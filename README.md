@@ -23,7 +23,6 @@ devtools::install_github("egpivo/SpatPCA")
     	- can be applied to either regularly or irregularly spaced data.
 
 
-
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
  
