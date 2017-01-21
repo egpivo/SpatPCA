@@ -19,9 +19,9 @@ devtools::install_github("egpivo/SpatPCA")
 ### Package description
 ***SpatPCA*** provides regularized principal component analysis 
 
-	- seeking localized patterns       
-    	- using the alternating direction method of multipliers (ADMM) algorithm
-    	- can be applied to either regularly or irregularly spaced data.
+* **seeking localized patterns       
+* **using the alternating direction method of multipliers (ADMM) algorithm
+* **can be applied to either regularly or irregularly spaced data.
 
 
 ### Author
