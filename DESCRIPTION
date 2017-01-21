@@ -1,0 +1,12 @@
+Package: SpatPCA
+Type: Package
+Title: Regularized Principal Component Analysis for Spatial Data
+Version: 1.1.1.1
+Date: 2016-05-20
+Author: Wen-Ting Wang and Hsin-Cheng Huang
+Maintainer: Wen-Ting Wang <egpivo@gmail.com>
+Description: Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigenfunctions by using the alternating direction method of multipliers algorithm. The method can be applied to either regularly or irregularly spaced data.
+License: GPL-2
+Imports: Rcpp, RcppParallel (>= 0.11.2)  
+LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+SystemRequirements: GNU make	

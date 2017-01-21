@@ -1,0 +1,6 @@
+useDynLib(SpatPCA)
+exportPattern("^[[:alpha:]]+")
+export(spatpca)
+importFrom("graphics", "par", "plot")
+importFrom(Rcpp, evalCpp)
+importFrom(RcppParallel, RcppParallelLibs)
