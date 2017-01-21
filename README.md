@@ -18,11 +18,12 @@ devtools::install_github("egpivo/SpatPCA")
 ```
 
 ### Package description
-***SpatPCA*** provides regularized principal component analysis 
+***SpatPCA*** provides regularized principal component analysis with 
 
-* seeking localized patterns and spatial prediction(kriging)     
-* using the alternating direction method of multipliers (ADMM) algorithm
-* can be applied to either regularly or irregularly spaced data.
+* seeking the dominant patterns which can be localized 
+* spatial prediction (Kriging)
+* either regularly or irregularly spaced data
+* by the alternating direction method of multipliers (ADMM) algorithm
 
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
