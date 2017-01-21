@@ -2,11 +2,6 @@
 
 
 # SpatPCA
-Provide regularized principal component analysis 
-    1. incorporating smoothness, sparseness and orthogonality of eigenfunctions 
-        - seeking localized patterns
-    2. using the alternating direction method of multipliers algorithm. 
-    3. can be applied to either regularly or irregularly spaced data.
 
 ### Installing
 To get the current released version from CRAN:
@@ -20,6 +15,14 @@ To get the current development version from GitHub:
 ```r
 devtools::install_github("egpivo/SpatPCA")
 ```
+
+### Package description
+***SpatPCA*** provides regularized principal component analysis 
+	- seeking localized patterns       
+    	- using the alternating direction method of multipliers (ADMM) algorithm
+    	- can be applied to either regularly or irregularly spaced data.
+
+
 
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
