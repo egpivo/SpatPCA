@@ -1,4 +1,5 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
 
 
 # SpatPCA
