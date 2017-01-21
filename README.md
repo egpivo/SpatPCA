@@ -1,5 +1,5 @@
 # SpatPCA
-- Description: Provide regularized principal component analysis 
+- Provide regularized principal component analysis 
     - incorporating smoothness, sparseness and orthogonality of eigenfunctions 
         - seeking localized patterns
     - by using the alternating direction method of multipliers algorithm. 
