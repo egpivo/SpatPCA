@@ -61,7 +61,7 @@ plot.cv = FALSE, maxit = 100, thr = 1e-04)
 \item{Yc}{If center is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
 }
 \description{
-Produce spatial patterns and spatial predictions at the designated locations according to the specified tuning parameters or the selected tuning parameters by M-fold cross-validation.
+Produce spatial dominant patterns and spatial predictions at the designated locations according to the specified tuning parameters or the selected tuning parameters by the M-fold cross-validation.
 }
 \details{
 An ADMM form of the proposed objective function is written as
