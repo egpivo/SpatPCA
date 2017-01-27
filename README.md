@@ -6,7 +6,7 @@
 
 # SpatPCA
 
-### Installing
+### Installation
 To get the current released version from CRAN:
 
 ```r
@@ -26,6 +26,10 @@ devtools::install_github("egpivo/SpatPCA")
 * computing spatial prediction (Kriging) at new locations
 * suitable for either regularly or irregularly spaced data
 * by the alternating direction method of multipliers (ADMM) algorithm
+
+```{r example}
+library(SpatPCA)
+```
 
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
