@@ -1,6 +1,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
 [![Travis-CI Build Status](https://travis-ci.org/egpivo/SpatPCA.svg?branch=master)](https://travis-ci.org/egpivo/SpatPCA)
+[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 
 
 # SpatPCA
