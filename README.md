@@ -32,10 +32,13 @@ devtools::install_github("egpivo/SpatPCA")
 library(SpatPCA)
 ### location
 x_1D <- as.matrix(seq(-5, 5, length = 50))
+###underlying eigenfunction
 Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
 ### Realizations on x_1D
 Y_1D <- rnorm(n = 100, sd = 3)%*%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
+### main function: spatpca()
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
+### Plot the estimate
 plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
 ```
 ### Author
