@@ -39,7 +39,7 @@ Y_1D <- rnorm(n = 100, sd = 3)%*%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
 ### main function: spatpca()
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 ### Plot the estimate
-plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
+plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = "1st eigenfunction")
 ```
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
