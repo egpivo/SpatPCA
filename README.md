@@ -23,7 +23,7 @@ devtools::install_github("egpivo/SpatPCA")
 ***SpatPCA*** provides regularized principal component analysis with
 
 * seeking the dominant patterns (eigenfunctions), which can be smooth and localized
-* computing spatial prediction (Kriging)
+* computing spatial prediction (Kriging) at new locations
 * suitable for either regularly or irregularly spaced data
 * by the alternating direction method of multipliers (ADMM) algorithm
 
