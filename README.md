@@ -6,6 +6,15 @@
 
 # SpatPCA
 
+### Dscription
+***SpatPCA*** provides regularized principal component analysis with
+
+* seeking the dominant patterns (eigenfunctions), which can be smooth and localized
+* computing spatial prediction (Kriging) at new locations
+* suitable for either regularly or irregularly spaced data
+* by the alternating direction method of multipliers (ADMM) algorithm
+
+
 ### Installation
 To get the current released version from CRAN:
 
@@ -15,20 +24,21 @@ install.packages("SpatPCA")
 
 To get the current development version from GitHub:
 
+
 ```r
 devtools::install_github("egpivo/SpatPCA")
 ```
 
-### Package description
-***SpatPCA*** provides regularized principal component analysis with
+### Usage
 
-* seeking the dominant patterns (eigenfunctions), which can be smooth and localized
-* computing spatial prediction (Kriging) at new locations
-* suitable for either regularly or irregularly spaced data
-* by the alternating direction method of multipliers (ADMM) algorithm
 
 ```{r example}
 library(SpatPCA)
+x_1D <- as.matrix(seq(-5, 5, length = 50))
+Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
+Y_1D <- rnorm(n = 100, sd = 3)\%*\%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D)
+plot(x_1D, cv_1D$eigenfn, type='l', main="1st eigenfunction")
 ```
 
 ### Author
