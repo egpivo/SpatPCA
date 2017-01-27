@@ -27,8 +27,17 @@ To get the current development version from GitHub:
 ```r
 devtools::install_github("egpivo/SpatPCA")
 ```
-
-
+### Usage
+```{r example}
+library(SpatPCA)
+### location
+x_1D <- as.matrix(seq(-5, 5, length = 50))
+Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
+### Realizations on x_1D
+Y_1D <- rnorm(n = 100, sd = 3)%*%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D)
+plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
+```
 ### Author
  [Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
  
