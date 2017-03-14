@@ -42,10 +42,10 @@ cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = "1st eigenfunction")
 ```
 ### Author
-**[Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang")** and **[Hsin-Cheng Huang] (http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")**
+[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang](http://www.stat.sinica.edu.tw/hchuang/blog/ "Hsin-Cheng Huang")
  
 ### Maintainer
-**[Wen-Ting Wang] (https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang")**
+[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang")
 
 ### Reference
 Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221v3.pdf, "Regularized principal component analysis for spatial data"). Journal of Computational and Graphical Statistics, 26, 14-25.
