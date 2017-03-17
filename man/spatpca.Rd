@@ -117,8 +117,8 @@ map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = T)}}
 Wen-Ting Wang and Hsin-Cheng Huang
 }
 \references{
-Wang, W.-T. and Huang, H.-C. (2016+). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics}, to appear.
+Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics} \bold{26} 14-25.
 
-Tzeng, S. and Huang, H.-C. (2015). Non-stationary multivariate spatial covariance estimation via low-rank regularization. \emph{Statistical Sinica} \bold{26} 151-172.
+Tzeng, S. and Huang, H.-C. (2015). Non-stationary multivariate spatial covariance estimation via low-rank regularization. \emph{Statistical Sinica} \bold{25} 151-172.
 
 }
