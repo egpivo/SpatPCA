@@ -69,14 +69,13 @@ An ADMM form of the proposed objective function is written as
 \eqn{\mbox{subject to $ \bm{\Phi}^T\bm{\Phi}=\bm{I}_K$,}} where \eqn{\bm{Y}} is a data matrix, \eqn{{\bm{\Omega}}} is a smoothness matrix, and \eqn{\bm{\Phi}=\{\phi_{jk}\}}.
 }
 \examples{
-\dontrun{
 ###### 1D: regular locations
 x_1D <- as.matrix(seq(-5, 5, length = 50))
 Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
 Y_1D <- rnorm(n = 100, sd = 3)\%*\%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 plot(x_1D, cv_1D$eigenfn, type='l', main="1st eigenfunction")
-
+\dontrun{
 ### 1D: artificial irregular locations
 rm_loc <- sample(1:50, 20)
 x_1Drm <- x_1D[-rm_loc]
@@ -118,7 +117,4 @@ Wen-Ting Wang and Hsin-Cheng Huang
 }
 \references{
 Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics} \bold{26} 14-25.
-
-Tzeng, S. and Huang, H.-C. (2015). Non-stationary multivariate spatial covariance estimation via low-rank regularization. \emph{Statistical Sinica} \bold{25} 151-172.
-
 }
