@@ -12,7 +12,7 @@
 * seeking the dominant patterns (eigenfunctions), which can be smooth and localized
 * computing spatial prediction (Kriging) at new locations
 * suitable for either regularly or irregularly spaced data
-* the alternating direction method of multipliers (ADMM) algorithm
+* by the alternating direction method of multipliers (ADMM) algorithm
 
 
 ### Installation
