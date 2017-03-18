@@ -27,7 +27,7 @@ To get the current development version from GitHub:
 ```r
 devtools::install_github("egpivo/SpatPCA")
 ```
-To compile C++ code with package `RcppArmadillo`
+To compile C++ code with package `RcppArmadillo`,
 
  * Windows users require Rtools
  * Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal
@@ -36,7 +36,7 @@ To compile C++ code with package `RcppArmadillo`
 curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
 sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
 ```
-More details can be found [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/)
+More details can be found [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
 
 ### Usage
 ```{r example}
