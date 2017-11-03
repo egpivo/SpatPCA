@@ -72,9 +72,13 @@ An ADMM form of the proposed objective function is written as
 ###### 1D: regular locations
 x_1D <- as.matrix(seq(-5, 5, length = 50))
 Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
+set.seed(1234)
 Y_1D <- rnorm(n = 100, sd = 3)\%*\%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
+lines(x_1D, svd(Y_1D)$v[,1], col='red')
+legend('topleft', c('SpatPCA', 'PCA'), lty=1:1, col=1:2)
+
 \dontrun{
 ### 1D: artificial irregular locations
 rm_loc <- sample(1:50, 20)

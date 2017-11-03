@@ -38,7 +38,7 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
   if(is.null(tau1)) {
     ntau1 <- 11
     max.tau1 <- egvl*sqrt(ncol(Y)/nrow(Y))
-    tau1 <- c(0,exp(seq(log(max.tau1/1e3), log(max.tau1), length = (ntau1-1))))   
+    tau1 <- c(0,exp(seq(log(max.tau1/1e6), log(max.tau1), length = (ntau1-1))))   
     
   }else{
     ntau1 <- length(tau1)
@@ -54,13 +54,13 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
     gsize <- 11
     temp <- svd(Y[which(stra!=1),])
     gammamax1 <- temp$d[1]^2/nrow(Y[which(stra!=1),])
-    gamma <- c(0,exp(seq(log(gammamax1/1e3), log(gammamax1), length = gsize-1)))
+    gamma <- c(0,exp(seq(log(gammamax1/1e4), log(gammamax1), length = gsize-1)))
   }
   
   
   if(ntau2 ==1 && tau2 > 0){
     if(tau2 !=0)
-      l2 <- c(0,exp(seq(log(tau2/1e3), log(tau2), length = 10)))
+      l2 <- c(0,exp(seq(log(tau2/1e4), log(tau2), length = 10)))
     else
       l2 <- tau2
   }

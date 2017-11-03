@@ -47,16 +47,16 @@ struct tpm: public RcppParallel::Worker {
   void operator()(std::size_t begin, std::size_t end) {
     for(std::size_t i = begin; i < end; i++){
       for(unsigned j = 0; j < p; ++j){
-        if(j >i){
-          if(d==2){  
-            double r  = sqrt(pow(P(i,0)-P(j,0),2)+(pow(P(i,1)-P(j,1),2)));
-            L(i,j) = r*r*log(r)/(8.0*arma::datum::pi);
+        if(j > i){
+          if(d == 2){  
+            double r  = sqrt(pow(P(i, 0)-P(j, 0), 2)+(pow(P(i, 1)-P(j, 1), 2)));
+            L(i, j) = r*r*log(r)/(8.0*arma::datum::pi);
           }
-          else if(d==1){
-            double r  = sqrt(pow(P(i,0)-P(j,0),2));
-            L(i,j) = pow(r,3)/12;
+          else if(d == 1){
+            double r  = sqrt(pow(P(i, 0)-P(j, 0), 2));
+            L(i, j) = pow(r, 3)/12;
           }
-          else if(d ==3){
+          else if(d == 3){
             double r = sqrt(pow(P(i, 0) - P(j, 0), 2) +
                             pow(P(i, 1) - P(j, 1), 2) +
                             pow(P(i, 2) - P(j, 2), 2));
@@ -112,33 +112,32 @@ arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi){
     for(unsigned i = 0; i < K; i++){
       psum = 0;
       for(unsigned j = 0; j < p; j++){
-        if(d==2){  
-          r  = sqrt(pow(z(newi,0)-P(j,0),2)+(pow(z(newi,1)-P(j,1),2)));
-          if(r!=0)
-            psum += para(j,i)* r*r*log(r)/(8.0*arma::datum::pi);
+        if(d == 2){  
+          r  = sqrt(pow(z(newi, 0)-P(j, 0), 2)+(pow(z(newi, 1)-P(j, 1), 2)));
+          if(r != 0)
+            psum += para(j, i)* r*r*log(r)/(8.0*arma::datum::pi);
           
         }
-        else if(d==1){
-          r  = norm(z.row(newi)-P.row(j),'f');
-          if(r!=0)
-            psum += para(j,i)*pow(r,3)/12;;
-          
+        else if(d == 1){
+          r  = norm(z.row(newi) - P.row(j), 'f');
+          if(r != 0)
+            psum += para(j,i)*pow(r, 3)/12;
         }
-        else if(d ==3){
+        else if(d == 3){
           double r = sqrt(pow(z(newi, 0) - P(j, 0), 2) +
                           pow(z(newi, 1) - P(j, 1), 2) +
                           pow(z(newi, 2) - P(j, 2), 2));
-          if(r!=0)
+          if(r != 0)
             psum += -para(j,i)*r/(8.0*arma::datum::pi);
         }
         
       }
-      if(d==1)
-        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p,i);
-      else if(d==2)
-        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p+2,i)*z(newi,1) + para(p,i);
-      else if(d==3)
-        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p+2,i)*z(newi,1)+ para(p+3,i)*z(newi,2) + para(p,i); 
+      if(d == 1)
+        eigen_fn(newi, i) = psum + para(p+1, i)*z(newi, 0) + para(p, i);
+      else if(d == 2)
+        eigen_fn(newi, i) = psum + para(p+1, i)*z(newi, 0) + para(p+2, i)*z(newi, 1) + para(p, i);
+      else if(d == 3)
+        eigen_fn(newi, i) = psum + para(p+1, i)*z(newi, 0) + para(p+2, i)*z(newi, 1)+ para(p+3, i)*z(newi, 2) + para(p, i); 
     }
   }
   return(eigen_fn);
@@ -580,10 +579,10 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
   mat Ip;
   Ip.eye(Y.n_cols,Y.n_cols);
   if(max(tau1) !=0 || max(tau2)!=0){
-   // if(d == 2)
+    if(d == 1)
+      Omega = cubicmatrix(sxy);
+    else
       Omega = tpmatrix(sxy);
-    //else
-  //    Omega = cubicmatrix(sxy);
   }
   else{
     if(gamma.n_elem >1){
@@ -822,10 +821,10 @@ arma::mat spatpca_rcpp(const arma::mat  sxy, const arma::mat Y, const int K, con
   arma::mat UPhi, Phiold, Phi, R, C, Lambda1, Lambda2;
   arma::vec SPhi;
   arma::mat Omega;
-  if(d ==2)
-    Omega = tpmatrix(sxy);
-  else
+  if(d ==1)
     Omega = cubicmatrix(sxy);
+  else
+    Omega = tpmatrix(sxy);
   arma::svd_econ(UPhi, SPhi, Phiold, Y,"right");
   Phi = Phiold.cols(0,K-1);
   C = Phi;

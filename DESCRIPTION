@@ -3,7 +3,7 @@ Type: Package
 Title: Regularized Principal Component Analysis for Spatial Data
 Version: 1.2.0.0
 Date: 2017-11-03
-URL: https://github.com/egpivo/SpatPCA
+URL: https://CRAN.R-project.org/package=SpatPCA, https://github.com/egpivo/SpatPCA
 BugReports: https://github.com/egpivo/SpatPCA/issues
 Description: Provide regularized principal component analysis incorporating smoothness,
   sparseness and orthogonality of eigenfunctions by using the alternating direction method of
