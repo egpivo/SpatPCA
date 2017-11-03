@@ -74,7 +74,7 @@ x_1D <- as.matrix(seq(-5, 5, length = 50))
 Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
 Y_1D <- rnorm(n = 100, sd = 3)\%*\%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
-plot(x_1D, cv_1D$eigenfn, type='l', main="1st eigenfunction")
+plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
 \dontrun{
 ### 1D: artificial irregular locations
 rm_loc <- sample(1:50, 20)
@@ -111,7 +111,23 @@ xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
 eof <- spatpca(x = xx, Y = YY, K = cv$Khat, tau1 = cv$stau1, tau2 = cv$stau2, x_new = xx_new)
 quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
 map("state", xlim = range(x_lon), ylim = range(x_lat), add = T)
-map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = T)}}
+map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = T)
+
+###### 3D: regular locations
+x = y = z = as.matrix(seq(-5, 5, length = 10))
+d = expand.grid(x, y, z)
+Phi_3D <- exp(-d[,1]^2 - d[,2]^2 -d[,3]^2)/norm(exp(-d[,1]^2 - d[,2]^2 -d[,3]^2), "F")
+Y_3D <- rnorm(n = 1000, sd = 3)\%*\%t(Phi) + matrix(rnorm(n = 100*10^3), 100, 10^3)
+cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length=10))
+
+library(plot3D)
+library(RColorBrewer)
+cols <- colorRampPalette(brewer.pal(9,'Blues'))(10)
+isosurf3D(x, y, z, colvar = array(cv_3D$eigenfn[,1], c(p, p, p)),
+            level= seq(min(cv_3D$eigenfn[,1]), max(cv_3D$eigenfn[,1]), length=10),
+            ticktype = "detailed",
+            colkey = list(side = 1),
+            col = cols)}}
 \author{
 Wen-Ting Wang and Hsin-Cheng Huang
 }

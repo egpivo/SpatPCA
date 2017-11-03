@@ -6,17 +6,24 @@
 spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FALSE), tau1 = NULL, tau2 = NULL,
                     gamma = NULL,  x_new = NULL, center = FALSE,plot.cv = FALSE, maxit = 100, thr = 1e-04){
   call2 <- match.call()
-  x = as.matrix(x)
-  if(nrow(x) != ncol(Y))
+  x <- as.matrix(x)
+  p <- ncol(Y)
+  n <- nrow(Y)
+  if(nrow(x) != p)
     stop("The number of rows of x should be equal to the number of columns of Y.")
   if (nrow(x) < 3)
     stop("Number of locations must be larger than 2.")
-  if (ncol(x) > 2 )
-    stop("Dimension of locations must be 1 or 2.")
+  if (ncol(x) > 3 )
+    stop("Dimension of locations must be less than 4.")
   
-  if (M >= nrow(Y))
+  if (M >= n)
     stop("Number of folds must be less than sample size.")
-  
+  if(!is.null(K)){
+    if (K > min(floor(n - n/M), p)){
+      K = min(floor(n - n/M), p)
+      warning("K must be smaller than min(floor(n - n/M), p).")
+    }
+  }
   if(center == TRUE)
     Y = Y - apply(Y , 2, "mean")
   
@@ -62,8 +69,9 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
   }
   if(K.select == TRUE){
     cvtempold <- spatpcacv2_rcpp(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
-    for(k in 2:min(dim(Y))){
+    for(k in 2:min(floor(n - n/M), p)){
       cvtemp <- spatpcacv2_rcpp(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
+      
       if(min(cvtempold$cv3)<= min(cvtemp$cv3)||abs(min(cvtempold$cv3) -min(cvtemp$cv3))<=1e-8)
         break
       cvtempold <- cvtemp

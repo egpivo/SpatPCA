@@ -52,34 +52,42 @@ struct tpm: public RcppParallel::Worker {
             double r  = sqrt(pow(P(i,0)-P(j,0),2)+(pow(P(i,1)-P(j,1),2)));
             L(i,j) = r*r*log(r)/(8.0*arma::datum::pi);
           }
-          else{
+          else if(d==1){
             double r  = sqrt(pow(P(i,0)-P(j,0),2));
-            L(i,j) = sqrt(2)/(16*sqrt(arma::datum::pi))*pow(r,3);
-          }  
+            L(i,j) = pow(r,3)/12;
+          }
+          else if(d ==3){
+            double r = sqrt(pow(P(i, 0) - P(j, 0), 2) +
+                            pow(P(i, 1) - P(j, 1), 2) +
+                            pow(P(i, 2) - P(j, 2), 2));
+            L(i, j) = -r/(8.0*arma::datum::pi);
+          }
+          
         }
       }  
       
-      L(i,p) = 1;
+      L(i, p) = 1;
       for(unsigned k = 0; k < d; ++k){
-        L(i,p+k+1) = P(i,k);
+        L(i, p+k+1) = P(i, k);
       }
     }
   }
 };
 
 arma::mat tpmatrix(const arma::mat P){
-  arma::mat L, Lp;
+  arma::mat L, Lp, Ip;
   int p = P.n_rows, d = P.n_cols;
   
   L.zeros(p+d+1, p+d+1);
+  Ip.eye(p+d+1, p+d+1);
   tpm tpm(P,L,p,d);
   parallelFor(0, p,tpm);
-  L = L + L.t();
-  Lp = inv(L);   
-  Lp.shed_cols(p,p+2);
-  Lp.shed_rows(p,p+2);
-  L.shed_cols(p,p+2);
-  L.shed_rows(p,p+2);
+  L = symmatl(L);
+  Lp = inv_sympd(L+1e-8*Ip);   
+  Lp.shed_cols(p, p+d);
+  Lp.shed_rows(p, p+d);
+  L.shed_cols(p, p+d);
+  L.shed_rows(p, p+d);
   arma::mat result = Lp.t()*(L*Lp);
   return(result);
 }
@@ -104,21 +112,33 @@ arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi){
     for(unsigned i = 0; i < K; i++){
       psum = 0;
       for(unsigned j = 0; j < p; j++){
-        if(d==2){
+        if(d==2){  
           r  = sqrt(pow(z(newi,0)-P(j,0),2)+(pow(z(newi,1)-P(j,1),2)));
           if(r!=0)
             psum += para(j,i)* r*r*log(r)/(8.0*arma::datum::pi);
+          
         }
-        else{
-          r = norm(z.row(newi)-P.row(j),'f');
+        else if(d==1){
+          r  = norm(z.row(newi)-P.row(j),'f');
           if(r!=0)
-            psum += para(j,i)*((sqrt(2)/(16*sqrt(arma::datum::pi)))*pow(r,3));
+            psum += para(j,i)*pow(r,3)/12;;
+          
         }
+        else if(d ==3){
+          double r = sqrt(pow(z(newi, 0) - P(j, 0), 2) +
+                          pow(z(newi, 1) - P(j, 1), 2) +
+                          pow(z(newi, 2) - P(j, 2), 2));
+          if(r!=0)
+            psum += -para(j,i)*r/(8.0*arma::datum::pi);
+        }
+        
       }
       if(d==1)
         eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p,i);
-      else
-        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p+2,i)*z(newi,1) + para(p,i); 
+      else if(d==2)
+        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p+2,i)*z(newi,1) + para(p,i);
+      else if(d==3)
+        eigen_fn(newi,i) = psum + para(p+1,i)*z(newi,0) + para(p+2,i)*z(newi,1)+ para(p+3,i)*z(newi,2) + para(p,i); 
     }
   }
   return(eigen_fn);
@@ -295,7 +315,7 @@ struct spatpcacv_p: public RcppParallel::Worker {
       mat Yvalid = Y.rows(arma::find(nk==(k+1)));
       
       arma::svd_econ(UPhi, SPhi, Phiold, Ytrain, "right");
-    
+      
       rho(k,0) = 10*pow(SPhi[0],2.0);
       Phicv.slice(k) = Phiold.cols(0,K-1);
       Phi = C = Phicv.slice(k);
@@ -382,7 +402,7 @@ struct spatpcacv_p3: public RcppParallel::Worker {
       Phi = C = Phicv.slice(k);
       int K = Phi.n_cols; 
       Lambda2 = Lmbd2cv.slice(k);
-     
+      
       if(max(tau2) != 0 || max(tau1) !=0){
         if(tau2.n_elem == 1){
           spatpcacore2(YYtrain.slice(k), Phi,C, Lambda2, Omega, tau1, rho(k,0), maxit,tol);
@@ -410,7 +430,7 @@ struct spatpcacv_p3: public RcppParallel::Worker {
       Vc2 = Vc.cols(sort_index(Sc,"descend"));
       Sct.ones(Sc2.n_elem);
       Sctz.zeros(Sc2.n_elem);
-    
+      
       for(unsigned int gj = 0; gj < gamma.n_elem; gj++){
         tempSc = tempSc2;
         tempL = K;
@@ -493,7 +513,7 @@ List spatpcacv_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numeri
     
     arma::mat cv2(M,tau2.n_elem);
     uword  index2;
-
+    
     spatpcacv_p2 spatpcacv_p2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk,  maxit, tol, cv2,tempinvcv); 
     RcppParallel::parallelFor(0, M, spatpcacv_p2);
     //out = join_cols(-sum(cv,0)/M, -sum(cv2,0)/M);
@@ -504,11 +524,11 @@ List spatpcacv_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numeri
     mat tempinv = arma::inv_sympd((cvtau1*Omega) - YYest + (rhoest*Ip));
     mat Rest = Phiest;
     mat Lambda1est = 0*Phiest;
-     
+    
     for(uword  i = 0; i <= index2; i++){
       spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, tau2[i], rhoest, maxit,tol);
     }
-   
+    
     out2 = sum(cv2,0)/M;
   }
   else{  
@@ -560,10 +580,10 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
   mat Ip;
   Ip.eye(Y.n_cols,Y.n_cols);
   if(max(tau1) !=0 || max(tau2)!=0){
-    if(d == 2)
+   // if(d == 2)
       Omega = tpmatrix(sxy);
-    else
-      Omega = cubicmatrix(sxy);
+    //else
+  //    Omega = cubicmatrix(sxy);
   }
   else{
     if(gamma.n_elem >1){
@@ -580,7 +600,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
       }
     }
   }
- 
+  
   if(tau1.n_elem > 1){  
     spatpcacv_p spatpcacv_p(Y, K, Omega,  tau1, nk,  maxit, tol, cv,YYtrain, Phicv,Lmbd2cv,rhocv);
     RcppParallel::parallelFor(0, M, spatpcacv_p);
@@ -633,33 +653,33 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
           spatpcacore2(YYtrain.slice(k), Phigg,Cgg, Lambda2gg, Omega, cvtau1, rhocv(k,0), maxit,tol);
         Phicv.slice(k) = Phigg;
         Lmbd2cv.slice(k) = Lambda2gg;
-       // tempinvcv.slice(k) = arma::inv_sympd((cvtau1*Omega) - YYtrain.slice(k) + (rhocv(k,0)*Ip));    
+        // tempinvcv.slice(k) = arma::inv_sympd((cvtau1*Omega) - YYtrain.slice(k) + (rhocv(k,0)*Ip));    
       }
     }
-      
+    
     
     out.zeros(1);
   }
   if(tau2.n_elem > 1){
     
     arma::mat cv2(M,tau2.n_elem);
-
+    
     spatpcacv_p2 spatpcacv_p2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk,  maxit, tol, cv2,tempinvcv); 
     RcppParallel::parallelFor(0, M, spatpcacv_p2);
-  
+    
     //out = join_cols(-sum(cv,0)/M, -sum(cv2,0)/M);
     (sum(cv2,0)).min(index2);
     cvtau2 = tau2[index2];
     
-
+    
     mat tempinv = arma::inv_sympd((cvtau1*Omega) - YYest + (rhoest*Ip));
     mat Rest = Phiest;
     mat Lambda1est = 0*Phiest;
-     
+    
     for(uword  i = 0; i <= index2; i++){
       spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, tau2[i], rhoest, maxit,tol);
     }
-   
+    
     out2 = sum(cv2,0)/M;
   }
   else{  
@@ -674,7 +694,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
     }
     out2.zeros(1);
   }
- 
+  
   spatpcacv_p3 spatpcacv_p3(Y,YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2,K, Omega,  cvtau1, tau2, gamma, nk,  maxit, tol, cv3);
   RcppParallel::parallelFor(0, M, spatpcacv_p3);
   if(gamma.n_elem > 1){
@@ -685,7 +705,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
     cvgamma = max(gamma);
   }
   out3 = sum(cv3,0)/M;
-
+  
   return List::create(Named("cv1") = out, Named("cv2") = out2, Named("cv3") = out3, Named("est") = Phiest, Named("cvtau1") = cvtau1, Named("cvtau2") = cvtau2,Named("cvgamma") = cvgamma);
 }
 
@@ -707,7 +727,7 @@ List eigenest_rcpp(NumericMatrix  phir, NumericMatrix Yr, double gamma, NumericM
   double tempSc2 = accu(Sc);
   double temp_v = totalvar - tempSc2;
   double err = (temp_v + K*gamma)/(p-tempL);
-
+  
   Sc2 = sort(Sc,"descend");
   Vc2 = Vc.cols(sort_index(Sc,"descend"));
   double tempSc = tempSc2, temp;
@@ -837,7 +857,7 @@ using namespace std;
 
 arma::mat spatpca2_rcpp(const arma::mat Omega, const arma::mat Y, const int K, const double l1, const arma::vec l2,  const int maxit, const double tol){
   
- 
+  
   double rho;
   arma::mat UPhi, Phiold, Phi, R, C, Lambda1, Lambda2;
   arma::vec SPhi;
@@ -866,4 +886,3 @@ arma::mat spatpca2_rcpp(const arma::mat Omega, const arma::mat Y, const int K, c
   }
   return Phi;
 }
-
