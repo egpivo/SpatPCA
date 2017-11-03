@@ -13,7 +13,7 @@
 
 * seeking the dominant patterns (eigenfunctions), which can be smooth and localized
 * computing spatial prediction (Kriging) at new locations
-* suitable for either regularly or irregularly spaced data
+* suitable for either regularly or irregularly spaced data, including 1D, 2D, and 3D
 * by the alternating direction method of multipliers (ADMM) algorithm
 
 
@@ -44,6 +44,7 @@ More details can be found [here](http://thecoatlessprofessor.com/programming/rcp
 ```{r example}
 library(SpatPCA)
 ### location
+set.seed(1234)`
 x_1D <- as.matrix(seq(-5, 5, length = 50))
 ###underlying eigenfunction
 Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
@@ -53,6 +54,8 @@ Y_1D <- rnorm(n = 100, sd = 3)%*%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 ### Plot the estimate
 plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = "1st eigenfunction")
+lines(x_1D, svd(Y_1D)$v[,1], col='red')
+legend('topleft', c('SpatPCA', 'PCA'), lty=1:1, col=1:2)
 ```
 ### Author
 [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang](http://www.stat.sinica.edu.tw/hchuang/ "Hsin-Cheng Huang")
