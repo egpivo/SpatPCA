@@ -1,3 +1,5 @@
+# SpatPCA
+
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
 [![Travis-CI Build Status](https://travis-ci.org/egpivo/SpatPCA.svg?branch=master)](https://travis-ci.org/egpivo/SpatPCA)
@@ -5,8 +7,6 @@
 [![Research software impact](http://depsy.org/api/package/cran/SpatPCA/badge.svg)](http://depsy.org/package/r/SpatPCA)
 
 
-
-# SpatPCA
 
 ### Dscription
 ***SpatPCA*** is an R package that facilitates regularized principal component analysis, 
