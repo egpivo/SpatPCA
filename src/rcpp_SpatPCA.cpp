@@ -82,8 +82,8 @@ arma::mat tpmatrix(const arma::mat P){
   Ip.eye(p+d+1, p+d+1);
   tpm tpm(P,L,p,d);
   parallelFor(0, p,tpm);
-  L = symmatl(L);
-  Lp = inv_sympd(L+1e-8*Ip);   
+  L = symmatu(L);
+  Lp = inv(L+1e-8*Ip);   
   Lp.shed_cols(p, p+d);
   Lp.shed_rows(p, p+d);
   L.shed_cols(p, p+d);
@@ -313,9 +313,9 @@ struct spatpcacv_p: public RcppParallel::Worker {
       mat Ytrain = Y.rows(arma::find(nk!=(k+1)));
       mat Yvalid = Y.rows(arma::find(nk==(k+1)));
       
-      arma::svd_econ(UPhi, SPhi, Phiold, Ytrain, "right");
-      
+      arma::svd_econ(UPhi, SPhi, Phiold, Ytrain, "right");  
       rho(k,0) = 10*pow(SPhi[0],2.0);
+      
       Phicv.slice(k) = Phiold.cols(0,K-1);
       Phi = C = Phicv.slice(k);
       Lambda2 = Lmbd2cv.slice(k) = Phi*(diagmat(rho(k,0) -1/(rho(k,0)-2*pow(SPhi.subvec(0,K-1),2))));
@@ -487,10 +487,10 @@ List spatpcacv_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numeri
   arma::mat  Lambda2est = Phiest*(diagmat(rhoest -1/(rhoest-2*pow(SPhiest.subvec(0,K-1),2))));
   arma::mat rhocv(M,1);
   arma::cube YYtrain(p,p,M), Phicv(p,K,M), Lmbd2cv(p,K,M), tempinvcv(p,p,M);
-  if(d == 2)
-    Omega = tpmatrix(sxy);
-  else
-    Omega = cubicmatrix(sxy);
+
+  Omega = tpmatrix(sxy);
+
+  
   
   if(tau1.n_elem > 1){  
     spatpcacv_p spatpcacv_p(Y, K, Omega,  tau1, nk,  maxit, tol, cv,YYtrain, Phicv,Lmbd2cv,rhocv);
@@ -579,10 +579,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
   mat Ip;
   Ip.eye(Y.n_cols,Y.n_cols);
   if(max(tau1) !=0 || max(tau2)!=0){
-    if(d == 1)
-      Omega = cubicmatrix(sxy);
-    else
-      Omega = tpmatrix(sxy);
+      Omega = tpmatrix(sxy)+1e-8*Ip;
   }
   else{
     if(gamma.n_elem >1){
@@ -600,6 +597,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
     }
   }
   
+
   if(tau1.n_elem > 1){  
     spatpcacv_p spatpcacv_p(Y, K, Omega,  tau1, nk,  maxit, tol, cv,YYtrain, Phicv,Lmbd2cv,rhocv);
     RcppParallel::parallelFor(0, M, spatpcacv_p);
@@ -655,10 +653,9 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
         // tempinvcv.slice(k) = arma::inv_sympd((cvtau1*Omega) - YYtrain.slice(k) + (rhocv(k,0)*Ip));    
       }
     }
-    
-    
     out.zeros(1);
   }
+  
   if(tau2.n_elem > 1){
     
     arma::mat cv2(M,tau2.n_elem);
@@ -693,7 +690,7 @@ List spatpcacv2_rcpp(NumericMatrix  sxyr, NumericMatrix Yr, int M, int K,  Numer
     }
     out2.zeros(1);
   }
-  
+
   spatpcacv_p3 spatpcacv_p3(Y,YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2,K, Omega,  cvtau1, tau2, gamma, nk,  maxit, tol, cv3);
   RcppParallel::parallelFor(0, M, spatpcacv_p3);
   if(gamma.n_elem > 1){

@@ -67,6 +67,7 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
   else{
     l2 <- 1
   }
+  
   if(K.select == TRUE){
     cvtempold <- spatpcacv2_rcpp(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for(k in 2:min(floor(n - n/M), p)){
