@@ -6,6 +6,17 @@
 
 using namespace Rcpp;
 
+// tpmatrix
+arma::mat tpmatrix(const arma::mat P);
+RcppExport SEXP _SpatPCA_tpmatrix(SEXP PSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat >::type P(PSEXP);
+    rcpp_result_gen = Rcpp::wrap(tpmatrix(P));
+    return rcpp_result_gen;
+END_RCPP
+}
 // tpm2
 arma::mat tpm2(const arma::mat z, const arma::mat P, const arma::mat Phi);
 RcppExport SEXP _SpatPCA_tpm2(SEXP zSEXP, SEXP PSEXP, SEXP PhiSEXP) {
@@ -56,6 +67,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_SpatPCA_tpmatrix", (DL_FUNC) &_SpatPCA_tpmatrix, 1},
     {"_SpatPCA_tpm2", (DL_FUNC) &_SpatPCA_tpm2, 3},
     {"_SpatPCA_spatpcacv2_rcpp", (DL_FUNC) &_SpatPCA_spatpcacv2_rcpp, 11},
     {"_SpatPCA_eigenest_rcpp", (DL_FUNC) &_SpatPCA_eigenest_rcpp, 4},

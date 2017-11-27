@@ -73,7 +73,7 @@ struct tpm: public RcppParallel::Worker {
     }
   }
 };
-
+// [[Rcpp::export]]
 arma::mat tpmatrix(const arma::mat P){
   arma::mat L, Lp, Ip;
   int p = P.n_rows, d = P.n_cols;

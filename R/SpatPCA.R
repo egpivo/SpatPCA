@@ -33,13 +33,13 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
   }else{ 
     ntau2 <- length(tau2)
   }
-  tempegvl <- svd(Y)
-  egvl <- tempegvl$d[1]^2 
+ # tempegvl <- svd(Y)
+#  egvl <- tempegvl$d[1]^2 
   if(is.null(tau1)) {
     ntau1 <- 11
-    max.tau1 <- egvl*sqrt(ncol(Y)/nrow(Y))
-    tau1 <- c(0,exp(seq(log(max.tau1/1e6), log(max.tau1), length = (ntau1-1))))   
-    
+   # max.tau1 <- egvl*sqrt(ncol(Y)/nrow(Y))
+   # tau1 <- c(0,exp(seq(log(max.tau1/1e6), log(max.tau1), length = (ntau1-1))))   
+    tau1 <- c(0,exp(seq(log(1e-6), 0, length = (ntau1-1))))   
   }else{
     ntau1 <- length(tau1)
   }
@@ -57,6 +57,13 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
     gamma <- c(0,exp(seq(log(gammamax1/1e4), log(gammamax1), length = gsize-1)))
   }
   
+  if(dim(x)[2] == 1){
+    min_x <- min(x)
+    max_x <- max(x)
+    x <- (x-min_x)/(max_x-min_x)
+    if(!is.null(x_new))
+      x_new <- (x_new-min_x)/(max_x-min_x)
+  }
   
   if(ntau2 ==1 && tau2 > 0){
     if(tau2 !=0)
@@ -102,9 +109,7 @@ spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FAL
 
   temp = eigenest_rcpp(est, Y, cvgamma, estfn)
   predict = temp$predict
-  
-
-
+ 
   if(plot.cv == TRUE && !is.null(cv1)){
     if(ntau2 >1){
       par(mfrow=c(3,1))
