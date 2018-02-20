@@ -8,7 +8,7 @@
 
 
 
-### Dscription
+### Description
 ***SpatPCA*** is an R package that facilitates regularized principal component analysis, 
 
 * seeking the dominant patterns (eigenfunctions), which can be smooth and localized
