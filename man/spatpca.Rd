@@ -4,7 +4,7 @@
 \alias{spatpca}
 \title{Regularized PCA for spatial data}
 \usage{
-spatpca(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K),TRUE,FALSE), 
+spatpca(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K), TRUE, FALSE), 
 tau1 = NULL, tau2 = NULL, gamma = NULL, x_new = NULL, center = FALSE, 
 plot.cv = FALSE, maxit = 100, thr = 1e-04)
 }
@@ -71,13 +71,13 @@ An ADMM form of the proposed objective function is written as
 \examples{
 ###### 1D: regular locations
 x_1D <- as.matrix(seq(-5, 5, length = 50))
-Phi_1D <- exp(-x_1D^2)/norm(exp(-x_1D^2), "F")
+Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 set.seed(1234)
-Y_1D <- rnorm(n = 100, sd = 3)\%*\%t(Phi_1D) + matrix(rnorm(n = 100*50), 100, 50)
+Y_1D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
-plot(x_1D, cv_1D$eigenfn[,1], type='l', main="1st eigenfunction")
-lines(x_1D, svd(Y_1D)$v[,1], col='red')
-legend('topleft', c('SpatPCA', 'PCA'), lty=1:1, col=1:2)
+plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
+lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
+legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
 
 \dontrun{
 ### 1D: artificial irregular locations
@@ -86,9 +86,9 @@ x_1Drm <- x_1D[-rm_loc]
 Y_1Drm <- Y_1D[,-rm_loc]
 x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
-plot(x_1Dnew, cv_1D$eigenfn, type = 'l', main="eigenfunction")
-plot(cv_1D$Yhat[,50], xlab = "n", ylab = "Yhat", type='l', 
-    main= paste("prediction at x = ", x_1Dnew[50]))
+plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
+plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l", 
+    main = paste("prediction at x = ", x_1Dnew[50]))
 
 ###### 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 library(fields)
@@ -96,21 +96,21 @@ library(pracma)
 data(ozone2)
 x <- ozone2$lon.lat
 Y <- ozone2$y
-date <- as.Date(ozone2$date, format = '\%y\%m\%d')
+date <- as.Date(ozone2$date, format = "\%y\%m\%d")
 rmna <- !colSums(is.na(Y))
-YY <- matrix(Y[, rmna], nrow=nrow(Y))
+YY <- matrix(Y[, rmna], nrow = nrow(Y))
 YY <- detrend(YY, "linear")
-xx <- x[rmna,]
+xx <- x[rmna, ]
 cv <- spatpca(x = xx, Y = YY)
 quilt.plot(xx, cv$eigenfn[,1])
-map("state", xlim = range(xx[,1]), ylim = range(xx[,2]), add = T)
-map.text("state", xlim = range(xx[,1]), ylim = range(xx[,2]), cex = 2, add = T)
-plot(date, YY\%*\%cv$eigenfn[,1], type = "l", ylab = "1st Principal Component")
+map("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), add = T)
+map.text("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), cex = 2, add = T)
+plot(date, YY \%*\% cv$eigenfn[,1], type = "l", ylab = "1st Principal Component")
 
 ### new loactions
 new_p = 200
-x_lon <- seq(min(xx[,1]), max(xx[,1]), length = new_p)
-x_lat <- seq(min(xx[,2]), max(xx[,2]), length = new_p)
+x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
+x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
 eof <- spatpca(x = xx, Y = YY, K = cv$Khat, tau1 = cv$stau1, tau2 = cv$stau2, x_new = xx_new)
 quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
@@ -120,15 +120,15 @@ map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = T)
 ###### 3D: regular locations
 x <- y <- z <- as.matrix(seq(-5, 5, length = 10))
 d <- expand.grid(x, y, z)
-Phi_3D <- exp(-d[,1]^2 - d[,2]^2 -d[,3]^2)/norm(exp(-d[,1]^2 - d[,2]^2 -d[,3]^2), "F")
-Y_3D <- rnorm(n = 1000, sd = 3)\%*\%t(Phi) + matrix(rnorm(n = 100*10^3), 100, 10^3)
-cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length=10))
+Phi_3D <- exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2) / norm(exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2), "F")
+Y_3D <- rnorm(n = 1000, sd = 3) \%*\% t(Phi) + matrix(rnorm(n = 100 * 10^3), 100, 10^3)
+cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length = 10))
 
 library(plot3D)
 library(RColorBrewer)
-cols <- colorRampPalette(brewer.pal(9,'Blues'))(10)
-isosurf3D(x, y, z, colvar = array(cv_3D$eigenfn[,1], c(p, p, p)),
-            level= seq(min(cv_3D$eigenfn[,1]), max(cv_3D$eigenfn[,1]), length=10),
+cols <- colorRampPalette(brewer.pal(9, "Blues"))(10)
+isosurf3D(x, y, z, colvar = array(cv_3D$eigenfn[, 1], c(p, p, p)),
+            level= seq(min(cv_3D$eigenfn[, 1]), max(cv_3D$eigenfn[, 1]), length = 10),
             ticktype = "detailed",
             colkey = list(side = 1),
             col = cols)}}

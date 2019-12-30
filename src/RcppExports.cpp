@@ -30,9 +30,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// spatpcacv2_rcpp
-List spatpcacv2_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector tau1r, NumericVector tau2r, NumericVector gammar, NumericVector nkr, int maxit, double tol, NumericVector l2r);
-RcppExport SEXP _SpatPCA_spatpcacv2_rcpp(SEXP sxyrSEXP, SEXP YrSEXP, SEXP MSEXP, SEXP KSEXP, SEXP tau1rSEXP, SEXP tau2rSEXP, SEXP gammarSEXP, SEXP nkrSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP l2rSEXP) {
+// spatpcaCV
+List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector tau1r, NumericVector tau2r, NumericVector gammar, NumericVector nkr, int maxit, double tol, NumericVector l2r);
+RcppExport SEXP _SpatPCA_spatpcaCV(SEXP sxyrSEXP, SEXP YrSEXP, SEXP MSEXP, SEXP KSEXP, SEXP tau1rSEXP, SEXP tau2rSEXP, SEXP gammarSEXP, SEXP nkrSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP l2rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,13 +47,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type l2r(l2rSEXP);
-    rcpp_result_gen = Rcpp::wrap(spatpcacv2_rcpp(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r));
+    rcpp_result_gen = Rcpp::wrap(spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r));
     return rcpp_result_gen;
 END_RCPP
 }
-// eigenest_rcpp
-List eigenest_rcpp(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
-RcppExport SEXP _SpatPCA_eigenest_rcpp(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
+// eigenEstimate
+List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
+RcppExport SEXP _SpatPCA_eigenEstimate(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +61,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type phi2r(phi2rSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenest_rcpp(phir, Yr, gamma, phi2r));
+    rcpp_result_gen = Rcpp::wrap(eigenEstimate(phir, Yr, gamma, phi2r));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -69,8 +69,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_SpatPCA_tpmatrix", (DL_FUNC) &_SpatPCA_tpmatrix, 1},
     {"_SpatPCA_tpm2", (DL_FUNC) &_SpatPCA_tpm2, 3},
-    {"_SpatPCA_spatpcacv2_rcpp", (DL_FUNC) &_SpatPCA_spatpcacv2_rcpp, 11},
-    {"_SpatPCA_eigenest_rcpp", (DL_FUNC) &_SpatPCA_eigenest_rcpp, 4},
+    {"_SpatPCA_spatpcaCV", (DL_FUNC) &_SpatPCA_spatpcaCV, 11},
+    {"_SpatPCA_eigenEstimate", (DL_FUNC) &_SpatPCA_eigenEstimate, 4},
     {NULL, NULL, 0}
 };
 

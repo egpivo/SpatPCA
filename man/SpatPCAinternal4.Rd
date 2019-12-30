@@ -2,11 +2,6 @@
 \name{tpmatrix}
 \alias{tpmatrix}
 \title{internal_function}
-\usage{
-internal_function
-}
-
-\description{
-internal_function
-}
+\usage{tpmatrix}
+\description{internal_function}
 \keyword{internal}

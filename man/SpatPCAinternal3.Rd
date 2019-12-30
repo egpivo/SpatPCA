@@ -2,11 +2,6 @@
 \name{tpm2}
 \alias{tpm2}
 \title{internal_function}
-\usage{
-internal_function
-}
-
-\description{
-internal_function
-}
+\usage{tpm2}
+\description{internal_function}
 \keyword{internal}
