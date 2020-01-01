@@ -58,7 +58,7 @@ Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 
 ### Plot the estimate
-plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = "1st eigenfunction")
+plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = '1st eigenfunction')
 lines(x_1D, svd(Y_1D)$v[,1], col='red')
 legend('topleft', c('SpatPCA', 'PCA'), lty = 1:1, col = 1:2)
 ```
