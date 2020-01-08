@@ -2,7 +2,7 @@ Package: SpatPCA
 Type: Package
 Title: Regularized Principal Component Analysis for Spatial Data
 Version: 1.2.0.1
-Date: 2019-12-30
+Date: 2020-01-08
 URL: https://github.com/egpivo/SpatPCA
 BugReports: https://github.com/egpivo/SpatPCA/issues
 Description: Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigenfunctions

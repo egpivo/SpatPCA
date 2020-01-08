@@ -1,7 +1,7 @@
 ## SpatPCA Package
 
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
-[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://cran.r-project.org/package=SpatPCA)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://CRAN.R-project.org/package=SpatPCA)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://CRAN.R-project.org/package=SpatPCA)
 [![Travis-CI Build Status](https://travis-ci.org/egpivo/SpatPCA.svg?branch=master)](https://travis-ci.org/egpivo/SpatPCA)
 [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Research software impact](http://depsy.org/api/package/cran/SpatPCA/badge.svg)](http://depsy.org/package/r/SpatPCA)
@@ -29,9 +29,9 @@ To get the current development version from GitHub:
 ```r
 devtools::install_github("egpivo/SpatPCA")
 ```
-To compile C++ code with the package [`RcppArmadillo`](https://cran.r-project.org/web/packages/RcppArmadillo/index.html),
+To compile C++ code with the package [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo),
 
- * Windows users require [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
+ * Windows users require [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/)
  * Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal
 
 ```
