@@ -41,23 +41,14 @@ sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
 More details can be found [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
 
 ### Usage
-```{r example}
+```r
 library(SpatPCA)
-
-### location
-x_1D <- as.matrix(seq(-5, 5, length = 50))
-
-###underlying eigenfunction
-Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
-
-### Realizations on x_1D
 set.seed(1234)
+x_1D <- as.matrix(seq(-5, 5, length = 50))
+Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
 
-### main function: spatpca()
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
-
-### Plot the estimate
 plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = '1st eigenfunction')
 lines(x_1D, svd(Y_1D)$v[,1], col='red')
 legend('topleft', c('SpatPCA', 'PCA'), lty = 1:1, col = 1:2)
