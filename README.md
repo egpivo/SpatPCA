@@ -47,7 +47,7 @@ spatpca(position, realizations)
 ```
 - Input: realizations with the corresponding position
 - Output: return the most dominant eigenfunctions automatically.
-- More details can be referred to [demo](https://egpivo.github.io/SpatPCA/docs/articles/demo.html)
+- More details can be referred to [Demo](https://egpivo.github.io/SpatPCA/articles/demo.html)
 
 ### Author
 [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang](http://www.stat.sinica.edu.tw/hchuang/ "Hsin-Cheng Huang")
