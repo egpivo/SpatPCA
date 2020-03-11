@@ -28,8 +28,11 @@ set.seed(1234)
 position <- matrix(seq(-5, 5, length = 100))
 true_eigen_fn <- exp(-position^2) / norm(exp(-position^2), "F")
 
-data.frame(position, eigenfunction = true_eigen_fn) %>%
-ggplot(aes(position, eigenfunction)) + geom_line() + base_theme
+data.frame(position = position,
+           eigenfunction = true_eigen_fn) %>%
+  ggplot(aes(position, eigenfunction)) +
+  geom_line() +
+  base_theme
 ```
 
 #### Generate realizations based on the eigenfunction
@@ -47,7 +50,12 @@ eigen_est <- cv$eigenfn
 
 #### Compare SpatPCA with PCA
 ```{r}
-data.frame(position = position, true = true_eigen_fn, spatpca = eigen_est[, 1], pca = svd(realizations)$v[,1]) %>%
+data.frame(position = position, 
+           true = true_eigen_fn, 
+           spatpca = eigen_est[, 1], 
+           pca = svd(realizations)$v[, 1]) %>%
   gather(estimate, eigenfunction, -position) %>%
-  ggplot(aes(x = position, y = eigenfunction, color = estimate)) + geom_line() + base_theme
+  ggplot(aes(x = position, y = eigenfunction, color = estimate)) +
+  geom_line() + 
+  base_theme
 ```
