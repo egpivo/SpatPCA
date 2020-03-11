@@ -43,16 +43,12 @@ More details can be found [here](http://thecoatlessprofessor.com/programming/rcp
 ### Usage
 ```r
 library(SpatPCA)
-set.seed(1234)
-x_1D <- as.matrix(seq(-5, 5, length = 50))
-Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
-Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
-
-cv_1D <- spatpca(x = x_1D, Y = Y_1D)
-plot(x_1D, cv_1D$eigenfn[,1], type = 'l', main = '1st eigenfunction')
-lines(x_1D, svd(Y_1D)$v[,1], col='red')
-legend('topleft', c('SpatPCA', 'PCA'), lty = 1:1, col = 1:2)
+spatpca(position, realizations)
 ```
+- Input: realizations with the corresponding position
+- Output: return the most dominant eigenfunctions automatically.
+- More details can be referred to [demo](https://egpivo.github.io/SpatPCA/docs/articles/demo.html)
+
 ### Author
 [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b "Wen-Ting Wang") and [Hsin-Cheng Huang](http://www.stat.sinica.edu.tw/hchuang/ "Hsin-Cheng Huang")
  

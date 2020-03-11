@@ -48,6 +48,18 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/demo.html">Demo: One-Dimension Location</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -89,7 +101,7 @@
 <p>To get the current released version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"SpatPCA"</span>)</a></code></pre></div>
 <p>To get the current development version from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">"egpivo/SpatPCA"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"egpivo/SpatPCA"</span>)</a></code></pre></div>
 <p>To compile C++ code with the package <a href="https://CRAN.R-project.org/package=RcppArmadillo"><code>RcppArmadillo</code></a>,</p>
 <ul>
 <li>Windows users require <a href="https://CRAN.R-project.org/bin/windows/Rtools/">Rtools</a>
@@ -104,15 +116,13 @@ sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /</code></pre>
 <h3 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(SpatPCA)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">x_1D &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">5</span>, <span class="dt">length =</span> <span class="dv">50</span>))</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">Phi_1D &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>x_1D<span class="op">^</span><span class="dv">2</span>) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/norm.html">norm</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/Log.html">exp</a></span>(<span class="op">-</span>x_1D<span class="op">^</span><span class="dv">2</span>), <span class="st">"F"</span>)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">Y_1D &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dt">n =</span> <span class="dv">100</span>, <span class="dt">sd =</span> <span class="dv">3</span>) <span class="op">%*%</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(Phi_1D) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="dt">n =</span> <span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="dv">50</span>), <span class="dv">100</span>, <span class="dv">50</span>)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">cv_1D &lt;-<span class="st"> </span><span class="kw"><a href="reference/spatpca.html">spatpca</a></span>(<span class="dt">x =</span> x_1D, <span class="dt">Y =</span> Y_1D)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="kw"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span>(x_1D, cv_1D<span class="op">$</span>eigenfn[,<span class="dv">1</span>], <span class="dt">type =</span> <span class="st">'l'</span>, <span class="dt">main =</span> <span class="st">'1st eigenfunction'</span>)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="kw"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span>(x_1D, <span class="kw"><a href="https://rdrr.io/r/base/svd.html">svd</a></span>(Y_1D)<span class="op">$</span>v[,<span class="dv">1</span>], <span class="dt">col=</span><span class="st">'red'</span>)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span>(<span class="st">'topleft'</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'SpatPCA'</span>, <span class="st">'PCA'</span>), <span class="dt">lty =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">1</span>, <span class="dt">col =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="reference/spatpca.html">spatpca</a></span>(position, realizations)</a></code></pre></div>
+<ul>
+<li>Input: realizations with the corresponding position</li>
+<li>Output: return the most dominant eigenfunctions automatically.</li>
+<li>More details can be referred to <a href="https://egpivo.github.io/SpatPCA/docs/articles/demo.html">demo</a>
+</li>
+</ul>
 </div>
 <div id="author" class="section level3">
 <h3 class="hasAnchor">

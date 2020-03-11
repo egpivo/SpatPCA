@@ -1,0 +1,53 @@
+---
+title: "Demo: One-Dimension Location"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{demom}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+### Basic settings
+```{r message=FALSE}
+library(SpatPCA)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+base_theme <- theme_classic(base_size = 18, base_family = "Times")
+```
+### Steps
+#### Set a True eigenfunction
+```{r}
+set.seed(1234)
+position <- matrix(seq(-5, 5, length = 100))
+true_eigen_fn <- exp(-position^2) / norm(exp(-position^2), "F")
+
+data.frame(position, eigenfunction = true_eigen_fn) %>%
+ggplot(aes(position, eigenfunction)) + geom_line() + base_theme
+```
+
+#### Generate realizations based on the eigenfunction
+
+```{r}
+realizations <- rnorm(n = 100, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = 100 * 100), 100, 100)
+```
+
+#### Apply `SpatPCA::spatpca` to estimate dominant eigenfunctions of realizations
+```{r}
+cv <- spatpca(x = position, Y = realizations)
+eigen_est <- cv$eigenfn
+```
+
+
+#### Compare SpatPCA with PCA
+```{r}
+data.frame(position = position, true = true_eigen_fn, spatpca = eigen_est[, 1], pca = svd(realizations)$v[,1]) %>%
+  gather(estimate, eigenfunction, -position) %>%
+  ggplot(aes(x = position, y = eigenfunction, color = estimate)) + geom_line() + base_theme
+```

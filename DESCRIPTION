@@ -14,3 +14,7 @@ LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 SystemRequirements: C++11
 Author: Wen-Ting Wang, Hsin-Cheng Huang
 Maintainer: Wen-Ting Wang <egpivo@gmail.com>
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
