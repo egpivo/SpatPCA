@@ -6,6 +6,7 @@ install:
   - R -e 'if (system.file(package="ggplot2") == "") install.packages("ggplot2")'
   - R -e 'if (system.file(package="dplyr") == "") install.packages("dplyr")'
   - R -e 'if (system.file(package="tidyr") == "") install.packages("tidyr")'
+  - R -e 'if (system.file(package="gifski") == "") install.packages("gifski")'
 env:
   - _R_CHECK_FORCE_SUGGESTS_=true
 compiler:
