@@ -1,8 +1,11 @@
 ---
 title: "Demo: Capture the Dominant Spatial Patten with One-Dimension Location"
-output: rmarkdown::html_vignette
+output:
+    rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 4
 vignette: >
-  %\VignetteIndexEntry{demom}
+  %\VignetteIndexEntry{Demo}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
