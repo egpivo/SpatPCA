@@ -25,6 +25,7 @@ library(SpatPCA)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(gifski)
 base_theme <- theme_classic(base_size = 18, base_family = "Times")
 ```
 ### True spatial pattern (eigenfunction)
