@@ -19,12 +19,7 @@ addons:
     packages:
     - gcc-4.9
     - g++-4.9
+    - cargo
 before_install:
   - mkdir ~/.R
   - echo "CXX1X=g++-4.9" > ~/.R/Makevars
-before_cache:
-- Rscript -e 'remotes::install_cran("pkgdown")'
-deploy:
-  provider: script
-  script: Rscript -e 'pkgdown::deploy_site_github()'
-  skip_cleanup: true
