@@ -1,6 +1,7 @@
 sudo: false
 language: R
 cache: packages
+r_packages: gifski
 warnings_are_errors: false
 install:
   - R -e 'if (system.file(package="ggplot2") == "") install.packages("ggplot2")'
