@@ -3,137 +3,155 @@
 #' Regularized PCA for spatial data
 #'
 
-spatpca <- function(x, Y, M = 5, K = NULL, K.select = ifelse(is.null(K), TRUE, FALSE), tau1 = NULL, tau2 = NULL,
-                    gamma = NULL, x_new = NULL, center = FALSE, plot.cv = FALSE, maxit = 100, thr = 1e-04){
-  call2 <- match.call()
-  x <- as.matrix(x)
-  p <- ncol(Y)
-  n <- nrow(Y)
-  if(nrow(x) != p)
-    stop("The number of rows of x should be equal to the number of columns of Y.")
-  if(nrow(x) < 3)
-    stop("Number of locations must be larger than 2.")
-  if(ncol(x) > 3)
-    stop("Dimension of locations must be less than 4.")
-  if(M >= n)
-    stop("Number of folds must be less than sample size.")
-  if(!is.null(K)) {
-    if (K > min(floor(n - n / M), p)) {
-      K <- min(floor(n - n / M), p)
-      warning("K must be smaller than min(floor(n - n/M), p).")
+spatpca <-
+  function(x,
+           Y,
+           M = 5,
+           K = NULL,
+           K.select = ifelse(is.null(K), TRUE, FALSE),
+           tau1 = NULL,
+           tau2 = NULL,
+           gamma = NULL,
+           x_new = NULL,
+           center = FALSE,
+           plot.cv = FALSE,
+           maxit = 100,
+           thr = 1e-04) {
+    call2 <- match.call()
+    x <- as.matrix(x)
+    p <- ncol(Y)
+    n <- nrow(Y)
+    if (nrow(x) != p)
+      stop("The number of rows of x should be equal to the number of columns of Y.")
+    if (nrow(x) < 3)
+      stop("Number of locations must be larger than 2.")
+    if (ncol(x) > 3)
+      stop("Dimension of locations must be less than 4.")
+    if (M >= n)
+      stop("Number of folds must be less than sample size.")
+    if (!is.null(K)) {
+      if (K > min(floor(n - n / M), p)) {
+        K <- min(floor(n - n / M), p)
+        warning("K must be smaller than min(floor(n - n/M), p).")
+      }
     }
-  }
-  # Remove the mean trend of Y
-  if(center)
-    Y <- Y - apply(Y , 2, "mean")
-  # Initialize candidates of tuning parameters
-  if(is.null(tau2)) {
-    tau2 <- 0
-    ntau2 <- 1
-  } else { 
-    ntau2 <- length(tau2)
-  }
-  if(is.null(tau1)) {
-    ntau1 <- 11
-    tau1 <- c(0, exp(seq(log(1e-6), 0, length = ntau1 - 1)))   
-  } else {
-    ntau1 <- length(tau1)
-  }
-  
-  if(M < 2 && (ntau1 > 1 || ntau2 > 1)) {
-    ntau1 <- ntau2 <- 1
-    warning("Only produce the result based on the largest tau1 and largest tau2.")
-  }
-  
-  stra <- sample(rep(1:M, length.out = nrow(Y)))
-  if(is.null(gamma)) {
-    gsize <- 11
-    temp <- svd(Y[which(stra != 1), ])
-    gammamax1 <- temp$d[1]^2 / nrow(Y[which(stra != 1), ])
-    gamma <- c(0, exp(seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)))
-  }
-  
-  if(dim(x)[2] == 1) {
-    min_x <- min(x)
-    max_x <- max(x)
-    x <- (x - min_x) / (max_x - min_x)
-    if(!is.null(x_new))
-      x_new <- (x_new - min_x) / (max_x - min_x)
-  }
-  
-  if(ntau2 == 1 && tau2 > 0) {
-    if(tau2 != 0)
-      l2 <- c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10)))
-    else
-      l2 <- tau2
-  } else {
-    l2 <- 1
-  }
-  
-  if(K.select) {
-    cvtempold <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
-    for(k in 2:min(floor(n - n / M), p)){
-      cvtemp <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
-      if(min(cvtempold$cv3) <= min(cvtemp$cv3) ||
-        abs(min(cvtempold$cv3) - min(cvtemp$cv3)) <= 1e-8)
-        break
-      cvtempold <- cvtemp
+    # Remove the mean trend of Y
+    if (center)
+      Y <- Y - apply(Y , 2, "mean")
+    # Initialize candidates of tuning parameters
+    if (is.null(tau2)) {
+      tau2 <- 0
+      ntau2 <- 1
+    } else {
+      ntau2 <- length(tau2)
     }
-    Khat <- k - 1
-  }
-  else{
-    cvtempold <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
-    Khat <- K
-  }
-   
-  cvtau1 <- cvtempold$cvtau1
-  cvtau2 <- cvtempold$cvtau2
-  cvgamma <- cvtempold$cvgamma
-  cv1 <- cvtempold$cv1
-  cv2 <- cvtempold$cv2
-  cv3 <- cvtempold$cv3
-  est <- cvtempold$est
-  if(is.null(x_new)){
-    x_new <- x
-    estfn <- est
-  }
-  else{
-    x_new <- as.matrix(x_new)
-    estfn <- tpm2(x_new, x, est)
-  }
-
-  eigen_estimate <- eigenEstimate(est, Y, cvgamma, estfn)
-  predict <- eigen_estimate$predict
- 
-  if(plot.cv == TRUE && !is.null(cv1)){
-    if(ntau2 > 1){
-      par(mfrow = c(3, 1))
-      plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
-      plot(tau2, cv2, type = "l", main = "for tau2 selection given selected tau1")
-      plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+    if (is.null(tau1)) {
+      ntau1 <- 11
+      tau1 <- c(0, exp(seq(log(1e-6), 0, length = ntau1 - 1)))
+    } else {
+      ntau1 <- length(tau1)
+    }
+    
+    if (M < 2 && (ntau1 > 1 || ntau2 > 1)) {
+      ntau1 <- ntau2 <- 1
+      warning("Only produce the result based on the largest tau1 and largest tau2.")
+    }
+    
+    stra <- sample(rep(1:M, length.out = nrow(Y)))
+    if (is.null(gamma)) {
+      gsize <- 11
+      temp <- svd(Y[which(stra != 1), ])
+      gammamax1 <- temp$d[1] ^ 2 / nrow(Y[which(stra != 1), ])
+      log_scale_candidates = seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
+      gamma <- c(0, log_scale_candidates)
+    }
+    
+    if (dim(x)[2] == 1) {
+      min_x <- min(x)
+      max_x <- max(x)
+      x <- (x - min_x) / (max_x - min_x)
+      if (!is.null(x_new))
+        x_new <- (x_new - min_x) / (max_x - min_x)
+    }
+    
+    if (ntau2 == 1 && tau2 > 0) {
+      if (tau2 != 0)
+        l2 <-
+          c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10)))
+      else
+        l2 <- tau2
+    } else {
+      l2 <- 1
+    }
+    
+    if (K.select) {
+      cvtempold <-
+        spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
+      for (k in 2:min(floor(n - n / M), p)) {
+        cvtemp <-
+          spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
+        if (min(cvtempold$cv3) <= min(cvtemp$cv3) ||
+            abs(min(cvtempold$cv3) - min(cvtemp$cv3)) <= 1e-8)
+          break
+        cvtempold <- cvtemp
+      }
+      Khat <- k - 1
     }
     else{
-      par(mfrow = c(2, 1))
-      plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
-      plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+      cvtempold <-
+        spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
+      Khat <- K
     }
+    
+    cvtau1 <- cvtempold$cvtau1
+    cvtau2 <- cvtempold$cvtau2
+    cvgamma <- cvtempold$cvgamma
+    cv1 <- cvtempold$cv1
+    cv2 <- cvtempold$cv2
+    cv3 <- cvtempold$cv3
+    est <- cvtempold$est
+    if (is.null(x_new)) {
+      x_new <- x
+      estfn <- est
+    }
+    else {
+      x_new <- as.matrix(x_new)
+      estfn <- tpm2(x_new, x, est)
+    }
+    
+    eigen_estimate <- eigenEstimate(est, Y, cvgamma, estfn)
+    predict <- eigen_estimate$predict
+    
+    if (plot.cv == TRUE && !is.null(cv1)) {
+      if (ntau2 > 1) {
+        par(mfrow = c(3, 1))
+        plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
+        plot(tau2, cv2, type = "l", main = "for tau2 selection given selected tau1")
+        plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+      }
+      else {
+        par(mfrow = c(2, 1))
+        plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
+        plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+      }
+    }
+    
+    obj.cv <- list(
+      call = call2,
+      eigenfn = estfn,
+      Yhat = predict,
+      Khat = K,
+      stau1 = cvtau1,
+      stau2 = cvtau2,
+      sgamma = cvgamma,
+      cv1 = cv1,
+      cv2 = cv2,
+      cv3 = cv3,
+      tau1 = tau1,
+      tau2 = tau2,
+      gamma = gamma,
+      Yc = Y
+    )
+    class(obj.cv) <- "spatpca"
+    return(obj.cv)
   }
-  
-  obj.cv <- list(call = call2,
-                 eigenfn = estfn,
-                 Yhat = predict,
-                 Khat = K,
-                 stau1 = cvtau1,
-                 stau2 = cvtau2,
-                 sgamma = cvgamma,
-                 cv1 = cv1,
-                 cv2 = cv2,
-                 cv3 = cv3,
-                 tau1 = tau1,
-                 tau2 = tau2,
-                 gamma = gamma,
-                 Yc = Y)
-  class(obj.cv) <- "spatpca"
-  return(obj.cv)
-}
-
