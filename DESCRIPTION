@@ -17,5 +17,9 @@ Maintainer: Wen-Ting Wang <egpivo@gmail.com>
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    dplyr,
+    ggplot2,
+    gifski,
+    tidyr
 VignetteBuilder: knitr
