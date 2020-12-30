@@ -1,5 +1,5 @@
 ---
-title: "Demo: Capture the Dominant Spatial Patten with One-Dimension Location"
+title: "[Demo] Capture Dominant Spatial Patten with One-Dimensional Locations"
 output:
     rmarkdown::html_vignette:
     fig_width: 6
