@@ -12,8 +12,10 @@ r_packages:
   - gifski
   - fields
   - dichromat
+  - covr
 env:
   - _R_CHECK_FORCE_SUGGESTS_=true
+  - _R_CHECK_CRAN_INCOMING_=FALSE
 compiler:
   - gcc-4.9
 addons:
@@ -27,3 +29,5 @@ addons:
 before_install:
   - mkdir ~/.R
   - echo "CXX1X=g++-4.9" > ~/.R/Makevars
+after_success:
+  - Rscript -e 'library(covr);codecov()'  
