@@ -1,0 +1,133 @@
+---
+title: "[Demo] Capture Dominant Spatial Patten with Two-Dimensional Locations"
+output:
+    rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 7
+vignette: >
+  %\VignetteIndexEntry{Demo2D}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  dpi = 300
+)
+```
+
+## Objective
+Represent how to use **SpatPCA** for two-dimensional data for capturing the most dominant spatial pattern
+
+## Basic settings
+#### Used packages
+```{r message=FALSE}
+library(SpatPCA)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gifski)
+library(fields)
+library(dichromat)
+
+base_theme <- theme_minimal(base_size = 8, base_family = "Times") +
+  theme(legend.position = "bottom")
+bluescale <- colorRampPalette(c(
+  "#FFFFCC",
+  "#C7E9B4",
+  "#7FCDBB",
+  "#40B6C4",
+  "#2C7FB8" ,
+  "#253494"
+))
+fill_bar <- guides(fill = guide_colourbar(
+    barwidth = 10,
+    barheight = 0.5,
+    label.position = "bottom")
+  )
+coltab <- bluescale(1024)
+```
+#### True spatial pattern (eigenfunction)
+- The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
+```{r, out.width = '100%'}
+set.seed(1024)
+p <- 30
+n <- 50
+location <-
+  matrix(rep(seq(-5, 5, length = p), 2), nrow = p, ncol = 2)
+expanded_location <- expand.grid(location[, 1], location[, 2])
+unnormalized_eigen_fn <-
+  as.vector(exp(-location[, 1] ^ 2) %*% t(exp(-location[, 2] ^ 2)))
+true_eigen_fn <-
+  unnormalized_eigen_fn / norm(t(unnormalized_eigen_fn), "F")
+
+data.frame(
+  location_dim1 = expanded_location[, 1],
+  location_dim2 = expanded_location[, 2],
+  eigenfunction = true_eigen_fn
+) %>%
+  ggplot(aes(location_dim1, location_dim2)) +
+  geom_tile(aes(fill = eigenfunction))  +
+  scale_fill_gradientn(colours = coltab) +
+  base_theme +
+  labs(title = "True Eigenfunction", fill = "") +
+  fill_bar
+
+```
+
+## Experiment
+#### Generate 2-D realizations 
+- We want to generate 100 random sample based on 
+  - The spatial signal for the true spatial pattern is distributed normally with $\sigma=20$
+  - The noise follows the standard normal distribution.
+
+```{r}
+realizations <- rnorm(n = n, sd = 10) %*% t(true_eigen_fn) + matrix(rnorm(n = n * p^2), n, p^2)
+```
+
+#### Animate realizations
+- We can see simulated central realizations change in a wide range more frequently than the others.
+```{r, animation.hook="gifski", out.width = '100%'}
+for (i in 1:n) {
+  par(mar = c(3, 3, 1, 1), family = "Times")
+  image.plot(
+    matrix(realizations[i, ], p, p),
+    main = paste0(i, "-th realization"),
+    zlim = c(-10, 10),
+    col = coltab,
+    horizontal = TRUE,
+    cex.main = 0.8,
+    cex.axis = 0.5,
+    axis.args=list(cex.axis=0.5),
+    legend.width=0.5
+  )
+}
+```
+
+#### Apply `SpatPCA::spatpca`
+We add a candidate set of `tau2` to see how **SpatPCA** obtain a localized smoothe pattern.
+```{r}
+tau2 <- c(0, exp(seq(log(10), log(400), length = 10)))
+cv <- spatpca(x = expanded_location, Y = realizations, tau2 = tau2)
+eigen_est <- cv$eigenfn
+```
+#### Compare **SpatPCA** with PCA
+The following figure shows that **SpatPCA** can find sparser pattern than PCA, which is close to the true pattern.
+```{r, out.width = '100%'}
+data.frame(
+  location_dim1 = expanded_location[, 1],
+  location_dim2 = expanded_location[, 2],
+  spatpca = eigen_est[, 1], 
+  pca = svd(realizations)$v[, 1]) %>%
+  gather(estimate, eigenfunction, -c(location_dim1, location_dim2)) %>%
+  ggplot(aes(location_dim1, location_dim2)) +
+  geom_tile(aes(fill=eigenfunction))  +
+  scale_fill_gradientn(colours = coltab) +
+  base_theme +
+  facet_wrap(.~estimate) +
+  labs(fill = "") +
+  fill_bar
+```

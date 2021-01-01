@@ -5,7 +5,7 @@ output:
     fig_width: 6
     fig_height: 4
 vignette: >
-  %\VignetteIndexEntry{Demo}
+  %\VignetteIndexEntry{Demo1D}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,11 +17,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Objective
-- Demonstrate how **SpatPCA** captures the most dominant spatial pattern of variation based on different signal-to-noise ratios.
-- Represent how to use **SpatPCA** for one-dimensional data
+## Objective
+We have two objectives
+1. Demonstrate how **SpatPCA** captures the most dominant spatial pattern of variation based on different signal-to-noise ratios.
+2. Represent how to use **SpatPCA** for one-dimensional data
 
-### Basic settings
+## Basic settings
 #### Used packages
 ```{r message=FALSE}
 library(SpatPCA)
@@ -32,7 +33,7 @@ library(gifski)
 base_theme <- theme_classic(base_size = 18, base_family = "Times")
 ```
 #### True spatial pattern (eigenfunction)
-- The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
+The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
 ```{r}
 set.seed(1024)
 position <- matrix(seq(-5, 5, length = 100))
@@ -45,9 +46,9 @@ data.frame(position = position,
   base_theme
 ```
 
-### Case I: Higher signal of the true eigenfunction
+## Case I: Higher signal of the true eigenfunction
 #### Generate realizations 
-- We want to generate 100 random sample based on 
+We want to generate 100 random sample based on 
   - The spatial signal for the true spatial pattern is distributed normally with $\sigma=20$
   - The noise follows the standard normal distribution.
 
@@ -56,7 +57,7 @@ realizations <- rnorm(n = 100, sd = 20) %*% t(true_eigen_fn) + matrix(rnorm(n = 
 ```
 
 #### Animate realizations
-- We can see simulated central realizations change in a wide range more frequently than the others.
+We can see simulated central realizations change in a wide range more frequently than the others.
 ```{r, animation.hook="gifski"}
 for (i in 1:100) {
   plot(x = position, y = realizations[i, ], ylim = c(-10, 10), ylab = "realization")
@@ -69,9 +70,9 @@ cv <- spatpca(x = position, Y = realizations)
 eigen_est <- cv$eigenfn
 ```
 #### Compare **SpatPCA** with PCA
-- Note: 
-  - Two estimates are similar to the true eigenfunctions
-  - **SpatPCA** can perform better at the both ends.
+There are two comparison remarks 
+  1. Two estimates are similar to the true eigenfunctions
+  2. **SpatPCA** can perform better at the both ends.
 ```{r}
 data.frame(position = position, 
            true = true_eigen_fn, 
@@ -90,7 +91,7 @@ realizations <- rnorm(n = 100, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = 1
 ```
 
 ### Animate realizations
-- Note: it is hard to see a crystal clear spatial pattern via the simluated sample.
+It is hard to see a crystal clear spatial pattern via the simluated sample shown below.
 ```{r, animation.hook="gifski"}
 for (i in 1:100) {
   plot(x = position, y = realizations[i, ], ylim = c(-10, 10), ylab = "realization")
@@ -98,7 +99,7 @@ for (i in 1:100) {
 ```
 
 ### Compare resultant patterns
-- Note: **SpatPCA** outperforms to PCA visually when the signal-to-noise ratio is quite lower.
+The following panel indicates that **SpatPCA** outperforms to PCA visually when the signal-to-noise ratio is quite lower.
 
 ```{r}
 cv <- spatpca(x = position, Y = realizations)

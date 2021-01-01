@@ -5,7 +5,8 @@
 [![Travis-CI Build Status](https://travis-ci.org/egpivo/SpatPCA.svg?branch=master)](https://travis-ci.org/egpivo/SpatPCA)
 [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Research software impact](http://depsy.org/api/package/cran/SpatPCA/badge.svg)](http://depsy.org/package/r/SpatPCA)
-
+[![Coverage
+Status](https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg)](https://codecov.io/github/egpivo/SpatpCA?branch=master)
 
 
 ### Description
