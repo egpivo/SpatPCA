@@ -30,4 +30,4 @@ before_install:
   - mkdir ~/.R
   - echo "CXX1X=g++-4.9" > ~/.R/Makevars
 after_success:
-  - Rscript -e 'library(covr);codecov()'  
+  - Rscript -e 'library(covr);codecov()'
