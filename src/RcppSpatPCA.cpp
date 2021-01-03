@@ -67,6 +67,11 @@ struct tpm: public RcppParallel::Worker {
   }
 };
 
+//' Internal function: thin-plane spline matrix
+//' @keywords internal
+//' @param P A location matrix
+//' @return A thin-plane spline matrix
+//'
 // [[Rcpp::export]]
 arma::mat tpmatrix(const arma::mat P) {
   int p = P.n_rows, d = P.n_cols;
@@ -87,6 +92,12 @@ arma::mat tpmatrix(const arma::mat P) {
   return(result);
 }
 
+//' Internal function: predicted thin-plane spline matrix
+//' @keywords internal
+//' @param P A location matrix
+//' @param Phi An eigenvector matrix
+//' @return A predicted thin-plane spline matrix
+//'
 // [[Rcpp::export]]
 arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi) {
   arma::mat L;
@@ -532,6 +543,20 @@ List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericV
   return List::create(Named("cv1") = out, Named("cv2") = out2,Named("est") = Phiest, Named("cvtau1") = cvtau1,Named("cvtau2") = cvtau2);
 }
 
+//' Internal function: K-fold Cross-validation 
+//' @keywords internal
+//' @param sxyr A location matrix
+//' @param Yr A data matrix
+//' @param M A data matrix
+//' @param K The number of estimated eigenfunctions
+//' @param tau1r A range of tau1
+//' @param tau2r A range of tau2
+//' @param gammar A range of gamma
+//' @param nkr The number of folds for CV
+//' @param maxit A maximum number of iteration
+//' @param tol A tolerance rate
+//' @param l2r A given tau2
+//' @return A list of selected parameters
 // [[Rcpp::export]]
 List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector tau1r, NumericVector tau2r, NumericVector gammar, NumericVector nkr, int maxit, double tol, NumericVector l2r) {
   int n = Yr.nrow(), p = Yr.ncol(), d = sxyr.ncol();
@@ -679,6 +704,13 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   return List::create(Named("cv1") = out, Named("cv2") = out2, Named("cv3") = out3, Named("est") = Phiest, Named("cvtau1") = cvtau1, Named("cvtau2") = cvtau2, Named("cvgamma") = cvgamma);
 }
 
+//' Internal function: Estimate eigenfunctions
+//' @keywords internal
+//' @param phir A location matrix for original observations
+//' @param Yr A data matrix
+//' @param gammar A gamma value
+//' @param phir2 A location matrix used to predict
+//' @return A eignfunction estimate matrix
 // [[Rcpp::export]]
 List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r) {
   int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = phi2r.nrow() ;
