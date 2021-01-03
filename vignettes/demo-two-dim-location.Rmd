@@ -3,8 +3,8 @@ title: "Capture the Dominant Spatial Patten with Two-Dimensional Locations"
 author: "Wen-Ting Wang"
 output:
     rmarkdown::html_vignette:
-    fig_width: 7
-    fig_height: 7
+    fig_width: 6
+    fig_height: 4
 vignette: >
   %\VignetteIndexEntry{Capture the Dominant Spatial Patten with Two-Dimensional Locations}
   %\VignetteEngine{knitr::rmarkdown}
@@ -32,25 +32,17 @@ library(dplyr)
 library(tidyr)
 library(gifski)
 library(fields)
-library(dichromat)
+library(scico)
 
-base_theme <- theme_minimal(base_size = 12, base_family = "Times") +
+base_theme <- theme_minimal(base_size = 10, base_family = "Times") +
   theme(legend.position = "bottom")
-bluescale <- colorRampPalette(c(
-  "#FFFFCC",
-  "#C7E9B4",
-  "#7FCDBB",
-  "#40B6C4",
-  "#2C7FB8" ,
-  "#253494"
-))
 fill_bar <- guides(fill = guide_colourbar(
     barwidth = 10,
     barheight = 0.5,
     label.position = "bottom")
   )
-coltab <- bluescale(1024)
-color_scale_limit <- c(-.27, .27)
+coltab <- scico(128, palette = 'vik')
+color_scale_limit <- c(-.28, .28)
 ```
 #### True spatial pattern (eigenfunction)
 - The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
