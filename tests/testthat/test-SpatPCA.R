@@ -11,7 +11,7 @@ expected_stau1_R_3.6_higher <- 0.0021544359
 expected_stau1_R_3.6_lower <- 0.0004644359
 
 expected_sgamma_R_3.6_higher <- 0.2137642
-expected_sgamma_R_3.6_lower <- 0.2762985
+expected_sgamma_R_3.6_lower <- 0.2762984
 
 # Test the result
 tol <- 1e-6
