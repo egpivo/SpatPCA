@@ -8,10 +8,10 @@ Y_1D <- {
 }
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 expected_stau1_R_3.6_higher <- 0.0021544359
-expected_stau1_R_3.6_lower <- 0.003844436
+expected_stau1_R_3.6_lower <- 0.0004644359
 
 expected_sgamma_R_3.6_higher <- 0.2137642
-expected_sgamma_R_3.6_lower <- 0.2762642
+expected_sgamma_R_3.6_lower <- 0.2762299
 
 # Test the result
 tol <- 1e-6
