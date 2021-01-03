@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.0.3</span>
       </span>
     </div>
 
@@ -105,25 +105,17 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://gif.ski/">gifski</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/NCAR/Fields">fields</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">dichromat</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/thomasp85/scico">scico</a></span><span class="op">)</span>
 
-<span class="va">base_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span>, base_family <span class="op">=</span> <span class="st">"Times"</span><span class="op">)</span> <span class="op">+</span>
+<span class="va">base_theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">10</span>, base_family <span class="op">=</span> <span class="st">"Times"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
-<span class="va">bluescale</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>
-  <span class="st">"#FFFFCC"</span>,
-  <span class="st">"#C7E9B4"</span>,
-  <span class="st">"#7FCDBB"</span>,
-  <span class="st">"#40B6C4"</span>,
-  <span class="st">"#2C7FB8"</span> ,
-  <span class="st">"#253494"</span>
-<span class="op">)</span><span class="op">)</span>
 <span class="va">fill_bar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html">guide_colourbar</a></span><span class="op">(</span>
     barwidth <span class="op">=</span> <span class="fl">10</span>,
     barheight <span class="op">=</span> <span class="fl">0.5</span>,
     label.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span>
   <span class="op">)</span>
-<span class="va">coltab</span> <span class="op">&lt;-</span> <span class="fu">bluescale</span><span class="op">(</span><span class="fl">1024</span><span class="op">)</span>
-<span class="va">color_scale_limit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.27</span>, <span class="fl">.27</span><span class="op">)</span></code></pre></div>
+<span class="va">coltab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scico/man/scico.html">scico</a></span><span class="op">(</span><span class="fl">128</span>, palette <span class="op">=</span> <span class="st">'vik'</span><span class="op">)</span>
+<span class="va">color_scale_limit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.28</span>, <span class="fl">.28</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="true-spatial-pattern-eigenfunction" class="section level4">
 <h4 class="hasAnchor">
