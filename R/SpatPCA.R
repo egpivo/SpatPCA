@@ -33,8 +33,8 @@
 #' \item{Yc}{If center is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
 #'
 #' @details An ADMM form of the proposed objective function is written as 
-#' \deqn{\min_{\bm{\Phi}} \|\bm{Y}-\bm{Y}\bm{\Phi}\bm{\Phi}'\|^2_F +\tau_1\mbox{tr}(\bm{\Phi}^T\bm{\Omega}\bm{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
-#' \eqn{\mbox{subject to $ \bm{\Phi}^T\bm{\Phi}=\bm{I}_K$,}} where \eqn{\bm{Y}} is a data matrix, \eqn{{\bm{\Omega}}} is a smoothness matrix, and \eqn{\bm{\Phi}=\{\phi_{jk}\}}.
+#' \deqn{\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F +\tau_1\mbox{tr}(\mathbf{\Phi}^T\mathbf{\Omega}\mathbf{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
+#' \eqn{\mbox{subject to $ \mathbf{\Phi}^T\mathbf{\Phi}=\mathbf{I}_K$,}} where \eqn{\mathbf{Y}} is a data matrix, \eqn{{\mathbf{\Omega}}} is a smoothness matrix, and \eqn{\mathbf{\Phi}=\{\phi_{jk}\}}.
 #' @export
 #' @author Wen-Ting Wang and Hsin-Cheng Huang
 #' @references Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics} \bold{26} 14-25.
@@ -48,6 +48,7 @@
 #' plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 #' lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 #' legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
+#' 
 #' \dontrun{
 #'   ### 1D: artificial irregular locations
 #'   rm_loc <- sample(1:50, 20)
@@ -64,7 +65,7 @@
 #'   data(ozone2)
 #'   x <- ozone2$lon.lat
 #'   Y <- ozone2$y
-#'   date <- as.Date(ozone2$date, format = "\%y\%m\%d")
+#'   date <- as.Date(ozone2$date, format = "%y%m%d")
 #'   rmna <- !colSums(is.na(Y))
 #'   YY <- matrix(Y[, rmna], nrow = nrow(Y))
 #'   YY <- detrend(YY, "linear")
