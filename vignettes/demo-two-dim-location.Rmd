@@ -34,7 +34,7 @@ library(gifski)
 library(fields)
 library(dichromat)
 
-base_theme <- theme_minimal(base_size = 8, base_family = "Times") +
+base_theme <- theme_minimal(base_size = 12, base_family = "Times") +
   theme(legend.position = "bottom")
 bluescale <- colorRampPalette(c(
   "#FFFFCC",
@@ -50,6 +50,7 @@ fill_bar <- guides(fill = guide_colourbar(
     label.position = "bottom")
   )
 coltab <- bluescale(1024)
+color_scale_limit <- c(-.27, .27)
 ```
 #### True spatial pattern (eigenfunction)
 - The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
@@ -72,7 +73,7 @@ data.frame(
 ) %>%
   ggplot(aes(location_dim1, location_dim2)) +
   geom_tile(aes(fill = eigenfunction))  +
-  scale_fill_gradientn(colours = coltab) +
+  scale_fill_gradientn(colours = coltab, limits = color_scale_limit) +
   base_theme +
   labs(title = "True Eigenfunction", fill = "") +
   fill_bar
@@ -126,7 +127,7 @@ data.frame(
   gather(estimate, eigenfunction, -c(location_dim1, location_dim2)) %>%
   ggplot(aes(location_dim1, location_dim2)) +
   geom_tile(aes(fill=eigenfunction))  +
-  scale_fill_gradientn(colours = coltab) +
+  scale_fill_gradientn(colours = coltab, limits = color_scale_limit) +
   base_theme +
   facet_wrap(.~estimate) +
   labs(fill = "") +
