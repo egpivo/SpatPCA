@@ -7,12 +7,25 @@ Y_1D <- {
     matrix(rnorm(n = 100 * 10), 100, 10)
 }
 cv_1D <- spatpca(x = x_1D, Y = Y_1D)
+expected_stau1_R_3.6_higher <- 0.0021544359
+expected_stau1_R_3.6_lower <- 0.003844436
+
+expected_sgamma_R_3.6_higher <- 0.2137642
+expected_sgamma_R_3.6_lower <- 0.2762642
 
 # Test the result
 tol <- 1e-6
 test_that("Selected tuning parameters", {
-  expect_lte(abs(cv_1D$stau1 - 0.0021544359), tol)
+  expect_lte(min(
+    abs(cv_1D$stau1 - expected_stau1_R_3.6_higher),
+    abs(cv_1D$stau1 - expected_stau1_R_3.6_lower)
+  ),
+  tol)
   expect_lte(abs(cv_1D$stau2 - 0), tol)
-  expect_lte(abs(cv_1D$sgamma - 0.2137642), tol)
+  expect_lte(min(
+    abs(cv_1D$sgamma - expected_sgamma_R_3.6_higher),
+    abs(cv_1D$sgamma - expected_sgamma_R_3.6_lower)
+  ),
+  tol)
   expect_null(cv_1D$Khat)
 })

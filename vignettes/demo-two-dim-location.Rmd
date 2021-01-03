@@ -1,11 +1,12 @@
 ---
-title: "[Demo] Capture Dominant Spatial Patten with Two-Dimensional Locations"
+title: "Capture the Dominant Spatial Patten with Two-Dimensional Locations"
+author: "Wen-Ting Wang"
 output:
     rmarkdown::html_vignette:
     fig_width: 7
     fig_height: 7
 vignette: >
-  %\VignetteIndexEntry{Demo2D}
+  %\VignetteIndexEntry{Capture the Dominant Spatial Patten with Two-Dimensional Locations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
