@@ -18,6 +18,8 @@
 #' @param plot.cv If TRUE, plot the cv values. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
+#' @param numCores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
+#'
 #' @return A list of objects including 
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
 #' \item{Yhat}{Prediction of Y at the new locations, x_new.}
@@ -44,7 +46,7 @@
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
 #' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
-#' cv_1D <- spatpca(x = x_1D, Y = Y_1D)
+#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
 #' plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 #' lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 #' legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
