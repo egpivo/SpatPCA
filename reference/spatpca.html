@@ -118,7 +118,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Regularized PCA for spatial data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/SpatPCA.R'><code>R/SpatPCA.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/spatPCA.R'><code>R/spatPCA.R</code></a></small>
     <div class="hidden name"><code>spatpca.Rd</code></div>
     </div>
 
@@ -139,7 +139,8 @@
   center <span class='op'>=</span> <span class='cn'>FALSE</span>,
   plot.cv <span class='op'>=</span> <span class='cn'>FALSE</span>,
   maxit <span class='op'>=</span> <span class='fl'>100</span>,
-  thr <span class='op'>=</span> <span class='fl'>1e-04</span>
+  thr <span class='op'>=</span> <span class='fl'>1e-04</span>,
+  numCores <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -197,6 +198,10 @@
       <th>thr</th>
       <td><p>Threshold for convergence. Default value is \(10^{-4}\).</p></td>
     </tr>
+    <tr>
+      <th>numCores</th>
+      <td><p>Number of cores used to parallel computing. Default value is NULL (See <code><a href='https://rdrr.io/pkg/RcppParallel/man/setThreadOptions.html'>RcppParallel::defaultNumThreads()</a></code>)</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -233,7 +238,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class='va'>Phi_1D</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>x_1D</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/norm.html'>norm</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/Log.html'>exp</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>x_1D</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span>, <span class='st'>"F"</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1234</span><span class='op'>)</span>
 <span class='va'>Y_1D</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>100</span>, sd <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span> <span class='op'>%*%</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>Phi_1D</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='fl'>50</span><span class='op'>)</span>, <span class='fl'>100</span>, <span class='fl'>50</span><span class='op'>)</span>
-<span class='va'>cv_1D</span> <span class='op'>&lt;-</span> <span class='fu'>spatpca</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x_1D</span>, Y <span class='op'>=</span> <span class='va'>Y_1D</span><span class='op'>)</span>
+<span class='va'>cv_1D</span> <span class='op'>&lt;-</span> <span class='fu'>spatpca</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x_1D</span>, Y <span class='op'>=</span> <span class='va'>Y_1D</span>, numCores <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x_1D</span>, <span class='va'>cv_1D</span><span class='op'>$</span><span class='va'>eigenfn</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span>, type <span class='op'>=</span> <span class='st'>"l"</span>, main <span class='op'>=</span> <span class='st'>"1st eigenfunction"</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>x_1D</span>, <span class='fu'><a href='https://rdrr.io/r/base/svd.html'>svd</a></span><span class='op'>(</span><span class='va'>Y_1D</span><span class='op'>)</span><span class='op'>$</span><span class='va'>v</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span>, col <span class='op'>=</span> <span class='st'>"red"</span><span class='op'>)</span>
 </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"topleft"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SpatPCA"</span>, <span class='st'>"PCA"</span><span class='op'>)</span>, lty <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>1</span>, col <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span>
