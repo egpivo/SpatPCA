@@ -17,7 +17,8 @@ spatpca(
   center = FALSE,
   plot.cv = FALSE,
   maxit = 100,
-  thr = 1e-04
+  thr = 1e-04,
+  numCores = NULL
 )
 }
 \arguments{
