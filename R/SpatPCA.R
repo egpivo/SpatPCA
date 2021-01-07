@@ -114,8 +114,11 @@ spatpca <-
            center = FALSE,
            plot.cv = FALSE,
            maxit = 100,
-           thr = 1e-04) {
+           thr = 1e-04,
+           numCores = NULL) {
     call2 <- match.call()
+    set_cores(numCores)
+    
     x <- as.matrix(x)
     p <- ncol(Y)
     n <- nrow(Y)
