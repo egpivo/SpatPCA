@@ -20,16 +20,16 @@ tpm2 <- function(z, P, Phi) {
     .Call(`_SpatPCA_tpm2`, z, P, Phi)
 }
 
-#' Internal function: K-fold Cross-validation 
+#' Internal function: M-fold Cross-validation 
 #' @keywords internal
 #' @param sxyr A location matrix
 #' @param Yr A data matrix
-#' @param M A data matrix
+#' @param M The number of folds for CV
 #' @param K The number of estimated eigenfunctions
 #' @param tau1r A range of tau1
 #' @param tau2r A range of tau2
 #' @param gammar A range of gamma
-#' @param nkr The number of folds for CV
+#' @param nkr A vector of fold numbers
 #' @param maxit A maximum number of iteration
 #' @param tol A tolerance rate
 #' @param l2r A given tau2

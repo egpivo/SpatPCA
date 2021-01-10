@@ -5,7 +5,7 @@
 #'
 #'
 #' @keywords internal
-#' @param maxit Number of number of cores for parallel computing.
+#' @param ncores Number of number of cores for parallel computing. Default is NULL.
 #' @return Logical
 #' 
 set_cores <- function(ncores = NULL) {

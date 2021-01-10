@@ -7,7 +7,7 @@
 set_cores(ncores = NULL)
 }
 \arguments{
-\item{maxit}{Number of number of cores for parallel computing.}
+\item{ncores}{Number of number of cores for parallel computing. Default is NULL.}
 }
 \value{
 Logical

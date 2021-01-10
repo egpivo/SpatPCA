@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{spatpcaCV}
 \alias{spatpcaCV}
-\title{Internal function: K-fold Cross-validation}
+\title{Internal function: M-fold Cross-validation}
 \usage{
 spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 }
@@ -11,7 +11,7 @@ spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 
 \item{Yr}{A data matrix}
 
-\item{M}{A data matrix}
+\item{M}{The number of folds for CV}
 
 \item{K}{The number of estimated eigenfunctions}
 
@@ -21,7 +21,7 @@ spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 
 \item{gammar}{A range of gamma}
 
-\item{nkr}{The number of folds for CV}
+\item{nkr}{A vector of fold numbers}
 
 \item{maxit}{A maximum number of iteration}
 
@@ -33,6 +33,6 @@ spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 A list of selected parameters
 }
 \description{
-Internal function: K-fold Cross-validation
+Internal function: M-fold Cross-validation
 }
 \keyword{internal}
