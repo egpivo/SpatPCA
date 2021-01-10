@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function: K-fold Cross-validation — spatpcaCV • SpatPCA</title>
+<title>Internal function: M-fold Cross-validation — spatpcaCV • SpatPCA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="Internal function: K-fold Cross-validation — spatpcaCV" />
-<meta property="og:description" content="Internal function: K-fold Cross-validation" />
+<meta property="og:title" content="Internal function: M-fold Cross-validation — spatpcaCV" />
+<meta property="og:description" content="Internal function: M-fold Cross-validation" />
+
+
 
 
 
@@ -117,13 +119,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function: K-fold Cross-validation</h1>
+    <h1>Internal function: M-fold Cross-validation</h1>
     <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/RcppExports.R'><code>R/RcppExports.R</code></a></small>
     <div class="hidden name"><code>spatpcaCV.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Internal function: K-fold Cross-validation</p>
+    <p>Internal function: M-fold Cross-validation</p>
     </div>
 
     <pre class="usage"><span class='fu'>spatpcaCV</span><span class='op'>(</span><span class='va'>sxyr</span>, <span class='va'>Yr</span>, <span class='va'>M</span>, <span class='va'>K</span>, <span class='va'>tau1r</span>, <span class='va'>tau2r</span>, <span class='va'>gammar</span>, <span class='va'>nkr</span>, <span class='va'>maxit</span>, <span class='va'>tol</span>, <span class='va'>l2r</span><span class='op'>)</span></pre>
@@ -141,7 +143,7 @@
     </tr>
     <tr>
       <th>M</th>
-      <td><p>A data matrix</p></td>
+      <td><p>The number of folds for CV</p></td>
     </tr>
     <tr>
       <th>K</th>
@@ -161,7 +163,7 @@
     </tr>
     <tr>
       <th>nkr</th>
-      <td><p>The number of folds for CV</p></td>
+      <td><p>A vector of fold numbers</p></td>
     </tr>
     <tr>
       <th>maxit</th>
