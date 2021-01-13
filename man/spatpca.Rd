@@ -85,7 +85,7 @@ plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
 
-\dontrun{
+\donttest{
   # The following examples will be executed more than 5 secs or including other libraries.
   ## 1D: artificial irregular locations
   rm_loc <- sample(1:50, 20)
