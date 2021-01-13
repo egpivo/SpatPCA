@@ -20,7 +20,7 @@
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param numCores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
 #'
-#' @return A list of objects including 
+#' @return A list of objects including
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
 #' \item{Yhat}{Prediction of Y at the new locations, x_new.}
 #' \item{stau1}{Selected tau1.}
@@ -34,14 +34,15 @@
 #' \item{gamma}{Sequence of gamma-values used in the process.}
 #' \item{Yc}{If center is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
 #'
-#' @details An ADMM form of the proposed objective function is written as 
+#' @details An ADMM form of the proposed objective function is written as
 #' \deqn{\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F +\tau_1\mbox{tr}(\mathbf{\Phi}^T\mathbf{\Omega}\mathbf{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
 #' \eqn{\mbox{subject to $ \mathbf{\Phi}^T\mathbf{\Phi}=\mathbf{I}_K$,}} where \eqn{\mathbf{Y}} is a data matrix, \eqn{{\mathbf{\Omega}}} is a smoothness matrix, and \eqn{\mathbf{\Phi}=\{\phi_{jk}\}}.
 #' @export
 #' @author Wen-Ting Wang and Hsin-Cheng Huang
 #' @references Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics} \bold{26} 14-25.
 #' @examples
-#' ###### 1D: regular locations
+#' # The following examples only use two threads for parallel computing.
+#' ## 1D: regular locations
 #' x_1D <- as.matrix(seq(-5, 5, length = 50))
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
@@ -50,18 +51,19 @@
 #' plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 #' lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 #' legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
-#' 
+#'
 #' \dontrun{
-#'   ### 1D: artificial irregular locations
+#'   # The following examples will be executed more than 5 secs or including other libraries.
+#'   ## 1D: artificial irregular locations
 #'   rm_loc <- sample(1:50, 20)
 #'   x_1Drm <- x_1D[-rm_loc]
 #'   Y_1Drm <- Y_1D[,-rm_loc]
 #'   x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 #'   cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
 #'   plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-#'   plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l", 
+#'   plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l",
 #'        main = paste("prediction at x = ", x_1Dnew[50]))
-#'   ###### 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
+#'   ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 #'   library(fields)
 #'   library(pracma)
 #'   data(ozone2)
@@ -86,7 +88,7 @@
 #'   quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
 #'   map("state", xlim = range(x_lon), ylim = range(x_lat), add = T)
 #'   map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = T)
-#'   ###### 3D: regular locations
+#'   ## 3D: regular locations
 #'   x <- y <- z <- as.matrix(seq(-5, 5, length = 10))
 #'   d <- expand.grid(x, y, z)
 #'   Phi_3D <- exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2) / norm(exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2), "F")
@@ -161,8 +163,8 @@ spatpca <-
     stra <- sample(rep(1:M, length.out = nrow(Y)))
     if (is.null(gamma)) {
       gsize <- 11
-      temp <- svd(Y[which(stra != 1), ])
-      gammamax1 <- temp$d[1] ^ 2 / nrow(Y[which(stra != 1), ])
+      temp <- svd(Y[which(stra != 1),])
+      gammamax1 <- temp$d[1] ^ 2 / nrow(Y[which(stra != 1),])
       log_scale_candidates = seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
       gamma <- c(0, log_scale_candidates)
     }
@@ -176,11 +178,11 @@ spatpca <-
     }
     
     if (ntau2 == 1 && tau2 > 0) {
-      if (tau2 != 0)
-        l2 <-
-          c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10)))
-      else
-        l2 <- tau2
+      l2 <- ifelse(
+        tau2 != 0,
+        c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
+        tau2
+      )
     } else {
       l2 <- 1
     }
@@ -223,7 +225,9 @@ spatpca <-
     eigen_estimate <- eigenEstimate(est, Y, cvgamma, estfn)
     predict <- eigen_estimate$predict
     
-    if (plot.cv == TRUE && !is.null(cv1)) {
+    if (plot.cv && !is.null(cv1)) {
+      originalPar <- par(no.readonly = TRUE)
+      on.exit(par(originalPar))
       if (ntau2 > 1) {
         par(mfrow = c(3, 1))
         plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
