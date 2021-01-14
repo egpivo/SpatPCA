@@ -33,7 +33,10 @@ Suggests:
     gifski,
     tidyr,
     fields,
-    scico
+    scico,
+    plot3D,
+    pracma,
+    RColorBrewer
 SystemRequirements: C++11, GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
