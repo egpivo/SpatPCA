@@ -165,8 +165,8 @@ spatpca <-
     stra <- sample(rep(1:M, length.out = nrow(Y)))
     if (is.null(gamma)) {
       gsize <- 11
-      temp <- svd(Y[which(stra != 1),])
-      gammamax1 <- temp$d[1] ^ 2 / nrow(Y[which(stra != 1),])
+      temp <- svd(Y[which(stra != 1), ])
+      gammamax1 <- temp$d[1] ^ 2 / nrow(Y[which(stra != 1), ])
       log_scale_candidates = seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
       gamma <- c(0, log_scale_candidates)
     }
@@ -180,11 +180,11 @@ spatpca <-
     }
     
     if (ntau2 == 1 && tau2 > 0) {
-      l2 <- ifelse(
-        tau2 != 0,
-        c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
-        tau2
-      )
+      l2 <- ifelse(tau2 != 0,
+                   c(0, exp(seq(
+                     log(tau2 / 1e4), log(tau2), length = 10
+                   ))),
+                   tau2)
     } else {
       l2 <- 1
     }
