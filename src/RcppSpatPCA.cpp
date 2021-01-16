@@ -67,20 +67,26 @@ struct tpm: public RcppParallel::Worker {
   }
 };
 
-//' Internal function: thin-plane spline matrix
-//' @keywords internal
-//' @param P A location matrix
+
+//' @title Thin-plane spline matrix
+//' 
+//' @description Produce a thin-plane spline matrix based on a given location matric
+//' 
+//' @param location A location matrix
 //' @return A thin-plane spline matrix
-//'
+//' @examples
+//' pesudo_sequence <- seq(-5, 5, length = 5)
+//' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
+//' thin_plate_matrix <- thinPlateMatrix(two_dim_location)
 // [[Rcpp::export]]
-arma::mat tpmatrix(const arma::mat P) {
-  int p = P.n_rows, d = P.n_cols;
+arma::mat thinPlateMatrix(const arma::mat location) {
+  int p = location.n_rows, d = location.n_cols;
   int total_size = p + d;
   arma::mat L, Lp, Ip;
   
   L.zeros(total_size + 1, total_size + 1);
   Ip.eye(total_size + 1, total_size + 1);
-  tpm tpm(P,L,p,d);
+  tpm tpm(location, L, p, d);
   parallelFor(0, p, tpm);
   L = symmatu(L);
   Lp = inv(L + 1e-8 * Ip);   
@@ -92,19 +98,29 @@ arma::mat tpmatrix(const arma::mat P) {
   return(result);
 }
 
-//' Internal function: predicted thin-plane spline matrix
+
+//' @title Spatial Prediction
+//' 
+//' @description Produce spatial predictions based on new locations
+//' 
 //' @keywords internal
-//' @param P A location matrix
+//' @param new_location A location matrix
+//' @param original_location A location matrix
 //' @param Phi An eigenvector matrix
-//' @return A predicted thin-plane spline matrix
-//'
+//' @return A predictive estimte matrix
+//' @examples
+//' pesudo_sequence <- seq(-5, 5, length = 2)
+//' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
+//' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
+//' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
+//' thin_plate_matrix <- spatialPrediction(new_location, original_location, Phi)
 // [[Rcpp::export]]
-arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi) {
+arma::mat spatialPrediction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
   arma::mat L;
-  int p = P.n_rows, d = P.n_cols, K = Phi.n_cols;
+  int p = original_location.n_rows, d = original_location.n_cols, K = Phi.n_cols;
   int total_size = p + d;
   L.zeros(total_size + 1, total_size + 1);
-  tpm tpm(P, L, p, d);
+  tpm tpm(original_location, L, p, d);
   parallelFor(0, p, tpm);
   L = L + L.t();
   
@@ -112,7 +128,7 @@ arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi) {
   Phi_star.zeros(total_size + 1, K);
   Phi_star.rows(0, p - 1) = Phi;
   para = solve(L, Phi_star);
-  int pnew = z.n_rows;
+  int pnew = new_location.n_rows;
   arma::mat eigen_fn(pnew, K);
   double psum, r;
 
@@ -121,29 +137,32 @@ arma::mat tpm2(const arma::mat z,const arma::mat P, const arma::mat Phi) {
       psum = 0;
       for(unsigned j = 0; j < p; j++) {
         if(d == 1) {  
-          r = norm(z.row(newi) - P.row(j), "f");
+          r = norm(new_location.row(newi) - original_location.row(j), "f");
           if(r != 0)
             psum += para(j,i)*pow(r, 3)/12;
         }
         else if(d == 2) {
-          r = sqrt(pow(z(newi, 0) - P(j, 0), 2) + (pow(z(newi, 1) - P(j, 1), 2)));
+          r = sqrt(pow(new_location(newi, 0) - original_location(j, 0), 2) + 
+            (pow(new_location(newi, 1) - original_location(j, 1), 2)));
           if(r != 0)
             psum += para(j, i) * r * r * log(r) / (8.0 * arma::datum::pi);
         }
         else if(d == 3) {
-          double r = sqrt(pow(z(newi, 0) - P(j, 0), 2) +
-                          pow(z(newi, 1) - P(j, 1), 2) +
-                          pow(z(newi, 2) - P(j, 2), 2));
+          double r = sqrt(pow(new_location(newi, 0) - original_location(j, 0), 2) +
+                          pow(new_location(newi, 1) - original_location(j, 1), 2) +
+                          pow(new_location(newi, 2) - original_location(j, 2), 2));
           if(r != 0)
             psum -= para(j, i) * r / (8.0 * arma::datum::pi);
         }
       }
       if(d == 1)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * z(newi, 0) + para(p, i);
+        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) + para(p, i);
       else if(d == 2)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * z(newi, 0) + para(p + 2, i) * z(newi, 1) + para(p, i);
+        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) +
+          para(p + 2, i) * new_location(newi, 1) + para(p, i);
       else if(d == 3)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * z(newi, 0) + para(p + 2, i) * z(newi, 1) + para(p + 3, i) * z(newi, 2) + para(p, i); 
+        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) +
+          para(p + 2, i) * new_location(newi, 1) + para(p + 3, i) * new_location(newi, 2) + para(p, i); 
     }
   }
   
@@ -490,7 +509,7 @@ List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericV
   arma::mat rhocv(M, 1);
   arma::cube YYtrain(p, p, M), Phicv(p, K, M), Lmbd2cv(p, K, M), tempinvcv(p, p, M);
 
-  Omega = tpmatrix(sxy);
+  Omega = thinPlateMatrix(sxy);
 
   if(tau1.n_elem > 1) {  
     spatpcacv_p spatpcacv_p(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
@@ -584,7 +603,7 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   mat Ip;
   Ip.eye(Y.n_cols,Y.n_cols);
   if(max(tau1) != 0 || max(tau2) != 0) {
-    Omega = tpmatrix(sxy) + 1e-8 * Ip;
+    Omega = thinPlateMatrix(sxy) + 1e-8 * Ip;
   }
   else {
     if(gamma.n_elem > 1) {
@@ -817,7 +836,7 @@ arma::mat spatpca_rcpp(const arma::mat sxy, const arma::mat Y, const int K, cons
   if(d == 1)
     Omega = cubicMatrix(sxy);
   else
-    Omega = tpmatrix(sxy);
+    Omega = thinPlateMatrix(sxy);
   arma::svd_econ(UPhi, SPhi, Phiold, Y, "right");
   Phi = Phiold.cols(0, K - 1);
   C = Phi;

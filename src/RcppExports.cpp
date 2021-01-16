@@ -6,27 +6,27 @@
 
 using namespace Rcpp;
 
-// tpmatrix
-arma::mat tpmatrix(const arma::mat P);
-RcppExport SEXP _SpatPCA_tpmatrix(SEXP PSEXP) {
+// thinPlateMatrix
+arma::mat thinPlateMatrix(const arma::mat location);
+RcppExport SEXP _SpatPCA_thinPlateMatrix(SEXP locationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type P(PSEXP);
-    rcpp_result_gen = Rcpp::wrap(tpmatrix(P));
+    Rcpp::traits::input_parameter< const arma::mat >::type location(locationSEXP);
+    rcpp_result_gen = Rcpp::wrap(thinPlateMatrix(location));
     return rcpp_result_gen;
 END_RCPP
 }
-// tpm2
-arma::mat tpm2(const arma::mat z, const arma::mat P, const arma::mat Phi);
-RcppExport SEXP _SpatPCA_tpm2(SEXP zSEXP, SEXP PSEXP, SEXP PhiSEXP) {
+// spatialPrediction
+arma::mat spatialPrediction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi);
+RcppExport SEXP _SpatPCA_spatialPrediction(SEXP new_locationSEXP, SEXP original_locationSEXP, SEXP PhiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type z(zSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type new_location(new_locationSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type original_location(original_locationSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type Phi(PhiSEXP);
-    rcpp_result_gen = Rcpp::wrap(tpm2(z, P, Phi));
+    rcpp_result_gen = Rcpp::wrap(spatialPrediction(new_location, original_location, Phi));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -67,8 +67,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SpatPCA_tpmatrix", (DL_FUNC) &_SpatPCA_tpmatrix, 1},
-    {"_SpatPCA_tpm2", (DL_FUNC) &_SpatPCA_tpm2, 3},
+    {"_SpatPCA_thinPlateMatrix", (DL_FUNC) &_SpatPCA_thinPlateMatrix, 1},
+    {"_SpatPCA_spatialPrediction", (DL_FUNC) &_SpatPCA_spatialPrediction, 3},
     {"_SpatPCA_spatpcaCV", (DL_FUNC) &_SpatPCA_spatpcaCV, 11},
     {"_SpatPCA_eigenEstimate", (DL_FUNC) &_SpatPCA_eigenEstimate, 4},
     {NULL, NULL, 0}

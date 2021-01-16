@@ -221,7 +221,7 @@ spatpca <-
     }
     else {
       x_new <- as.matrix(x_new)
-      estfn <- tpm2(x_new, x, est)
+      estfn <- spatialPrediction(x_new, x, est)
     }
     
     eigen_estimate <- eigenEstimate(est, Y, cvgamma, estfn)
