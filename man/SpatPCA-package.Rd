@@ -8,8 +8,8 @@ A new regularization approach to estimate the leading spatial patterns via smoot
 \details{\tabular{ll}{
 Package:\tab SpatPCA\cr
 Type:\tab Package\cr
-Version:\tab  1.3.1.0\cr
-Date:\tab 2021-01-07\cr
+Version:\tab  1.3.0.4\cr
+Date:\tab 2021-01-16\cr
 License: \tab GPL version 3\cr
 }
 }
