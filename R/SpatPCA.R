@@ -93,7 +93,7 @@
 #' x <- y <- z <- as.matrix(seq(-5, 5, length = 10))
 #' d <- expand.grid(x, y, z)
 #' Phi_3D <- exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2) / norm(exp(-d[, 1]^2 - d[, 2]^2 - d[, 3]^2), "F")
-#' Y_3D <- rnorm(n = 1000, sd = 3) %*% t(Phi) + matrix(rnorm(n = 100 * 10^3), 100, 10^3)
+#' Y_3D <- rnorm(n = 1000, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * 10^3), 100, 10^3)
 #' cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length = 10))
 #' library(plot3D)
 #' library(RColorBrewer)
