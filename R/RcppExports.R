@@ -29,7 +29,7 @@ thinPlateMatrix <- function(location) {
 #' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 #' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 #' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-#' thin_plate_matrix <- eigneFunction(new_location, original_location, Phi)
+#' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
 eigenFunction <- function(new_location, original_location, Phi) {
     .Call(`_SpatPCA_eigenFunction`, new_location, original_location, Phi)
 }

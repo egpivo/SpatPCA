@@ -67,7 +67,6 @@ struct tpm: public RcppParallel::Worker {
   }
 };
 
-
 //' @title Thin-plane spline matrix
 //' 
 //' @description Produce a thin-plane spline matrix based on a given location matric
@@ -98,7 +97,6 @@ arma::mat thinPlateMatrix(const arma::mat location) {
   return(result);
 }
 
-
 //' @title Interpolated Eigen-function
 //' 
 //' @description Produce Eigen-function values based on new locations
@@ -113,7 +111,7 @@ arma::mat thinPlateMatrix(const arma::mat location) {
 //' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 //' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 //' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-//' thin_plate_matrix <- eigneFunction(new_location, original_location, Phi)
+//' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
 // [[Rcpp::export]]
 arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
   arma::mat L;
