@@ -13,7 +13,7 @@ spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 
 \item{M}{The number of folds for CV}
 
-\item{K}{The number of estimated eigenfunctions}
+\item{K}{The number of estimated eigen-functions}
 
 \item{tau1r}{A range of tau1}
 
