@@ -16,7 +16,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.align = "center",
-  dpi = 300
+  dpi = 300,
+  tidy = "styler"
 )
 ```
 
