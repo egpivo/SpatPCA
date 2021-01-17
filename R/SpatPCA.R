@@ -221,10 +221,10 @@ spatpca <-
     }
     else {
       x_new <- as.matrix(x_new)
-      estfn <- spatialPrediction(x_new, x, est)
+      estfn <- eigenFunction(x_new, x, est)
     }
     
-    eigen_estimate <- eigenEstimate(est, Y, cvgamma, estfn)
+    eigen_estimate <- spatialPrediction(est, Y, cvgamma, estfn)
     predict <- eigen_estimate$predict
     
     if (plot.cv && !is.null(cv1)) {

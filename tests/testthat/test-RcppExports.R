@@ -12,7 +12,7 @@ test_that("Thin-Plate Spline Matrix", {
 # spatialPrediction
 Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
 new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
-test_that("Spatial prediction", {
-  expect_lte(spatialPrediction(new_location, two_dim_location, Phi) - 0.2352884,
+test_that("Eigen-function", {
+  expect_lte(eigenFunction(new_location, two_dim_location, Phi) - 0.2352884,
              tol)
 })

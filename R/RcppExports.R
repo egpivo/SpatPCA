@@ -15,9 +15,9 @@ thinPlateMatrix <- function(location) {
     .Call(`_SpatPCA_thinPlateMatrix`, location)
 }
 
-#' @title Spatial Prediction
+#' @title Interpolated Eigen-function
 #' 
-#' @description Produce spatial predictions based on new locations
+#' @description Produce Eigen-function values based on new locations
 #' 
 #' @keywords internal
 #' @param new_location A location matrix
@@ -29,9 +29,9 @@ thinPlateMatrix <- function(location) {
 #' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 #' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 #' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-#' thin_plate_matrix <- spatialPrediction(new_location, original_location, Phi)
-spatialPrediction <- function(new_location, original_location, Phi) {
-    .Call(`_SpatPCA_spatialPrediction`, new_location, original_location, Phi)
+#' thin_plate_matrix <- eigneFunction(new_location, original_location, Phi)
+eigenFunction <- function(new_location, original_location, Phi) {
+    .Call(`_SpatPCA_eigenFunction`, new_location, original_location, Phi)
 }
 
 #' Internal function: M-fold Cross-validation 
@@ -39,7 +39,7 @@ spatialPrediction <- function(new_location, original_location, Phi) {
 #' @param sxyr A location matrix
 #' @param Yr A data matrix
 #' @param M The number of folds for CV
-#' @param K The number of estimated eigenfunctions
+#' @param K The number of estimated eigen-functions
 #' @param tau1r A range of tau1
 #' @param tau2r A range of tau2
 #' @param gammar A range of gamma
@@ -52,14 +52,18 @@ spatpcaCV <- function(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r
     .Call(`_SpatPCA_spatpcaCV`, sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r)
 }
 
-#' Internal function: Estimate eigenfunctions
+#' Internal function: Spatial prediction
 #' @keywords internal
-#' @param phir A location matrix for original observations
+#' @param phir A matrix of estimated eigenfunctions based on original locations
 #' @param Yr A data matrix
 #' @param gammar A gamma value
-#' @param phir2 A location matrix used to predict
-#' @return A eignfunction estimate matrix
-eigenEstimate <- function(phir, Yr, gamma, phi2r) {
-    .Call(`_SpatPCA_eigenEstimate`, phir, Yr, gamma, phi2r)
+#' @param phi2r A vector of values of an eigenfunction on new locations
+#' @return A list of objects
+#' \item{prediction}{A vector of spatial predicitons}
+#' \item{estimated_covariance}{An estimated covariance matrix.}
+#' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
+#' \item{error}{Error rate for the ADMM algorithm}
+spatialPrediction <- function(phir, Yr, gamma, phi2r) {
+    .Call(`_SpatPCA_spatialPrediction`, phir, Yr, gamma, phi2r)
 }
 

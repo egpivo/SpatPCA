@@ -99,9 +99,9 @@ arma::mat thinPlateMatrix(const arma::mat location) {
 }
 
 
-//' @title Spatial Prediction
+//' @title Interpolated Eigen-function
 //' 
-//' @description Produce spatial predictions based on new locations
+//' @description Produce Eigen-function values based on new locations
 //' 
 //' @keywords internal
 //' @param new_location A location matrix
@@ -113,9 +113,9 @@ arma::mat thinPlateMatrix(const arma::mat location) {
 //' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 //' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 //' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-//' thin_plate_matrix <- spatialPrediction(new_location, original_location, Phi)
+//' thin_plate_matrix <- eigneFunction(new_location, original_location, Phi)
 // [[Rcpp::export]]
-arma::mat spatialPrediction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
+arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
   arma::mat L;
   int p = original_location.n_rows, d = original_location.n_cols, K = Phi.n_cols;
   int total_size = p + d;
@@ -139,7 +139,7 @@ arma::mat spatialPrediction(const arma::mat new_location, const arma::mat origin
         if(d == 1) {  
           r = norm(new_location.row(newi) - original_location.row(j), "f");
           if(r != 0)
-            psum += para(j,i)*pow(r, 3)/12;
+            psum += para(j, i) * pow(r, 3)/12;
         }
         else if(d == 2) {
           r = sqrt(pow(new_location(newi, 0) - original_location(j, 0), 2) + 
@@ -286,7 +286,7 @@ void spatpcacore3(const arma::mat tempinv, arma::mat& Phi, arma::mat& R, arma::m
   iter++;
 }
 
-struct spatpcacv_p: public RcppParallel::Worker {
+struct spatpcaCVPhi: public RcppParallel::Worker {
   const mat& Y;
   int K;
   const mat& Omega;
@@ -299,7 +299,7 @@ struct spatpcacv_p: public RcppParallel::Worker {
   cube& Phicv;
   cube& Lmbd2cv;
   mat& rho;
-  spatpcacv_p(const mat& Y, int K, const mat& Omega, const vec& tau1, const vec& nk, int maxit, double tol, mat& output, cube& YYtrain, cube& Phicv, cube& Lmbd2cv, mat& rho): Y(Y), K(K), Omega(Omega), tau1(tau1), nk(nk), maxit(maxit), tol(tol), output(output), YYtrain(YYtrain), Phicv(Phicv), Lmbd2cv(Lmbd2cv), rho(rho) {}
+  spatpcaCVPhi(const mat& Y, int K, const mat& Omega, const vec& tau1, const vec& nk, int maxit, double tol, mat& output, cube& YYtrain, cube& Phicv, cube& Lmbd2cv, mat& rho): Y(Y), K(K), Omega(Omega), tau1(tau1), nk(nk), maxit(maxit), tol(tol), output(output), YYtrain(YYtrain), Phicv(Phicv), Lmbd2cv(Lmbd2cv), rho(rho) {}
 
   void operator()(std::size_t begin, std::size_t end) {
     arma::mat Ip;
@@ -326,7 +326,7 @@ struct spatpcacv_p: public RcppParallel::Worker {
   }
 };
 
-struct spatpcacv_p2: public RcppParallel::Worker {
+struct spatpcaCVPhi2: public RcppParallel::Worker {
   const mat& Y;
   const cube& YYtrain;
   cube& Phicv;
@@ -342,7 +342,7 @@ struct spatpcacv_p2: public RcppParallel::Worker {
   mat& output;
   cube& tempinv;
   
-  spatpcacv_p2(
+  spatpcaCVPhi2(
     const mat& Y,
     const cube& YYtrain,
     cube& Phicv,
@@ -381,7 +381,7 @@ struct spatpcacv_p2: public RcppParallel::Worker {
   }
 };
 
-struct spatpcacv_p3: public RcppParallel::Worker {
+struct spatpcaCVPhi3: public RcppParallel::Worker {
   const mat& Y;
   const cube& YYtrain;
   const cube& Phicv;
@@ -400,7 +400,7 @@ struct spatpcacv_p3: public RcppParallel::Worker {
   mat& output;
   
   
-  spatpcacv_p3(
+  spatpcaCVPhi3(
     const mat& Y,
     const cube& YYtrain,
     const cube& Phicv,
@@ -445,7 +445,7 @@ struct spatpcacv_p3: public RcppParallel::Worker {
       else {
         Phi = Phicv.slice(k);
       }
-      arma::mat Vc, Vc2, covtrain, covvalid, covest, vec;
+      arma::mat Vc, Vc2, covtrain, covvalid, estimated_covariance, vec;
       arma::vec Sc, Sc2, Sct, Sctz, cv;
       arma::mat eigenvalue;
       covtrain = YYtrain.slice(k) / (Y.n_rows - Yvalid.n_rows);
@@ -480,8 +480,8 @@ struct spatpcacv_p3: public RcppParallel::Worker {
         else
           err = totalvar / p;
         eigenvalue = arma::max(Sc2 - (err + gamma[gj]) * Sct, Sctz);
-        covest =  Phi * Vc2 * diagmat(eigenvalue) * trans(Vc2) * trans(Phi);
-        output(k,gj) = pow(arma::norm(covvalid - covest - err * Ip, "fro"), 2.0);
+        estimated_covariance =  Phi * Vc2 * diagmat(eigenvalue) * trans(Vc2) * trans(Phi);
+        output(k,gj) = pow(arma::norm(covvalid - estimated_covariance - err * Ip, "fro"), 2.0);
       }
     }
   }
@@ -512,8 +512,8 @@ List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericV
   Omega = thinPlateMatrix(sxy);
 
   if(tau1.n_elem > 1) {  
-    spatpcacv_p spatpcacv_p(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
-    RcppParallel::parallelFor(0, M, spatpcacv_p);
+    spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
+    RcppParallel::parallelFor(0, M, spatpcaCVPhi);
     uword index1;
     (sum(cv, 0)).min(index1);
     cvtau1 = tau1[index1];  
@@ -531,8 +531,8 @@ List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericV
     arma::mat cv2(M, tau2.n_elem);
     uword index2;
 
-    spatpcacv_p2 spatpcacv_p2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
-    RcppParallel::parallelFor(0, M, spatpcacv_p2);
+    spatpcaCVPhi2 spatpcaCVPhi2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
+    RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
     (sum(cv2, 0)).min(index2);
     cvtau2 = tau2[index2];
     mat Ip;
@@ -567,7 +567,7 @@ List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericV
 //' @param sxyr A location matrix
 //' @param Yr A data matrix
 //' @param M The number of folds for CV
-//' @param K The number of estimated eigenfunctions
+//' @param K The number of estimated eigen-functions
 //' @param tau1r A range of tau1
 //' @param tau2r A range of tau2
 //' @param gammar A range of gamma
@@ -622,8 +622,8 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   }
 
   if(tau1.n_elem > 1) {  
-    spatpcacv_p spatpcacv_p(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
-    RcppParallel::parallelFor(0, M, spatpcacv_p);
+    spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
+    RcppParallel::parallelFor(0, M, spatpcaCVPhi);
     (sum(cv, 0)).min(index1);
     cvtau1 = tau1[index1];  
     if(index1 > 0)
@@ -682,8 +682,8 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   
   if(tau2.n_elem > 1) {
     arma::mat cv2(M, tau2.n_elem);
-    spatpcacv_p2 spatpcacv_p2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
-    RcppParallel::parallelFor(0, M, spatpcacv_p2);
+    spatpcaCVPhi2 spatpcaCVPhi2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
+    RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
 
     (sum(cv2, 0)).min(index2);
     cvtau2 = tau2[index2];
@@ -709,8 +709,8 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
     out2.zeros(1);
   }
   
-  spatpcacv_p3 spatpcacv_p3(Y, YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2, K, Omega, cvtau1, tau2, gamma, nk, maxit, tol, cv3);
-  RcppParallel::parallelFor(0, M, spatpcacv_p3);
+  spatpcaCVPhi3 spatpcaCVPhi3(Y, YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2, K, Omega, cvtau1, tau2, gamma, nk, maxit, tol, cv3);
+  RcppParallel::parallelFor(0, M, spatpcaCVPhi3);
   if(gamma.n_elem > 1) {
     (sum(cv3, 0)).min(index3);
     cvgamma = gamma[index3];
@@ -723,15 +723,19 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   return List::create(Named("cv1") = out, Named("cv2") = out2, Named("cv3") = out3, Named("est") = Phiest, Named("cvtau1") = cvtau1, Named("cvtau2") = cvtau2, Named("cvgamma") = cvgamma);
 }
 
-//' Internal function: Estimate eigenfunctions
+//' Internal function: Spatial prediction
 //' @keywords internal
-//' @param phir A location matrix for original observations
+//' @param phir A matrix of estimated eigenfunctions based on original locations
 //' @param Yr A data matrix
 //' @param gammar A gamma value
-//' @param phir2 A location matrix used to predict
-//' @return A eignfunction estimate matrix
+//' @param phi2r A vector of values of an eigenfunction on new locations
+//' @return A list of objects
+//' \item{prediction}{A vector of spatial predicitons}
+//' \item{estimated_covariance}{An estimated covariance matrix.}
+//' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
+//' \item{error}{Error rate for the ADMM algorithm}
 // [[Rcpp::export]]
-List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r) {
+List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r) {
   int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = phi2r.nrow() ;
   arma::mat phi(phir.begin(), p, K, false);
   arma::mat phi2(phi2r.begin(), p2, K, false);
@@ -750,14 +754,14 @@ List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMa
   Sc2 = sort(Sc, "descend");
   Vc2 = Vc.cols(sort_index(Sc, "descend"));
   double tempSc = tempSc2, temp;
-  arma::mat Sct, Sctz, Phi;
+  arma::mat Sct, Sctz;
   Sct.ones(Sc2.n_elem);
   Sctz.zeros(Sc2.n_elem);
   
   if(Sc2[0] > gamma) {
     err = (totalvar - tempSc + K * gamma) / (p - tempL);
     temp = Sc2[tempL - 1];  
-    while(temp-gamma < err) {
+    while(temp - gamma < err) {
       if(tempL == 1) {
         err = (totalvar - Sc2[0] + gamma) / (p - 1);
         break;
@@ -775,115 +779,10 @@ List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMa
   
   arma::vec eigenvalue = arma::max(Sc2 - (err + gamma) * Sct, Sctz);
   arma::vec eigenvalue2 = eigenvalue + err;
-  arma::mat covest = phi * Vc2 * diagmat(eigenvalue / eigenvalue2) * trans(phi2 * Vc2);
-  arma::mat predict = Y * covest;
-  return List::create(Named("err") = err, Named("Phi") = Phi, Named("eigenvalue") = eigenvalue, Named("covest") = covest, Named("predict") = predict);
-}
-
-arma::mat eigenest2(mat phi, mat cov, double gamma) {
-  int p = phi.n_rows, K = phi.n_cols;
-  arma::mat Vc, Vc2;
-  arma::vec Sc, Sc2;
-  arma::eig_sym(Sc, Vc, phi.t() * cov * phi);
-  int tempL = K;
-  double err;
-  arma::vec eigenvalue;
-  arma::mat covest;
-  double totalvar = trace(cov);
-  double tempSc2 = accu(Sc);
-  double temp_v = totalvar - tempSc2;
-  err = (temp_v + K * gamma) / (p - tempL);
-  
-  Sc2 = sort(Sc, "descend");
-  Vc2 = Vc.cols(sort_index(Sc, "descend"));
-  double tempSc = tempSc2, temp;
-  arma::mat Sct, Sctz, Phi, Ip;
-  Sct.ones(Sc2.n_elem);
-  Sctz.zeros(Sc2.n_elem);
-  Ip.eye(p,p);
-  if(Sc2[0] > gamma) {
-    err = (totalvar - tempSc + K * gamma) / (p - tempL);
-    temp = Sc2[tempL - 1];  
-    while(temp-gamma < err) {
-      if(tempL == 1) {
-        err = (totalvar - Sc2[0] + gamma) / (p - 1);
-        break;
-      }
-      tempSc -= Sc2[tempL - 1];
-      tempL --;
-      err = (totalvar - tempSc + tempL * gamma) / (p - tempL);
-      temp = Sc2[tempL - 1];
-    }
-    if(Sc2[0] - gamma < err)
-      err = totalvar / p;
-  }
-  else {
-    err = totalvar / p;
-  }
-  
-  eigenvalue = arma::max(Sc2 - (err + gamma) * Sct, Sctz);
-  Phi = phi * Vc2;
-  covest =  Phi * diagmat(eigenvalue) * trans(Phi) + err * Ip;
-  return(covest);
-}
-
-arma::mat spatpca_rcpp(const arma::mat sxy, const arma::mat Y, const int K, const double l1, const arma::vec l2, const int maxit, const double tol) {
-  int d = sxy.n_cols;
-  double rho;
-  arma::mat UPhi, Phiold, Phi, R, C, Lambda1, Lambda2;
-  arma::vec SPhi;
-  arma::mat Omega;
-  if(d == 1)
-    Omega = cubicMatrix(sxy);
-  else
-    Omega = thinPlateMatrix(sxy);
-  arma::svd_econ(UPhi, SPhi, Phiold, Y, "right");
-  Phi = Phiold.cols(0, K - 1);
-  C = Phi;
-  rho = 10 * pow(SPhi[0], 2.0);
-  
-  Lambda2 = Phi * (diagmat(rho - 1 / (rho - 2 * pow(SPhi.subvec(0, K - 1), 2)))); 
-  mat YY = Y.t() * Y;
-  
-  if(l1 > 0)
-    Phi = spatpcacore2p(YY, C, Lambda2, Omega, l1, rho, maxit, tol);
-  
-  if(max(l2) != 0) {
-    mat Ip;
-    Ip.eye(Y.n_cols, Y.n_cols);
-    mat tempinv = arma::inv_sympd((l1 * Omega) - YY + (rho * Ip));
-    Lambda1 = 0 * Phi;
-    R = Phi;
-    for(unsigned int j = 0; j < l2.n_elem; j++)
-      spatpcacore3(tempinv, Phi, R, C, Lambda1, Lambda2, l2[j], rho, maxit, tol);
-  }
-  return Phi;
-}
-
-arma::mat spatpca2_rcpp(const arma::mat Omega, const arma::mat Y, const int K, const double l1, const arma::vec l2, const int maxit, const double tol) {
-  double rho;
-  arma::mat UPhi, Phiold, Phi, R, C, Lambda1, Lambda2;
-  arma::vec SPhi;
-  
-  arma::svd_econ(UPhi, SPhi, Phiold, Y, "right");
-  Phi = Phiold.cols(0, K - 1);
-  C = Phi;
-  rho = 10 * pow(SPhi[0], 2.0);
-  
-  Lambda2 = Phi*(diagmat(rho - 1 / (rho - 2 * pow(SPhi.subvec(0, K - 1), 2)))); 
-  mat YY = Y.t() * Y;
-  
-  if(l1 > 0)
-    Phi = spatpcacore2p(YY, C, Lambda2, Omega, l1, rho, maxit, tol);
-
-  if(max(l2) != 0) {
-    mat Ip;
-    Ip.eye(Y.n_cols,Y.n_cols);
-    mat tempinv = inv_sympd((l1 * Omega) - YY + (rho * Ip));
-    Lambda1 = 0 * Phi;
-    R = Phi;
-    for(unsigned int j = 0; j < l2.n_elem; j++)
-      spatpcacore3(tempinv, Phi, R, C, Lambda1, Lambda2, l2[j], rho, maxit, tol);
-  }
-  return Phi;
+  arma::mat estimated_covariance = phi * Vc2 * diagmat(eigenvalue / eigenvalue2) * trans(phi2 * Vc2);
+  arma::mat prediction = Y * estimated_covariance;
+  return List::create(Named("prediction") = prediction,
+                      Named("estimated_covariance") = estimated_covariance,
+                      Named("eigenvalue") = eigenvalue,
+                      Named("error") = err);
 }

@@ -17,16 +17,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// spatialPrediction
-arma::mat spatialPrediction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi);
-RcppExport SEXP _SpatPCA_spatialPrediction(SEXP new_locationSEXP, SEXP original_locationSEXP, SEXP PhiSEXP) {
+// eigenFunction
+arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi);
+RcppExport SEXP _SpatPCA_eigenFunction(SEXP new_locationSEXP, SEXP original_locationSEXP, SEXP PhiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type new_location(new_locationSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type original_location(original_locationSEXP);
     Rcpp::traits::input_parameter< const arma::mat >::type Phi(PhiSEXP);
-    rcpp_result_gen = Rcpp::wrap(spatialPrediction(new_location, original_location, Phi));
+    rcpp_result_gen = Rcpp::wrap(eigenFunction(new_location, original_location, Phi));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -51,9 +51,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// eigenEstimate
-List eigenEstimate(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
-RcppExport SEXP _SpatPCA_eigenEstimate(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
+// spatialPrediction
+List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
+RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,16 +61,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type phi2r(phi2rSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenEstimate(phir, Yr, gamma, phi2r));
+    rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, phi2r));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SpatPCA_thinPlateMatrix", (DL_FUNC) &_SpatPCA_thinPlateMatrix, 1},
-    {"_SpatPCA_spatialPrediction", (DL_FUNC) &_SpatPCA_spatialPrediction, 3},
+    {"_SpatPCA_eigenFunction", (DL_FUNC) &_SpatPCA_eigenFunction, 3},
     {"_SpatPCA_spatpcaCV", (DL_FUNC) &_SpatPCA_spatpcaCV, 11},
-    {"_SpatPCA_eigenEstimate", (DL_FUNC) &_SpatPCA_eigenEstimate, 4},
+    {"_SpatPCA_spatialPrediction", (DL_FUNC) &_SpatPCA_spatialPrediction, 4},
     {NULL, NULL, 0}
 };
 

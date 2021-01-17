@@ -2,28 +2,27 @@
 % Please edit documentation in R/RcppExports.R
 \name{spatialPrediction}
 \alias{spatialPrediction}
-\title{Spatial Prediction}
+\title{Internal function: Spatial prediction}
 \usage{
-spatialPrediction(new_location, original_location, Phi)
+spatialPrediction(phir, Yr, gamma, phi2r)
 }
 \arguments{
-\item{new_location}{A location matrix}
+\item{phir}{A matrix of estimated eigenfunctions based on original locations}
 
-\item{original_location}{A location matrix}
+\item{Yr}{A data matrix}
 
-\item{Phi}{An eigenvector matrix}
+\item{phi2r}{A vector of values of an eigenfunction on new locations}
+
+\item{gammar}{A gamma value}
 }
 \value{
-A predictive estimte matrix
+A list of objects
+\item{prediction}{A vector of spatial predicitons}
+\item{estimated_covariance}{An estimated covariance matrix.}
+\item{eigenvalue}{A vecotor of estimated eigenvalues.}
+\item{error}{Error rate for the ADMM algorithm}
 }
 \description{
-Produce spatial predictions based on new locations
-}
-\examples{
-pesudo_sequence <- seq(-5, 5, length = 2)
-original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
-new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
-Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-thin_plate_matrix <- spatialPrediction(new_location, original_location, Phi)
+Internal function: Spatial prediction
 }
 \keyword{internal}
