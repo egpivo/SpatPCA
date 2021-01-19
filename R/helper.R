@@ -8,7 +8,7 @@
 #' @param ncores Number of number of cores for parallel computing. Default is NULL.
 #' @return Logical
 #'
-setCores <- function(ncores = NULL) {
+set_cores <- function(ncores = NULL) {
   if (!is.null(ncores)) {
     if (!is.numeric(ncores)) {
       stop("Please enter valid type - but got ", class(ncores))

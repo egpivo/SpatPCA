@@ -9,12 +9,13 @@ spatpca(
   Y,
   M = 5,
   K = NULL,
-  is_K_selected = ifelse(is.null(K), TRUE, FALSE),
+  K.select = ifelse(is.null(K), TRUE, FALSE),
   tau1 = NULL,
   tau2 = NULL,
   gamma = NULL,
   x_new = NULL,
-  is_Y_centered = FALSE,
+  center = FALSE,
+  plot.cv = FALSE,
   maxit = 100,
   thr = 1e-04,
   numCores = NULL
@@ -27,9 +28,9 @@ spatpca(
 
 \item{M}{Optional number of folds; default is 5.}
 
-\item{K}{Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or is_K_selected is TRUE, K is selected automatically.}
+\item{K}{Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or K.select is TRUE, K is selected automatically.}
 
-\item{is_K_selected}{If TRUE, K is selected automatically; otherwise, is_K_selected is set to be user-supplied K. Default depends on user-supplied K.}
+\item{K.select}{If TRUE, K is selected automatically; otherwise, K.select is set to be user-supplied K. Default depends on user-supplied K.}
 
 \item{tau1}{Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.}
 
@@ -39,7 +40,9 @@ spatpca(
 
 \item{x_new}{New location matrix. If NULL, it is x.}
 
-\item{is_Y_centered}{If TRUE, center the columns of Y. Default is FALSE.}
+\item{center}{If TRUE, center the columns of Y. Default is FALSE.}
+
+\item{plot.cv}{If TRUE, plot the cv values. Default is FALSE.}
 
 \item{maxit}{Maximum number of iterations. Default value is 100.}
 
@@ -54,13 +57,13 @@ A list of objects including
 \item{stau1}{Selected tau1.}
 \item{stau2}{Selected tau2.}
 \item{sgamma}{Selected gamma.}
-\item{cv_tau1}{cv socres for tau1.}
-\item{cv_tau2}{cv socres for tau2.}
-\item{cv_gamma}{cv socres for gamma.}
+\item{cv1}{cv socres for tau1.}
+\item{cv2}{cv socres for tau2.}
+\item{cv3}{cv socres for gamma.}
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
-\item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
+\item{Yc}{If center is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
 }
 \description{
 Produce spatial dominant patterns and spatial predictions at the designated locations according to the specified tuning parameters or the selected tuning parameters by the M-fold cross-validation.
@@ -120,18 +123,17 @@ quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab 
 map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
 ## 3D: regular locations
-p <- 10
-x <- y <- z <- as.matrix(seq(-5, 5, length = p))
+x <- y <- z <- as.matrix(seq(-5, 5, length = 10))
 d <- expand.grid(x, y, z)
 Phi_3D <- rowSums(exp(-d^2)) / norm(as.matrix(rowSums(exp(-d^2))), "F")
-Y_3D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_3D) + matrix(rnorm(n = 100 * p^3), 100, p^3)
+Y_3D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_3D) + matrix(rnorm(n = 100 * 10^3), 100, 10^3)
 cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length = 10))
 library(plot3D)
 library(RColorBrewer)
-cols <- colorRampPalette(brewer.pal(9, "Blues"))(p)
+cols <- colorRampPalette(brewer.pal(9, "Blues"))(10)
 isosurf3D(x, y, z,
          colvar = array(cv_3D$eigenfn[, 1], c(p, p, p)),
-         level= seq(min(cv_3D$eigenfn[, 1]), max(cv_3D$eigenfn[, 1]), length = p),
+         level= seq(min(cv_3D$eigenfn[, 1]), max(cv_3D$eigenfn[, 1]), length = 10),
          ticktype = "detailed",
          colkey = list(side = 1),
          col = cols)

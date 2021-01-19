@@ -7,14 +7,15 @@
 #'
 #' @param x Location matrix (\eqn{p \times d}). Each row is a location. \eqn{d} is the dimension of locations
 #' @param Y Data matrix (\eqn{n \times p}) stores the values at \eqn{p} locations with sample size \eqn{n}.
-#' @param K Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or is_K_selected is TRUE, K is selected automatically.
-#' @param is_K_selected If TRUE, K is selected automatically; otherwise, is_K_selected is set to be user-supplied K. Default depends on user-supplied K.
+#' @param K Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or K.select is TRUE, K is selected automatically.
+#' @param K.select If TRUE, K is selected automatically; otherwise, K.select is set to be user-supplied K. Default depends on user-supplied K.
 #' @param tau1 Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
 #' @param x_new New location matrix. If NULL, it is x.
 #' @param M Optional number of folds; default is 5.
-#' @param is_Y_centered If TRUE, center the columns of Y. Default is FALSE.
+#' @param center If TRUE, center the columns of Y. Default is FALSE.
+#' @param plot.cv If TRUE, plot the cv values. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param numCores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
@@ -25,13 +26,13 @@
 #' \item{stau1}{Selected tau1.}
 #' \item{stau2}{Selected tau2.}
 #' \item{sgamma}{Selected gamma.}
-#' \item{cv_tau1}{cv socres for tau1.}
-#' \item{cv_tau2}{cv socres for tau2.}
-#' \item{cv_gamma}{cv socres for gamma.}
+#' \item{cv1}{cv socres for tau1.}
+#' \item{cv2}{cv socres for tau2.}
+#' \item{cv3}{cv socres for gamma.}
 #' \item{tau1}{Sequence of tau1-values used in the process.}
 #' \item{tau2}{Sequence of tau2-values used in the process.}
 #' \item{gamma}{Sequence of gamma-values used in the process.}
-#' \item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
+#' \item{Yc}{If center is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
 #'
 #' @details An ADMM form of the proposed objective function is written as
 #' \deqn{\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F +\tau_1\mbox{tr}(\mathbf{\Phi}^T\mathbf{\Omega}\mathbf{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
@@ -89,18 +90,17 @@
 #' map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 #' map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
 #' ## 3D: regular locations
-#' p <- 10
-#' x <- y <- z <- as.matrix(seq(-5, 5, length = p))
+#' x <- y <- z <- as.matrix(seq(-5, 5, length = 10))
 #' d <- expand.grid(x, y, z)
 #' Phi_3D <- rowSums(exp(-d^2)) / norm(as.matrix(rowSums(exp(-d^2))), "F")
-#' Y_3D <- rnorm(n = 100, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * p^3), 100, p^3)
+#' Y_3D <- rnorm(n = 100, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * 10^3), 100, 10^3)
 #' cv_3D <- spatpca(x = d, Y = Y_3D, tau2 = seq(0, 1000, length = 10))
 #' library(plot3D)
 #' library(RColorBrewer)
-#' cols <- colorRampPalette(brewer.pal(9, "Blues"))(p)
+#' cols <- colorRampPalette(brewer.pal(9, "Blues"))(10)
 #' isosurf3D(x, y, z,
 #'          colvar = array(cv_3D$eigenfn[, 1], c(p, p, p)),
-#'          level= seq(min(cv_3D$eigenfn[, 1]), max(cv_3D$eigenfn[, 1]), length = p),
+#'          level= seq(min(cv_3D$eigenfn[, 1]), max(cv_3D$eigenfn[, 1]), length = 10),
 #'          ticktype = "detailed",
 #'          colkey = list(side = 1),
 #'          col = cols)
@@ -109,17 +109,18 @@ spatpca <- function(x,
                     Y,
                     M = 5,
                     K = NULL,
-                    is_K_selected = ifelse(is.null(K), TRUE, FALSE),
+                    K.select = ifelse(is.null(K), TRUE, FALSE),
                     tau1 = NULL,
                     tau2 = NULL,
                     gamma = NULL,
                     x_new = NULL,
-                    is_Y_centered = FALSE,
+                    center = FALSE,
+                    plot.cv = FALSE,
                     maxit = 100,
                     thr = 1e-04,
                     numCores = NULL) {
   call2 <- match.call()
-  setCores(numCores)
+  set_cores(numCores)
 
   x <- as.matrix(x)
   p <- ncol(Y)
@@ -143,7 +144,7 @@ spatpca <- function(x,
     }
   }
   # Remove the mean trend of Y
-  if (is_Y_centered) {
+  if (center) {
     Y <- Y - apply(Y, 2, "mean")
   }
   # Initialize candidates of tuning parameters
@@ -170,8 +171,7 @@ spatpca <- function(x,
     gsize <- 11
     temp <- svd(Y[which(stra != 1), ])
     gammamax1 <- temp$d[1]^2 / nrow(Y[which(stra != 1), ])
-    log_scale_candidates <-
-      seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
+    log_scale_candidates <- seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
     gamma <- c(0, log_scale_candidates)
   }
 
@@ -185,23 +185,20 @@ spatpca <- function(x,
   }
 
   if (ntau2 == 1 && tau2 > 0) {
-    l2 <- ifelse(tau2 != 0,
-      c(0, exp(seq(
-        log(tau2 / 1e4), log(tau2),
-        length = 10
-      ))),
+    l2 <- ifelse(
+      tau2 != 0,
+      c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
       tau2
     )
   } else {
     l2 <- 1
   }
 
-  if (is_K_selected) {
+  if (K.select) {
     cvtempold <-
       spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for (k in 2:min(floor(n - n / M), p)) {
-      cvtemp <-
-        spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
+      cvtemp <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
       if (min(cvtempold$cv3) <= min(cvtemp$cv3) ||
         abs(min(cvtempold$cv3) - min(cvtemp$cv3)) <= 1e-8) {
         break
@@ -211,17 +208,16 @@ spatpca <- function(x,
     Khat <- k - 1
   }
   else {
-    cvtempold <-
-      spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
+    cvtempold <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
     Khat <- K
   }
 
   cvtau1 <- cvtempold$cvtau1
   cvtau2 <- cvtempold$cvtau2
   cvgamma <- cvtempold$cvgamma
-  cv_tau1 <- cvtempold$cv1
-  cv_tau2 <- cvtempold$cv2
-  cv_gamma <- cvtempold$cv3
+  cv1 <- cvtempold$cv1
+  cv2 <- cvtempold$cv2
+  cv3 <- cvtempold$cv3
   est <- cvtempold$est
   if (is.null(x_new)) {
     x_new <- x
@@ -235,6 +231,22 @@ spatpca <- function(x,
   eigen_estimate <- spatialPrediction(est, Y, cvgamma, estfn)
   predict <- eigen_estimate$predict
 
+  if (plot.cv && !is.null(cv1)) {
+    originalPar <- par(no.readonly = TRUE)
+    on.exit(par(originalPar))
+    if (ntau2 > 1) {
+      par(mfrow = c(3, 1))
+      plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
+      plot(tau2, cv2, type = "l", main = "for tau2 selection given selected tau1")
+      plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+    }
+    else {
+      par(mfrow = c(2, 1))
+      plot(tau1, cv1, type = "l", main = "for tau1 selection given tau2 = 0")
+      plot(gamma, cv3, type = "l", main = "for gamma selection given selected tau1 and tau2")
+    }
+  }
+
   obj.cv <- list(
     call = call2,
     eigenfn = estfn,
@@ -243,9 +255,9 @@ spatpca <- function(x,
     stau1 = cvtau1,
     stau2 = cvtau2,
     sgamma = cvgamma,
-    cv_tau1 = cv_tau1,
-    cv_tau2 = cv_tau2,
-    cv_gamma = cv_gamma,
+    cv1 = cv1,
+    cv2 = cv2,
+    cv3 = cv3,
     tau1 = tau1,
     tau2 = tau2,
     gamma = gamma,
@@ -253,63 +265,4 @@ spatpca <- function(x,
   )
   class(obj.cv) <- "spatpca"
   return(obj.cv)
-}
-
-#'
-#' @title  Display the cross-validation results
-#'
-#' @description Display the M-fold cross-validation results
-#'
-#' @param x An spatpca class object for `plot` method
-#' @param ... Not used directly
-#' @seealso \link{spatpca}
-#'
-#' @export
-#' @method plot spatpca
-#' @examples
-#' x_1D <- as.matrix(seq(-5, 5, length = 10))
-#' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
-#' set.seed(1234)
-#' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
-#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
-#' plot(cv_1D)
-#
-plot.spatpca <- function(x, ...) {
-  if (class(x) != "spatpca") {
-    stop("Invalid object! Please enter a `spatpca` object")
-  }
-
-  # Set the default theme
-  theme_set(
-    theme_bw() +
-      theme(
-        text = element_text(size = 16),
-        legend.position = "none",
-        legend.title = element_blank(),
-        plot.title = element_text(hjust = 0.5)
-      )
-  )
-  cv_dataframe <- rbind(
-    data.frame(
-      type = "tau1 given tau2 = 0",
-      parameter = array(x$tau1),
-      cv = array(x$cv_tau1)
-    ),
-    data.frame(
-      type = "tau2 given selected tau1",
-      parameter = array(x$tau2),
-      cv = array(x$cv_tau2)
-    ),
-    data.frame(
-      type = "gamma given selected tau1 and tau2",
-      parameter = array(x$gamma),
-      cv = array(x$cv_gamma)
-    )
-  )
-  result <-
-    ggplot(cv_dataframe, aes(x = parameter, y = cv, color = type)) +
-    geom_line(size = 1.5) +
-    facet_grid(scales = "free", . ~ type)
-
-  return(suppressMessages(print(result)))
 }
