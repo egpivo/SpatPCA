@@ -22,14 +22,13 @@ Description: Provide regularized principal component analysis incorporating smoo
 License: GPL-3
 LazyData: true
 ByteCompile: true
-Imports: Rcpp, RcppParallel
+Imports: Rcpp, RcppParallel, ggplot2
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 2.1.0),
-    dplyr,
-    ggplot2,
+    dplyr (>= 1.0.3),
     gifski,
     tidyr,
     fields,
