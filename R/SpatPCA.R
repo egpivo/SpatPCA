@@ -119,7 +119,7 @@ spatpca <- function(x,
                     thr = 1e-04,
                     numCores = NULL) {
   call2 <- match.call()
-  set_cores(numCores)
+  setCores(numCores)
 
   x <- as.matrix(x)
   p <- ncol(Y)
