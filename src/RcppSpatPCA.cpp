@@ -485,81 +485,6 @@ struct spatpcaCVPhi3: public RcppParallel::Worker {
   }
 };
 
-List spatpcacv_rcpp(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector  tau1r, NumericVector tau2r, NumericVector nkr, int maxit, double tol, NumericVector l2r) {
-  int n = Yr.nrow(), p = Yr.ncol(), d = sxyr.ncol();
-  arma::mat Y(Yr.begin(), n, p, false);
-  arma::mat sxy(sxyr.begin(), p, d, false);
-  colvec tau1(tau1r.begin(), tau1r.size(), false);
-  colvec tau2(tau2r.begin(), tau2r.size(), false);
-  colvec nk(nkr.begin(), nkr.size(), false);
-  colvec l2(l2r.begin(), l2r.size(), false);
-  arma::mat cv(M, tau1.n_elem), out, out2;
-  arma::mat Omega;
-  double cvtau1, cvtau2;
-  arma::mat YYest = Y.t() * Y;
-  arma::mat UPhiest, Phiest2;
-  vec SPhiest;
-  arma::svd_econ(UPhiest, SPhiest, Phiest2, Y, "right");
-  double rhoest = 10 * pow(SPhiest[0], 2.0);
-  arma::mat Phiest = Phiest2.cols(0, K - 1); 
-  arma::mat Cest = Phiest;
-  arma::mat  Lambda2est = Phiest * (diagmat(rhoest - 1 / (rhoest - 2 * pow(SPhiest.subvec(0, K - 1), 2))));
-  arma::mat rhocv(M, 1);
-  arma::cube YYtrain(p, p, M), Phicv(p, K, M), Lmbd2cv(p, K, M), tempinvcv(p, p, M);
-
-  Omega = thinPlateMatrix(sxy);
-
-  if(tau1.n_elem > 1) {  
-    spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
-    RcppParallel::parallelFor(0, M, spatpcaCVPhi);
-    uword index1;
-    (sum(cv, 0)).min(index1);
-    cvtau1 = tau1[index1];  
-    if(index1 > 0)
-      Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, cvtau1, rhoest, maxit, tol);
-    out = sum(cv, 0) / M;
-  }
-  else {
-    cvtau1= max(tau1); 
-    Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, cvtau1, rhoest, maxit, tol);
-    out.zeros(1);
-  }
-  
-  if(tau2.n_elem > 1) {
-    arma::mat cv2(M, tau2.n_elem);
-    uword index2;
-
-    spatpcaCVPhi2 spatpcaCVPhi2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
-    RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
-    (sum(cv2, 0)).min(index2);
-    cvtau2 = tau2[index2];
-    mat Ip;
-    Ip.eye(Y.n_cols,Y.n_cols);
-    mat tempinv = arma::inv_sympd((cvtau1 * Omega) - YYest + (rhoest * Ip));
-    mat Rest = Phiest;
-    mat Lambda1est = 0 * Phiest;
-    
-    for(uword i = 0; i <= index2; i++)
-      spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, tau2[i], rhoest, maxit, tol);
-    out2 = sum(cv2, 0) / M;
-  }
-  else {  
-    cvtau2 = max(tau2);
-    if(cvtau2 > 0) {
-      mat Ip;
-      Ip.eye(Y.n_cols, Y.n_cols);
-      mat tempinv = arma::inv_sympd((cvtau1 * Omega) - YYest + (rhoest * Ip));
-      mat Rest= Phiest;
-      mat Lambda1est = 0 * Phiest;
-      for(uword i = 0; i < l2.n_elem; i++)
-        spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, l2[i], rhoest, maxit, tol);
-    }
-    out2.zeros(1);
-  }
-  
-  return List::create(Named("cv1") = out, Named("cv2") = out2,Named("est") = Phiest, Named("cvtau1") = cvtau1,Named("cvtau2") = cvtau2);
-}
-
 //' Internal function: M-fold Cross-validation 
 //' @keywords internal
 //' @param sxyr A location matrix
@@ -584,9 +509,9 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
   colvec gamma(gammar.begin(), gammar.size(), false);
   colvec nk(nkr.begin(), nkr.size(), false);
   colvec l2(l2r.begin(), l2r.size(), false);
-  arma::mat cv(M, tau1.n_elem), cv3(M, gamma.n_elem), out, out2, out3;
+  arma::mat cv(M, tau1.n_elem), cv3(M, gamma.n_elem), cv_score_tau1, cv_score_tau2, cv_score_gamma;
   arma::mat Omega;
-  double cvtau1, cvtau2 = 0, cvgamma;
+  double selected_tau1, selected_tau2 = 0, selected_gamma;
   arma::mat YYest = Y.t()*Y;
   arma::mat UPhiest, Phiest2;
   vec SPhiest;
@@ -623,15 +548,15 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
     spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, YYtrain, Phicv, Lmbd2cv, rhocv);
     RcppParallel::parallelFor(0, M, spatpcaCVPhi);
     (sum(cv, 0)).min(index1);
-    cvtau1 = tau1[index1];  
+    selected_tau1 = tau1[index1];  
     if(index1 > 0)
-      Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, cvtau1, rhoest, maxit, tol);
-    out = sum(cv, 0) / M;
+      Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, selected_tau1, rhoest, maxit, tol);
+    cv_score_tau1 = sum(cv, 0) / M;
   }
   else {
-    cvtau1 = max(tau1);
-    if(cvtau1 != 0 && max(tau2) == 0) {
-      Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, cvtau1, rhoest, maxit, tol);
+    selected_tau1 = max(tau1);
+    if(selected_tau1 != 0 && max(tau2) == 0) {
+      Phiest = spatpcacore2p(YYest, Cest, Lambda2est, Omega, selected_tau1, rhoest, maxit, tol);
       arma::mat Phigg, Cgg, Lambda2gg;
       mat Yvalid, Ytrain;
       arma::mat UPhi, Phioldg;
@@ -644,13 +569,13 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
         Phigg = Cgg = Phioldg.cols(0, K - 1);
         rhocv(k, 0) = 10 * pow(SPhi[0], 2.0);
         Lambda2gg = Phigg * (diagmat(rhocv(k, 0) - 1 / (rhocv(k, 0) - 2 * pow(SPhi.subvec(0, K - 1), 2))));
-        spatpcacore2(YYtrain.slice(k), Phigg,Cgg, Lambda2gg, Omega, cvtau1, rhocv(k, 0), maxit, tol);
+        spatpcacore2(YYtrain.slice(k), Phigg,Cgg, Lambda2gg, Omega, selected_tau1, rhocv(k, 0), maxit, tol);
         Phicv.slice(k) = Phigg;
         Lmbd2cv.slice(k) = Lambda2gg;
-        tempinvcv.slice(k) = arma::inv_sympd((cvtau1 * Omega) - YYtrain.slice(k) + (rhocv(k, 0) * Ip));    
+        tempinvcv.slice(k) = arma::inv_sympd((selected_tau1 * Omega) - YYtrain.slice(k) + (rhocv(k, 0) * Ip));    
       }
     }
-    else if(cvtau1 == 0 && max(tau2) == 0) {
+    else if(selected_tau1 == 0 && max(tau2) == 0) {
       arma::mat UPhi2, Phioldc;
       vec SPhi2;
       arma::svd_econ(UPhi2, SPhi2, Phioldc, Y, "right");
@@ -669,56 +594,62 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
         Phigg = Cgg = Phioldg.cols(0, K - 1);
         rhocv(k, 0) = 10 * pow(SPhi[0], 2.0);
         Lambda2gg = Phigg * (diagmat(rhocv(k, 0) - 1 / (rhocv(k, 0) - 2 * pow(SPhi.subvec(0, K - 1), 2))));
-        if(cvtau1 != 0)
-          spatpcacore2(YYtrain.slice(k), Phigg,Cgg, Lambda2gg, Omega, cvtau1, rhocv(k, 0), maxit, tol);
+        if(selected_tau1 != 0)
+          spatpcacore2(YYtrain.slice(k), Phigg,Cgg, Lambda2gg, Omega, selected_tau1, rhocv(k, 0), maxit, tol);
         Phicv.slice(k) = Phigg;
         Lmbd2cv.slice(k) = Lambda2gg;    
       }
     }
-    out.zeros(1);
+    cv_score_tau1.zeros(1);
   }
   
   if(tau2.n_elem > 1) {
     arma::mat cv2(M, tau2.n_elem);
-    spatpcaCVPhi2 spatpcaCVPhi2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, cvtau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
+    spatpcaCVPhi2 spatpcaCVPhi2(Y, YYtrain, Phicv, Lmbd2cv, rhocv, K, selected_tau1, Omega, tau2, nk, maxit, tol, cv2, tempinvcv); 
     RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
 
     (sum(cv2, 0)).min(index2);
-    cvtau2 = tau2[index2];
+    selected_tau2 = tau2[index2];
 
-    mat tempinv = arma::inv_sympd((cvtau1 * Omega) - YYest + (rhoest * Ip));
+    mat tempinv = arma::inv_sympd((selected_tau1 * Omega) - YYest + (rhoest * Ip));
     mat Rest = Phiest;
     mat Lambda1est = 0 * Phiest;
 
     for(uword i = 0; i <= index2; i++)
       spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, tau2[i], rhoest, maxit, tol);
 
-    out2 = sum(cv2, 0) / M;
+    cv_score_tau2 = sum(cv2, 0) / M;
   }
   else {  
-    cvtau2 = max(tau2);
-    if(cvtau2 > 0) {
-      mat tempinv = arma::inv_sympd((cvtau1 * Omega) - YYest + (rhoest * Ip));
+    selected_tau2 = max(tau2);
+    if(selected_tau2 > 0) {
+      mat tempinv = arma::inv_sympd((selected_tau1 * Omega) - YYest + (rhoest * Ip));
       mat Rest= Phiest;
       mat Lambda1est = 0 * Phiest;
       for(uword i = 0; i < l2.n_elem; i++)
         spatpcacore3(tempinv, Phiest, Rest, Cest, Lambda1est, Lambda2est, l2[i], rhoest, maxit, tol);
     }
-    out2.zeros(1);
+    cv_score_tau2.zeros(1);
   }
   
-  spatpcaCVPhi3 spatpcaCVPhi3(Y, YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2, K, Omega, cvtau1, tau2, gamma, nk, maxit, tol, cv3);
+  spatpcaCVPhi3 spatpcaCVPhi3(Y, YYtrain, Phicv, Lmbd2cv, rhocv, tempinvcv, index2, K, Omega, selected_tau1, tau2, gamma, nk, maxit, tol, cv3);
   RcppParallel::parallelFor(0, M, spatpcaCVPhi3);
   if(gamma.n_elem > 1) {
     (sum(cv3, 0)).min(index3);
-    cvgamma = gamma[index3];
+    selected_gamma = gamma[index3];
   }
   else {
-    cvgamma = max(gamma);
+    selected_gamma = max(gamma);
   }
-  out3 = sum(cv3, 0) / M;
+  cv_score_gamma = sum(cv3, 0) / M;
   
-  return List::create(Named("cv1") = out, Named("cv2") = out2, Named("cv3") = out3, Named("est") = Phiest, Named("cvtau1") = cvtau1, Named("cvtau2") = cvtau2, Named("cvgamma") = cvgamma);
+  return List::create(Named("cv_score_tau1") = cv_score_tau1,
+                      Named("cv_score_tau2") = cv_score_tau2,
+                      Named("cv_score_gamma") = cv_score_gamma,
+                      Named("estimated_eigenfn") = Phiest,
+                      Named("selected_tau1") = selected_tau1,
+                      Named("selected_tau2") = selected_tau2,
+                      Named("selected_gamma") = selected_gamma);
 }
 
 //' Internal function: Spatial prediction

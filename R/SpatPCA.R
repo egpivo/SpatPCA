@@ -133,7 +133,7 @@ spatpca <- function(x,
                     num_cores = NULL) {
   call2 <- match.call()
   setCores(num_cores)
-
+  
   x <- as.matrix(x)
   p <- ncol(Y)
   n <- nrow(Y)
@@ -162,32 +162,32 @@ spatpca <- function(x,
   # Initialize candidates of tuning parameters
   if (is.null(tau2)) {
     tau2 <- 0
-    ntau2 <- 1
+    num_tau2 <- 1
   } else {
-    ntau2 <- length(tau2)
+    num_tau2 <- length(tau2)
   }
   if (is.null(tau1)) {
-    ntau1 <- 11
-    tau1 <- c(0, exp(seq(log(1e-6), 0, length = ntau1 - 1)))
+    num_tau1 <- 11
+    tau1 <- c(0, exp(seq(log(1e-6), 0, length = num_tau1 - 1)))
   } else {
-    ntau1 <- length(tau1)
+    num_tau1 <- length(tau1)
   }
-
-  if (M < 2 && (ntau1 > 1 || ntau2 > 1)) {
-    ntau1 <- ntau2 <- 1
+  
+  if (M < 2 && (num_tau1 > 1 || num_tau2 > 1)) {
+    num_tau1 <- num_tau2 <- 1
     warning("Only produce the result based on the largest tau1 and largest tau2.")
   }
-
+  
   stra <- sample(rep(1:M, length.out = nrow(Y)))
   if (is.null(gamma)) {
-    gsize <- 11
-    temp <- svd(Y[which(stra != 1), ])
-    gammamax1 <- temp$d[1]^2 / nrow(Y[which(stra != 1), ])
+    num_gamma <- 11
+    svd_Y_partial <- svd(Y[which(stra != 1), ])
+    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y[which(stra != 1), ])
     log_scale_candidates <-
-      seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
+      seq(log(max_gamma / 1e4), log(max_gamma), length = num_gamma - 1)
     gamma <- c(0, log_scale_candidates)
   }
-
+  
   if (dim(x)[2] == 1) {
     min_x <- min(x)
     max_x <- max(x)
@@ -196,21 +196,22 @@ spatpca <- function(x,
       x_new <- (x_new - min_x) / (max_x - min_x)
     }
   }
-
-  if (ntau2 == 1 && tau2 > 0) {
+  
+  if (num_tau2 == 1 && tau2 > 0) {
     l2 <- ifelse(tau2 != 0,
-      c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
-      tau2
+                 c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
+                 tau2
     )
   } else {
     l2 <- 1
   }
-
+  
   if (is_K_selected) {
     cv_result <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for (k in 2:min(floor(n - n / M), p)) {
       cv_new_result <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
-      if (min(cv_result$cv3) <= min(cv_new_result$cv3) || abs(min(cv_result$cv3) - min(cv_new_result$cv3)) <= 1e-8) {
+      difference <- cv_result$selected_gamma - cv_new_result$selected_gamma
+      if (difference <= 0 || abs(difference) <= 1e-8) {
         break
       }
       cv_result <- cv_new_result
@@ -221,14 +222,14 @@ spatpca <- function(x,
     cv_result <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
     selected_K <- K
   }
-
-  selected_tau1 <- cv_result$cvtau1
-  selected_tau2 <- cv_result$cvtau2
-  selected_gamma <- cv_result$cvgamma
-  cv_score_tau1 <- cv_result$cv1
-  cv_score_tau2 <- cv_result$cv2
-  cv_score_gamma <- cv_result$cv3
-  estimated_eigenfn <- cv_result$est
+  
+  selected_tau1 <- cv_result$selected_tau1
+  selected_tau2 <- cv_result$selected_tau2
+  selected_gamma <- cv_result$selected_gamma
+  cv_score_tau1 <- cv_result$cv_score_tau1
+  cv_score_tau2 <- cv_result$cv_score_tau2
+  cv_score_gamma <- cv_result$cv_score_gamma
+  estimated_eigenfn <- cv_result$estimated_eigenfn
   if (is.null(x_new)) {
     x_new <- x
     predicted_eigenfn <- estimated_eigenfn
@@ -237,10 +238,10 @@ spatpca <- function(x,
     x_new <- as.matrix(x_new)
     predicted_eigenfn <- eigenFunction(x_new, x, estimated_eigenfn)
   }
-
+  
   spatial_prediction <- spatialPrediction(estimated_eigenfn, Y, selected_gamma, predicted_eigenfn)
   prediction <- spatial_prediction$predict
-
+  
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
@@ -260,6 +261,7 @@ spatpca <- function(x,
   class(obj.cv) <- "spatpca"
   return(obj.cv)
 }
+
 
 #'
 #' @title  Display the cross-validation results
