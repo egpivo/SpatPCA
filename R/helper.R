@@ -5,26 +5,24 @@
 #'
 #'
 #' @keywords internal
-#' @param ncores Number of number of cores for parallel computing. Default is NULL.
+#' @param num_cores Number of number of cores for parallel computing. Default is NULL.
 #' @return Logical
 #'
-setCores <- function(ncores = NULL) {
-  if (!is.null(ncores)) {
-    if (!is.numeric(ncores)) {
-      stop("Please enter valid type - but got ", class(ncores))
+setCores <- function(num_cores = NULL) {
+  if (!is.null(num_cores)) {
+    if (!is.numeric(num_cores)) {
+      stop("Please enter valid type - but got ", class(num_cores))
     }
 
-    defaultNumber <- RcppParallel::defaultNumThreads()
-    if (ncores > defaultNumber) {
-      stop("The input number of cores is invalid - default is ", defaultNumber)
+    default_number <- RcppParallel::defaultNumThreads()
+    if (num_cores > default_number) {
+      stop("The input number of cores is invalid - default is ", default_number)
     }
-    if (ncores < 1) {
-      stop("The number of cores is not greater than 1 - but got ", ncores)
+    if (num_cores < 1) {
+      stop("The number of cores is not greater than 1 - but got ", num_cores)
     }
     tryCatch(
-      {
-        RcppParallel::setThreadOptions(numThreads = ncores)
-      },
+      RcppParallel::setThreadOptions(numThreads = num_cores),
       error = print
     )
   }

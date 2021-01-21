@@ -19,7 +19,7 @@ x_1D <- as.matrix(seq(-5, 5, length = 10))
 Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 set.seed(1234)
 Y_1D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
-cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 plot(cv_1D)
 }
 \seealso{

@@ -1,4 +1,4 @@
-defaultNumber <- RcppParallel::defaultNumThreads()
+default_number <- RcppParallel::defaultNumThreads()
 test_that("The number of cores for RcppParallel", {
   expect_error(
     setCores("test"),
@@ -9,9 +9,9 @@ test_that("The number of cores for RcppParallel", {
     "The number of cores is not greater than 1 - but got 0"
   )
   expect_error(
-    setCores(defaultNumber + 1),
-    cat("The input number of cores is invalid - default is ", defaultNumber)
+    setCores(default_number + 1),
+    cat("The input number of cores is invalid - default is ", default_number)
   )
-  expect_true(setCores(defaultNumber))
+  expect_true(setCores(default_number))
   expect_null(setCores())
 })

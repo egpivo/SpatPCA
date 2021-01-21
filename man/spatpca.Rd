@@ -17,7 +17,7 @@ spatpca(
   is_Y_centered = FALSE,
   maxit = 100,
   thr = 1e-04,
-  numCores = NULL
+  num_cores = NULL
 )
 }
 \arguments{
@@ -45,18 +45,19 @@ spatpca(
 
 \item{thr}{Threshold for convergence. Default value is \eqn{10^{-4}}.}
 
-\item{numCores}{Number of cores used to parallel computing. Default value is NULL (See \code{RcppParallel::defaultNumThreads()})}
+\item{num_cores}{Number of cores used to parallel computing. Default value is NULL (See \code{RcppParallel::defaultNumThreads()})}
 }
 \value{
 A list of objects including
 \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
-\item{Yhat}{Prediction of Y at the new locations, x_new.}
-\item{stau1}{Selected tau1.}
-\item{stau2}{Selected tau2.}
-\item{sgamma}{Selected gamma.}
-\item{cv_tau1}{cv socres for tau1.}
-\item{cv_tau2}{cv socres for tau2.}
-\item{cv_gamma}{cv socres for gamma.}
+\item{selected_K}{Selected K based on CV. Execute the algorithm when \code{is_K_selected} is \code{TRUE}.}
+\item{prediction}{Prediction of Y at the new locations, x_new.}
+\item{selected_tau1}{Selected tau1.}
+\item{selected_tau2}{Selected tau2.}
+\item{selected_gamma}{Selected gamma.}
+\item{cv_score_tau1}{cv scores for tau1.}
+\item{cv_score_tau2}{cv scores for tau2.}
+\item{cv_score_gamma}{cv scores for gamma.}
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
@@ -77,7 +78,7 @@ x_1D <- as.matrix(seq(-5, 5, length = 50))
 Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 set.seed(1234)
 Y_1D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
-cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
@@ -91,7 +92,10 @@ Y_1Drm <- Y_1D[,-rm_loc]
 x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
 plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l",
+plot(cv_1D$prediction[, 50],
+     xlab = "n",
+     ylab = "prediction",
+     type = "l",
      main = paste("prediction at x = ", x_1Dnew[50]))
 ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 library(fields)
@@ -115,8 +119,17 @@ new_p <- 200
 x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
 x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
-eof <- spatpca(x = xx, Y = YY, K = cv$Khat, tau1 = cv$stau1, tau2 = cv$stau2, x_new = xx_new)
-quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
+eof <- spatpca(x = xx,
+               Y = YY,
+               K = cv$selected_K, 
+               tau1 = cv$selected_tau1, 
+               tau2 = cv$selected_tau2, 
+               x_new = xx_new)
+quilt.plot(xx_new, eof$eigenfn[,1],
+           nx = new_p, 
+           ny = new_p, 
+           xlab = "lon.", 
+           ylab = "lat.")
 map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
 ## 3D: regular locations

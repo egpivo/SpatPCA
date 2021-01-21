@@ -17,17 +17,18 @@
 #' @param is_Y_centered If TRUE, center the columns of Y. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
-#' @param numCores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
+#' @param num_cores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
 #'
 #' @return A list of objects including
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
-#' \item{Yhat}{Prediction of Y at the new locations, x_new.}
-#' \item{stau1}{Selected tau1.}
-#' \item{stau2}{Selected tau2.}
-#' \item{sgamma}{Selected gamma.}
-#' \item{cv_tau1}{cv socres for tau1.}
-#' \item{cv_tau2}{cv socres for tau2.}
-#' \item{cv_gamma}{cv socres for gamma.}
+#' \item{selected_K}{Selected K based on CV. Execute the algorithm when `is_K_selected` is `TRUE`.}
+#' \item{prediction}{Prediction of Y at the new locations, x_new.}
+#' \item{selected_tau1}{Selected tau1.}
+#' \item{selected_tau2}{Selected tau2.}
+#' \item{selected_gamma}{Selected gamma.}
+#' \item{cv_score_tau1}{cv scores for tau1.}
+#' \item{cv_score_tau2}{cv scores for tau2.}
+#' \item{cv_score_gamma}{cv scores for gamma.}
 #' \item{tau1}{Sequence of tau1-values used in the process.}
 #' \item{tau2}{Sequence of tau2-values used in the process.}
 #' \item{gamma}{Sequence of gamma-values used in the process.}
@@ -46,7 +47,7 @@
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
 #' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
-#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
+#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 #' plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 #' lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 #' legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
@@ -60,7 +61,10 @@
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
 #' plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-#' plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l",
+#' plot(cv_1D$prediction[, 50],
+#'      xlab = "n",
+#'      ylab = "prediction",
+#'      type = "l",
 #'      main = paste("prediction at x = ", x_1Dnew[50]))
 #' ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 #' library(fields)
@@ -84,8 +88,17 @@
 #' x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
 #' x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 #' xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
-#' eof <- spatpca(x = xx, Y = YY, K = cv$Khat, tau1 = cv$stau1, tau2 = cv$stau2, x_new = xx_new)
-#' quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
+#' eof <- spatpca(x = xx,
+#'                Y = YY,
+#'                K = cv$selected_K, 
+#'                tau1 = cv$selected_tau1, 
+#'                tau2 = cv$selected_tau2, 
+#'                x_new = xx_new)
+#' quilt.plot(xx_new, eof$eigenfn[,1],
+#'            nx = new_p, 
+#'            ny = new_p, 
+#'            xlab = "lon.", 
+#'            ylab = "lat.")
 #' map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 #' map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
 #' ## 3D: regular locations
@@ -117,9 +130,9 @@ spatpca <- function(x,
                     is_Y_centered = FALSE,
                     maxit = 100,
                     thr = 1e-04,
-                    numCores = NULL) {
+                    num_cores = NULL) {
   call2 <- match.call()
-  setCores(numCores)
+  setCores(num_cores)
 
   x <- as.matrix(x)
   p <- ncol(Y)
@@ -149,29 +162,29 @@ spatpca <- function(x,
   # Initialize candidates of tuning parameters
   if (is.null(tau2)) {
     tau2 <- 0
-    ntau2 <- 1
+    num_tau2 <- 1
   } else {
-    ntau2 <- length(tau2)
+    num_tau2 <- length(tau2)
   }
   if (is.null(tau1)) {
-    ntau1 <- 11
-    tau1 <- c(0, exp(seq(log(1e-6), 0, length = ntau1 - 1)))
+    num_tau1 <- 11
+    tau1 <- c(0, exp(seq(log(1e-6), 0, length = num_tau1 - 1)))
   } else {
-    ntau1 <- length(tau1)
+    num_tau1 <- length(tau1)
   }
 
-  if (M < 2 && (ntau1 > 1 || ntau2 > 1)) {
-    ntau1 <- ntau2 <- 1
+  if (M < 2 && (num_tau1 > 1 || num_tau2 > 1)) {
+    num_tau1 <- num_tau2 <- 1
     warning("Only produce the result based on the largest tau1 and largest tau2.")
   }
 
   stra <- sample(rep(1:M, length.out = nrow(Y)))
   if (is.null(gamma)) {
-    gsize <- 11
-    temp <- svd(Y[which(stra != 1), ])
-    gammamax1 <- temp$d[1]^2 / nrow(Y[which(stra != 1), ])
+    num_gamma <- 11
+    svd_Y_partial <- svd(Y[which(stra != 1), ])
+    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y[which(stra != 1), ])
     log_scale_candidates <-
-      seq(log(gammamax1 / 1e4), log(gammamax1), length = gsize - 1)
+      seq(log(max_gamma / 1e4), log(max_gamma), length = num_gamma - 1)
     gamma <- c(0, log_scale_candidates)
   }
 
@@ -184,12 +197,9 @@ spatpca <- function(x,
     }
   }
 
-  if (ntau2 == 1 && tau2 > 0) {
+  if (num_tau2 == 1 && tau2 > 0) {
     l2 <- ifelse(tau2 != 0,
-      c(0, exp(seq(
-        log(tau2 / 1e4), log(tau2),
-        length = 10
-      ))),
+      c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
       tau2
     )
   } else {
@@ -197,55 +207,52 @@ spatpca <- function(x,
   }
 
   if (is_K_selected) {
-    cvtempold <-
-      spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
+    cv_result <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for (k in 2:min(floor(n - n / M), p)) {
-      cvtemp <-
-        spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
-      if (min(cvtempold$cv3) <= min(cvtemp$cv3) ||
-        abs(min(cvtempold$cv3) - min(cvtemp$cv3)) <= 1e-8) {
+      cv_new_result <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
+      difference <- cv_result$selected_gamma - cv_new_result$selected_gamma
+      if (difference <= 0 || abs(difference) <= 1e-8) {
         break
       }
-      cvtempold <- cvtemp
+      cv_result <- cv_new_result
     }
-    Khat <- k - 1
+    selected_K <- k - 1
   }
   else {
-    cvtempold <-
-      spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
-    Khat <- K
+    cv_result <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
+    selected_K <- K
   }
 
-  cvtau1 <- cvtempold$cvtau1
-  cvtau2 <- cvtempold$cvtau2
-  cvgamma <- cvtempold$cvgamma
-  cv_tau1 <- cvtempold$cv1
-  cv_tau2 <- cvtempold$cv2
-  cv_gamma <- cvtempold$cv3
-  est <- cvtempold$est
+  selected_tau1 <- cv_result$selected_tau1
+  selected_tau2 <- cv_result$selected_tau2
+  selected_gamma <- cv_result$selected_gamma
+  cv_score_tau1 <- cv_result$cv_score_tau1
+  cv_score_tau2 <- cv_result$cv_score_tau2
+  cv_score_gamma <- cv_result$cv_score_gamma
+  estimated_eigenfn <- cv_result$estimated_eigenfn
   if (is.null(x_new)) {
     x_new <- x
-    estfn <- est
+    predicted_eigenfn <- estimated_eigenfn
   }
   else {
     x_new <- as.matrix(x_new)
-    estfn <- eigenFunction(x_new, x, est)
+    predicted_eigenfn <- eigenFunction(x_new, x, estimated_eigenfn)
   }
 
-  eigen_estimate <- spatialPrediction(est, Y, cvgamma, estfn)
-  predict <- eigen_estimate$predict
+  spatial_prediction <- spatialPrediction(estimated_eigenfn, Y, selected_gamma, predicted_eigenfn)
+  prediction <- spatial_prediction$predict
 
   obj.cv <- list(
     call = call2,
-    eigenfn = estfn,
-    Yhat = predict,
-    Khat = K,
-    stau1 = cvtau1,
-    stau2 = cvtau2,
-    sgamma = cvgamma,
-    cv_tau1 = cv_tau1,
-    cv_tau2 = cv_tau2,
-    cv_gamma = cv_gamma,
+    eigenfn = estimated_eigenfn,
+    prediction = prediction,
+    selected_K = K,
+    selected_tau1 = selected_tau1,
+    selected_tau2 = selected_tau2,
+    selected_gamma = selected_gamma,
+    cv_score_tau1 = cv_score_tau1,
+    cv_score_tau2 = cv_score_tau2,
+    cv_score_gamma = cv_score_gamma,
     tau1 = tau1,
     tau2 = tau2,
     gamma = gamma,
@@ -254,6 +261,7 @@ spatpca <- function(x,
   class(obj.cv) <- "spatpca"
   return(obj.cv)
 }
+
 
 #'
 #' @title  Display the cross-validation results
@@ -271,7 +279,7 @@ spatpca <- function(x,
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
 #' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
-#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = 2)
+#' cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 #' plot(cv_1D)
 #
 plot.spatpca <- function(x, ...) {
@@ -293,17 +301,17 @@ plot.spatpca <- function(x, ...) {
     data.frame(
       type = "tau1 given tau2 = 0",
       parameter = array(x$tau1),
-      cv = array(x$cv_tau1)
+      cv = array(x$cv_score_tau1)
     ),
     data.frame(
       type = "tau2 given selected tau1",
       parameter = array(x$tau2),
-      cv = array(x$cv_tau2)
+      cv = array(x$cv_score_tau2)
     ),
     data.frame(
       type = "gamma given selected tau1 and tau2",
       parameter = array(x$gamma),
-      cv = array(x$cv_gamma)
+      cv = array(x$cv_score_gamma)
     )
   )
   result <-
