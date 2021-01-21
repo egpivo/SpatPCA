@@ -1,7 +1,7 @@
 # generate 1-D data with a given seed
 set.seed(1234)
 tol <- 1e-6
-numCores <- 2
+num_cores <- 2
 
 x_1D <- as.matrix(seq(-5, 5, length = 10))
 Phi_1D <- exp(-x_1D ^ 2) / norm(exp(-x_1D ^ 2), "F")
@@ -9,32 +9,32 @@ Y_1D <- {
   rnorm(n = 100, sd = 3) %*% t(Phi_1D) +
     matrix(rnorm(n = 100 * 10), 100, 10)
 }
-cv_1D <- spatpca(x = x_1D, Y = Y_1D, numCores = numCores)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 
-usedNumberCores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-expected_stau1_R_3.6_higher <- 0.0021544359
-expected_stau1_R_3.6_lower <- 0.0004644359
-expected_sgamma_R_3.6_higher <- 0.2137642
-expected_sgamma_R_3.6_lower <- 0.2762986
+used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
+expected_selected_tau1_R_3.6_higher <- 0.0021544359
+expected_selected_tau1_R_3.6_lower <- 0.0004644359
+expected_selected_gamma_R_3.6_higher <- 0.2137642
+expected_selected_gamma_R_3.6_lower <- 0.2762986
 
 # Test 
 test_that("Selected tuning parameters", {
   expect_lte(min(
-    abs(cv_1D$stau1 - expected_stau1_R_3.6_higher),
-    abs(cv_1D$stau1 - expected_stau1_R_3.6_lower)
+    abs(cv_1D$selected_tau1 - expected_selected_tau1_R_3.6_higher),
+    abs(cv_1D$selected_tau1 - expected_selected_tau1_R_3.6_lower)
   ),
   tol)
-  expect_lte(abs(cv_1D$stau2 - 0), tol)
+  expect_lte(abs(cv_1D$selected_tau2 - 0), tol)
   expect_lte(min(
-    abs(cv_1D$sgamma - expected_sgamma_R_3.6_higher),
-    abs(cv_1D$sgamma - expected_sgamma_R_3.6_lower)
+    abs(cv_1D$selected_gamma - expected_selected_gamma_R_3.6_higher),
+    abs(cv_1D$selected_gamma - expected_selected_gamma_R_3.6_lower)
   ),
   tol)
   expect_null(cv_1D$Khat)
 })
 
 test_that("Number of threads", {
-  expect_equal(numCores, usedNumberCores)
+  expect_equal(num_cores, used_number_cores)
 })
 
 test_that("cross-validation plot", {

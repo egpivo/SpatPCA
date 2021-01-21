@@ -4,10 +4,10 @@
 \alias{setCores}
 \title{Internal function: Set the number of cores for parallel computing}
 \usage{
-setCores(ncores = NULL)
+setCores(num_cores = NULL)
 }
 \arguments{
-\item{ncores}{Number of number of cores for parallel computing. Default is NULL.}
+\item{num_cores}{Number of number of cores for parallel computing. Default is NULL.}
 }
 \value{
 Logical
