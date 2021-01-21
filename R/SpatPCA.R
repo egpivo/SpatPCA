@@ -133,7 +133,7 @@ spatpca <- function(x,
                     num_cores = NULL) {
   call2 <- match.call()
   setCores(num_cores)
-  
+
   x <- as.matrix(x)
   p <- ncol(Y)
   n <- nrow(Y)
@@ -172,12 +172,12 @@ spatpca <- function(x,
   } else {
     num_tau1 <- length(tau1)
   }
-  
+
   if (M < 2 && (num_tau1 > 1 || num_tau2 > 1)) {
     num_tau1 <- num_tau2 <- 1
     warning("Only produce the result based on the largest tau1 and largest tau2.")
   }
-  
+
   stra <- sample(rep(1:M, length.out = nrow(Y)))
   if (is.null(gamma)) {
     num_gamma <- 11
@@ -187,7 +187,7 @@ spatpca <- function(x,
       seq(log(max_gamma / 1e4), log(max_gamma), length = num_gamma - 1)
     gamma <- c(0, log_scale_candidates)
   }
-  
+
   if (dim(x)[2] == 1) {
     min_x <- min(x)
     max_x <- max(x)
@@ -196,16 +196,16 @@ spatpca <- function(x,
       x_new <- (x_new - min_x) / (max_x - min_x)
     }
   }
-  
+
   if (num_tau2 == 1 && tau2 > 0) {
     l2 <- ifelse(tau2 != 0,
-                 c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
-                 tau2
+      c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
+      tau2
     )
   } else {
     l2 <- 1
   }
-  
+
   if (is_K_selected) {
     cv_result <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for (k in 2:min(floor(n - n / M), p)) {
@@ -222,7 +222,7 @@ spatpca <- function(x,
     cv_result <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
     selected_K <- K
   }
-  
+
   selected_tau1 <- cv_result$selected_tau1
   selected_tau2 <- cv_result$selected_tau2
   selected_gamma <- cv_result$selected_gamma
@@ -238,10 +238,10 @@ spatpca <- function(x,
     x_new <- as.matrix(x_new)
     predicted_eigenfn <- eigenFunction(x_new, x, estimated_eigenfn)
   }
-  
+
   spatial_prediction <- spatialPrediction(estimated_eigenfn, Y, selected_gamma, predicted_eigenfn)
   prediction <- spatial_prediction$predict
-  
+
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
