@@ -21,8 +21,8 @@
 #'
 #' @return A list of objects including
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
-#' \item{Khat}{Selected K based on CV. Execute the algorithm when `is_K_selected` is `TRUE`}
-#' \item{Yhat}{Prediction of Y at the new locations, x_new.}
+#' \item{selected_K}{Selected K based on CV. Execute the algorithm when `is_K_selected` is `TRUE`.}
+#' \item{prediction}{Prediction of Y at the new locations, x_new.}
 #' \item{selected_tau1}{Selected tau1.}
 #' \item{selected_tau2}{Selected tau2.}
 #' \item{selected_gamma}{Selected gamma.}
@@ -61,7 +61,10 @@
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
 #' plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-#' plot(cv_1D$Yhat[, 50], xlab = "n", ylab = "Yhat", type = "l",
+#' plot(cv_1D$prediction[, 50],
+#'      xlab = "n",
+#'      ylab = "prediction",
+#'      type = "l",
 #'      main = paste("prediction at x = ", x_1Dnew[50]))
 #' ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 #' library(fields)
@@ -85,8 +88,17 @@
 #' x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
 #' x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 #' xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
-#' eof <- spatpca(x = xx, Y = YY, K = cv$Khat, tau1 = cv$selected_tau1, tau2 = cv$selected_tau2, x_new = xx_new)
-#' quilt.plot(xx_new, eof$eigenfn[,1], nx = new_p, ny = new_p, xlab = "lon.", ylab = "lat.")
+#' eof <- spatpca(x = xx,
+#'                Y = YY,
+#'                K = cv$selected_K, 
+#'                tau1 = cv$selected_tau1, 
+#'                tau2 = cv$selected_tau2, 
+#'                x_new = xx_new)
+#' quilt.plot(xx_new, eof$eigenfn[,1],
+#'            nx = new_p, 
+#'            ny = new_p, 
+#'            xlab = "lon.", 
+#'            ylab = "lat.")
 #' map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 #' map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
 #' ## 3D: regular locations
@@ -203,11 +215,11 @@ spatpca <- function(x,
       }
       cv_result <- cv_new_result
     }
-    Khat <- k - 1
+    selected_K <- k - 1
   }
   else {
     cv_result <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
-    Khat <- K
+    selected_K <- K
   }
 
   selected_tau1 <- cv_result$cvtau1
@@ -232,8 +244,8 @@ spatpca <- function(x,
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
-    Yhat = prediction,
-    Khat = K,
+    prediction = prediction,
+    selected_K = K,
     selected_tau1 = selected_tau1,
     selected_tau2 = selected_tau2,
     selected_gamma = selected_gamma,

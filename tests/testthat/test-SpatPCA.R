@@ -30,7 +30,7 @@ test_that("Selected tuning parameters", {
     abs(cv_1D$selected_gamma - expected_selected_gamma_R_3.6_lower)
   ),
   tol)
-  expect_null(cv_1D$Khat)
+  expect_null(cv_1D$selected_K)
 })
 
 test_that("Number of threads", {
