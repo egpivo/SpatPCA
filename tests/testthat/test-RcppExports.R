@@ -4,7 +4,7 @@ two_dim_location <-
   as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 
 # thinPlateMatrix
-thin_plate_matrix <- thinPlateMatrix(two_dim_location)
+thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
 test_that("Thin-Plate Spline Matrix", {
   expect_lte(norm(thin_plate_matrix, "F") - 0.362588, tol)
 })

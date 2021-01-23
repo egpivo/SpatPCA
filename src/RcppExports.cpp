@@ -6,14 +6,14 @@
 
 using namespace Rcpp;
 
-// thinPlateMatrix
-arma::mat thinPlateMatrix(const arma::mat location);
-RcppExport SEXP _SpatPCA_thinPlateMatrix(SEXP locationSEXP) {
+// thinPlateSplineMatrix
+arma::mat thinPlateSplineMatrix(const arma::mat location);
+RcppExport SEXP _SpatPCA_thinPlateSplineMatrix(SEXP locationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type location(locationSEXP);
-    rcpp_result_gen = Rcpp::wrap(thinPlateMatrix(location));
+    rcpp_result_gen = Rcpp::wrap(thinPlateSplineMatrix(location));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -52,22 +52,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // spatialPrediction
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
-RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
+List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction);
+RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP predicted_eignefunctionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type phir(phirSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type phi2r(phi2rSEXP);
-    rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, phi2r));
+    Rcpp::traits::input_parameter< NumericMatrix >::type predicted_eignefunction(predicted_eignefunctionSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, predicted_eignefunction));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_SpatPCA_thinPlateMatrix", (DL_FUNC) &_SpatPCA_thinPlateMatrix, 1},
+    {"_SpatPCA_thinPlateSplineMatrix", (DL_FUNC) &_SpatPCA_thinPlateSplineMatrix, 1},
     {"_SpatPCA_eigenFunction", (DL_FUNC) &_SpatPCA_eigenFunction, 3},
     {"_SpatPCA_spatpcaCV", (DL_FUNC) &_SpatPCA_spatpcaCV, 11},
     {"_SpatPCA_spatialPrediction", (DL_FUNC) &_SpatPCA_spatialPrediction, 4},

@@ -57,7 +57,7 @@
 #' ## 1D: artificial irregular locations
 #' rm_loc <- sample(1:50, 20)
 #' x_1Drm <- x_1D[-rm_loc]
-#' Y_1Drm <- Y_1D[,-rm_loc]
+#' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
 #' plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
@@ -79,10 +79,10 @@
 #' YY <- detrend(YY, "linear")
 #' xx <- x[rmna, ]
 #' cv <- spatpca(x = xx, Y = YY)
-#' quilt.plot(xx, cv$eigenfn[,1])
+#' quilt.plot(xx, cv$eigenfn[, 1])
 #' map("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), add = TRUE)
 #' map.text("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), cex = 2, add = TRUE)
-#' plot(date, YY %*% cv$eigenfn[,1], type = "l", ylab = "1st Principal Component")
+#' plot(date, YY %*% cv$eigenfn[, 1], type = "l", ylab = "1st Principal Component")
 #' ### new loactions
 #' new_p <- 200
 #' x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
