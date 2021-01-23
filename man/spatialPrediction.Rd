@@ -4,14 +4,14 @@
 \alias{spatialPrediction}
 \title{Internal function: Spatial prediction}
 \usage{
-spatialPrediction(phir, Yr, gamma, phi2r)
+spatialPrediction(phir, Yr, gamma, predicted_eignefunction)
 }
 \arguments{
 \item{phir}{A matrix of estimated eigenfunctions based on original locations}
 
 \item{Yr}{A data matrix}
 
-\item{phi2r}{A vector of values of an eigenfunction on new locations}
+\item{predicted_eignefunction}{A vector of values of an eigenfunction on new locations}
 
 \item{gammar}{A gamma value}
 }
