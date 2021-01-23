@@ -10,9 +10,9 @@
 #' @examples
 #' pesudo_sequence <- seq(-5, 5, length = 5)
 #' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
-#' thin_plate_matrix <- thinPlateMatrix(two_dim_location)
-thinPlateMatrix <- function(location) {
-    .Call(`_SpatPCA_thinPlateMatrix`, location)
+#' thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
+thinPlateSplineMatrix <- function(location) {
+    .Call(`_SpatPCA_thinPlateSplineMatrix`, location)
 }
 
 #' @title Interpolated Eigen-function
