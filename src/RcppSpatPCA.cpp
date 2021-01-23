@@ -229,7 +229,7 @@ void spatpcaCore3(const arma::mat tempinv, arma::mat& Phi, arma::mat& R, arma::m
   
   arma::mat U, V, difference_Phi_R, difference_Phi_C;
   arma::vec S;
-  arma::mat Phiold = Phi;
+  arma::mat Phi_old = Phi;
   arma::mat Rold = R;
   arma::mat Cold = C;
   arma::mat Lambda1old = Lambda1;
@@ -253,7 +253,7 @@ void spatpcaCore3(const arma::mat tempinv, arma::mat& Phi, arma::mat& R, arma::m
     
     if(max(error) <= tol)
       break;
-    Phiold = Phi;
+    Phi_old = Phi;
     Rold = R;
     Cold = C;
     Lambda1old = Lambda1;
@@ -282,15 +282,15 @@ struct spatpcaCVPhi: public RcppParallel::Worker {
     arma::mat Ip;
     Ip.eye(Y.n_cols,Y.n_cols);
     for(std::size_t k = begin; k < end; k++) {
-      arma::mat svd_U, Phiold, Phi,C, Lambda2;
+      arma::mat svd_U, Phi_old, Phi,C, Lambda2;
       vec singular_value;
       mat Y_train = Y.rows(arma::find(nk != (k + 1)));
       mat Y_validation = Y.rows(arma::find(nk == (k + 1)));
       
-      arma::svd_econ(svd_U, singular_value, Phiold, Y_train, "right");  
+      arma::svd_econ(svd_U, singular_value, Phi_old, Y_train, "right");  
       rho(k, 0) = 10 * pow(singular_value[0], 2.0);
       
-      Phi_cv.slice(k) = Phiold.cols(0, K - 1);
+      Phi_cv.slice(k) = Phi_old.cols(0, K - 1);
       Phi = C = Phi_cv.slice(k);
       Lambda2 = Lambd2_cv.slice(k) = Phi*(diagmat(rho(k, 0) - 1 / (rho(k, 0) - 2 * pow(singular_value.subvec(0, K - 1), 2))));
       output(k, 0) = pow(arma::norm(Y_validation * (Ip - (Phi_cv.slice(k)) * (Phi_cv.slice(k)).t()), "fro"), 2.0); 
@@ -510,13 +510,13 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
     if(gamma.n_elem > 1) {
       Omega = Ip;
       mat Y_train, Y_validation; 
-      arma::mat svd_U, Phioldg;
+      arma::mat svd_U, Phi_oldg;
       vec singular_value;
       for(unsigned k = 0; k < M; ++k) {
         Y_train = Y.rows(arma::find(nk != (k + 1)));
         Y_validation = Y.rows(arma::find(nk == (k + 1)));
-        arma::svd_econ(svd_U, singular_value, Phioldg, Y_train, "right");
-        Phi_cv.slice(k) = Phioldg.cols(0, K - 1);
+        arma::svd_econ(svd_U, singular_value, Phi_oldg, Y_train, "right");
+        Phi_cv.slice(k) = Phi_oldg.cols(0, K - 1);
         gram_matrix_Y_train.slice(k) = Y_train.t() * Y_train;
       }
     }
@@ -537,14 +537,14 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
       estimated_Phi = spatpcaCore2p(gram_matrix_Y, estimated_C, estimated_Lambda2, Omega, selected_tau1, estimated_rho, maxit, tol);
       arma::mat Phigg, Cgg, Lambda2gg;
       mat Y_validation, Y_train;
-      arma::mat svd_U, Phioldg;
+      arma::mat svd_U, Phi_oldg;
       vec singular_value;
 
       for(unsigned k = 0; k < M; ++k) {
         Y_train = Y.rows(arma::find(nk != (k + 1)));
         gram_matrix_Y_train.slice(k) = Y_train.t() * Y_train;
-        arma::svd_econ(svd_U, singular_value, Phioldg, Y_train, "right");
-        Phigg = Cgg = Phioldg.cols(0, K - 1);
+        arma::svd_econ(svd_U, singular_value, Phi_oldg, Y_train, "right");
+        Phigg = Cgg = Phi_oldg.cols(0, K - 1);
         rho_cv(k, 0) = 10 * pow(singular_value[0], 2.0);
         Lambda2gg = Phigg * (diagmat(rho_cv(k, 0) - 1 / (rho_cv(k, 0) - 2 * pow(singular_value.subvec(0, K - 1), 2))));
         spatpcaCore2(gram_matrix_Y_train.slice(k), Phigg,Cgg, Lambda2gg, Omega, selected_tau1, rho_cv(k, 0), maxit, tol);
@@ -554,26 +554,26 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
       }
     }
     else if(selected_tau1 == 0 && max(tau2) == 0) {
-      arma::mat svd_U2, Phioldc;
+      arma::mat svd_U2, Phi_oldc;
       vec singular_value2;
-      arma::svd_econ(svd_U2, singular_value2, Phioldc, Y, "right");
-      estimated_Phi = Phioldc.cols(0,K - 1); 
+      arma::svd_econ(svd_U2, singular_value2, Phi_oldc, Y, "right");
+      estimated_Phi = Phi_oldc.cols(0,K - 1); 
     }
     else {
       arma::mat Phigg, Cgg, Lambda2gg;
       mat Y_validation, Y_train;
-      arma::mat svd_U, Phioldg;
+      arma::mat svd_U, Phi_oldg;
       vec singular_value;
 
       for(unsigned k = 0; k < M; ++k) {
         Y_train = Y.rows(arma::find(nk != (k + 1)));
         gram_matrix_Y_train.slice(k) = Y_train.t() * Y_train;
-        arma::svd_econ(svd_U, singular_value, Phioldg, Y_train, "right");
-        Phigg = Cgg = Phioldg.cols(0, K - 1);
+        arma::svd_econ(svd_U, singular_value, Phi_oldg, Y_train, "right");
+        Phigg = Cgg = Phi_oldg.cols(0, K - 1);
         rho_cv(k, 0) = 10 * pow(singular_value[0], 2.0);
         Lambda2gg = Phigg * (diagmat(rho_cv(k, 0) - 1 / (rho_cv(k, 0) - 2 * pow(singular_value.subvec(0, K - 1), 2))));
         if(selected_tau1 != 0)
-          spatpcaCore2(gram_matrix_Y_train.slice(k), Phigg,Cgg, Lambda2gg, Omega, selected_tau1, rho_cv(k, 0), maxit, tol);
+          spatpcaCore2(gram_matrix_Y_train.slice(k), Phigg, Cgg, Lambda2gg, Omega, selected_tau1, rho_cv(k, 0), maxit, tol);
         Phi_cv.slice(k) = Phigg;
         Lambd2_cv.slice(k) = Lambda2gg;    
       }
@@ -635,17 +635,17 @@ List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector
 //' @param phir A matrix of estimated eigenfunctions based on original locations
 //' @param Yr A data matrix
 //' @param gammar A gamma value
-//' @param phi2r A vector of values of an eigenfunction on new locations
+//' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 //' @return A list of objects
 //' \item{prediction}{A vector of spatial predicitons}
 //' \item{estimated_covariance}{An estimated covariance matrix.}
 //' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
 //' \item{error}{Error rate for the ADMM algorithm}
 // [[Rcpp::export]]
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r) {
-  int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = phi2r.nrow() ;
+List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction) {
+  int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = predicted_eignefunction.nrow() ;
   arma::mat phi(phir.begin(), p, K, false);
-  arma::mat phi2(phi2r.begin(), p2, K, false);
+  arma::mat predicted_phi(predicted_eignefunction.begin(), p2, K, false);
   arma::mat Y(Yr.begin(), n, p, false);
   arma::mat Vc, Vc2;
   arma::vec Sc, Sc2;
@@ -686,7 +686,7 @@ List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, Numer
   
   arma::vec eigenvalue = arma::max(Sc2 - (error + gamma) * Sct, Sctz);
   arma::vec eigenvalue2 = eigenvalue + error;
-  arma::mat estimated_covariance = phi * Vc2 * diagmat(eigenvalue / eigenvalue2) * trans(phi2 * Vc2);
+  arma::mat estimated_covariance = phi * Vc2 * diagmat(eigenvalue / eigenvalue2) * trans(predicted_phi * Vc2);
   arma::mat prediction = Y * estimated_covariance;
   return List::create(Named("prediction") = prediction,
                       Named("estimated_covariance") = estimated_covariance,

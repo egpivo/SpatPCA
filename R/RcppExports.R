@@ -57,13 +57,13 @@ spatpcaCV <- function(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r
 #' @param phir A matrix of estimated eigenfunctions based on original locations
 #' @param Yr A data matrix
 #' @param gammar A gamma value
-#' @param phi2r A vector of values of an eigenfunction on new locations
+#' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 #' @return A list of objects
 #' \item{prediction}{A vector of spatial predicitons}
 #' \item{estimated_covariance}{An estimated covariance matrix.}
 #' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
 #' \item{error}{Error rate for the ADMM algorithm}
-spatialPrediction <- function(phir, Yr, gamma, phi2r) {
-    .Call(`_SpatPCA_spatialPrediction`, phir, Yr, gamma, phi2r)
+spatialPrediction <- function(phir, Yr, gamma, predicted_eignefunction) {
+    .Call(`_SpatPCA_spatialPrediction`, phir, Yr, gamma, predicted_eignefunction)
 }
 

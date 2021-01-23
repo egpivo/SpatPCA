@@ -52,16 +52,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // spatialPrediction
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix phi2r);
-RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP phi2rSEXP) {
+List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction);
+RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP predicted_eignefunctionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type phir(phirSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type phi2r(phi2rSEXP);
-    rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, phi2r));
+    Rcpp::traits::input_parameter< NumericMatrix >::type predicted_eignefunction(predicted_eignefunctionSEXP);
+    rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, predicted_eignefunction));
     return rcpp_result_gen;
 END_RCPP
 }
