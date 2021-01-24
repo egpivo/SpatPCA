@@ -44,3 +44,22 @@ test_that("cross-validation plot", {
   )
   expect_true("ggplot" %in% class(plot.spatpca(cv_1D)))
 })
+
+# Test `predict`
+
+x_1Dnew <- as.matrix(seq(6, 7, length = 4))
+prediction <- predict(cv_1D, x_new = x_1Dnew)
+
+
+test_that("cross-validation plot", {
+  expect_error(
+    predict(cv_1D, NULL),
+    cat("New locations cannot be NULL")
+  )
+  expect_error(
+    predict(cv_1D, matrix(c(1, 2), ncol = 2)),
+    cat("Inconsistent dimension of locations - original dimension is 1")
+  )
+  expect_equal(ncol(prediction$prediction), 4)
+  expect_equal(nrow(prediction$predicted_eigenfn), 4)
+})

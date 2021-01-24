@@ -12,17 +12,17 @@
 #' @param tau1 Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
-#' @param x_new New location matrix. If NULL, it is x.
 #' @param M Optional number of folds; default is 5.
 #' @param is_Y_centered If TRUE, center the columns of Y. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param num_cores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
-#'
+#' 
+#' @seealso \link{predict}
+#' 
 #' @return A list of objects including
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
 #' \item{selected_K}{Selected K based on CV. Execute the algorithm when `is_K_selected` is `TRUE`.}
-#' \item{prediction}{Prediction of Y at the new locations, x_new.}
 #' \item{selected_tau1}{Selected tau1.}
 #' \item{selected_tau2}{Selected tau2.}
 #' \item{selected_gamma}{Selected gamma.}
@@ -33,6 +33,7 @@
 #' \item{tau2}{Sequence of tau2-values used in the process.}
 #' \item{gamma}{Sequence of gamma-values used in the process.}
 #' \item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
+#' \item{x}{Input location matrix}
 #'
 #' @details An ADMM form of the proposed objective function is written as
 #' \deqn{\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F +\tau_1\mbox{tr}(\mathbf{\Phi}^T\mathbf{\Omega}\mathbf{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
@@ -53,19 +54,6 @@
 #' legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
 #'
 #' \donttest{
-#' # The following examples will be executed more than 5 secs or including other libraries.
-#' ## 1D: artificial irregular locations
-#' rm_loc <- sample(1:50, 20)
-#' x_1Drm <- x_1D[-rm_loc]
-#' Y_1Drm <- Y_1D[, -rm_loc]
-#' x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
-#' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
-#' plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-#' plot(cv_1D$prediction[, 50],
-#'      xlab = "n",
-#'      ylab = "prediction",
-#'      type = "l",
-#'      main = paste("prediction at x = ", x_1Dnew[50]))
 #' ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 #' library(fields)
 #' library(pracma)
@@ -92,9 +80,10 @@
 #'                Y = YY,
 #'                K = cv$selected_K, 
 #'                tau1 = cv$selected_tau1, 
-#'                tau2 = cv$selected_tau2, 
-#'                x_new = xx_new)
-#' quilt.plot(xx_new, eof$eigenfn[,1],
+#'                tau2 = cv$selected_tau2)
+#' predicted_eof <- preict(eof, xx_new)              
+#' quilt.plot(xx_new,
+#'            predicted_eof$predicted_eigenfn[,1],
 #'            nx = new_p, 
 #'            ny = new_p, 
 #'            xlab = "lon.", 
@@ -230,22 +219,10 @@ spatpca <- function(x,
   cv_score_tau2 <- cv_result$cv_score_tau2
   cv_score_gamma <- cv_result$cv_score_gamma
   estimated_eigenfn <- cv_result$estimated_eigenfn
-  if (is.null(x_new)) {
-    x_new <- x
-    predicted_eigenfn <- estimated_eigenfn
-  }
-  else {
-    x_new <- as.matrix(x_new)
-    predicted_eigenfn <- eigenFunction(x_new, x, estimated_eigenfn)
-  }
-
-  spatial_prediction <- spatialPrediction(estimated_eigenfn, Y, selected_gamma, predicted_eigenfn)
-  prediction <- spatial_prediction$predict
 
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
-    prediction = prediction,
     selected_K = K,
     selected_tau1 = selected_tau1,
     selected_tau2 = selected_tau2,
@@ -256,10 +233,60 @@ spatpca <- function(x,
     tau1 = tau1,
     tau2 = tau2,
     gamma = gamma,
-    Yc = Y
+    Yc = Y,
+    x = x
   )
   class(obj.cv) <- "spatpca"
   return(obj.cv)
+}
+
+
+#' @title  Spatial predictions on new locations
+#'
+#' @description Predict on new locations with the estimated spatial structures.
+#' 
+#' @param spatpca_object An `spatpca` class object 
+#' @param x_new New location matrix.
+#' @seealso \link{spatpca}
+#' @return 
+#' \item{predicted_eigenfn}{Eigenfunction values on new locations.}
+#' \item{prediction}{Predictions of Y at the new locations, x_new.}
+#' @examples
+#' # 1D: artificial irregular locations
+#' x_1D <- as.matrix(seq(-5, 5, length = 10))
+#' rm_loc <- sample(1:50, 20)
+#' x_1Drm <- x_1D[-rm_loc]
+#' Y_1Drm <- Y_1D[, -rm_loc]
+#' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
+#' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
+#' prediction <- predict(cv_1D, x_new = x_1Dnew)
+#' 
+predict <- function(spatpca_object, x_new, ...) {
+  if (class(spatpca_object) != "spatpca") {
+    stop("Invalid object! Please enter a `spatpca` object")
+  }
+  if (is.null(x_new)) {
+    stop("New locations cannot be NULL")
+  }
+  x_new <- as.matrix(x_new)
+  if (ncol(x_new) != ncol(spatpca_object$x)) {
+    stop("Inconsistent dimension of locations - original dimension is ", ncol(spatpca_object$x))
+  }
+  
+  predicted_eigenfn <- eigenFunction(
+    x_new,
+    spatpca_object$x,
+    spatpca_object$eigenfn)
+  
+  spatial_prediction <- spatialPrediction(
+    spatpca_object$eigenfn,
+    spatpca_object$Yc,
+    spatpca_object$selected_gamma,
+    predicted_eigenfn)
+  return(list(
+    predicted_eigenfn = predicted_eigenfn,
+    prediction = spatial_prediction$predict)
+  )
 }
 
 
@@ -268,7 +295,7 @@ spatpca <- function(x,
 #'
 #' @description Display the M-fold cross-validation results
 #'
-#' @param x An spatpca class object for `plot` method
+#' @param spatpca_object An spatpca class object for `plot` method
 #' @param ... Not used directly
 #' @seealso \link{spatpca}
 #'
@@ -282,8 +309,8 @@ spatpca <- function(x,
 #' cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 #' plot(cv_1D)
 #
-plot.spatpca <- function(x, ...) {
-  if (class(x) != "spatpca") {
+plot.spatpca <- function(spatpca_object, ...) {
+  if (class(spatpca_object) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
 
@@ -300,22 +327,23 @@ plot.spatpca <- function(x, ...) {
   cv_dataframe <- rbind(
     data.frame(
       type = "tau1 given tau2 = 0",
-      parameter = array(x$tau1),
-      cv = array(x$cv_score_tau1)
+      parameter = array(spatpca_object$tau1),
+      cv = array(spatpca_object$cv_score_tau1)
     ),
     data.frame(
       type = "tau2 given selected tau1",
-      parameter = array(x$tau2),
-      cv = array(x$cv_score_tau2)
+      parameter = array(spatpca_object$tau2),
+      cv = array(spatpca_object$cv_score_tau2)
     ),
     data.frame(
       type = "gamma given selected tau1 and tau2",
-      parameter = array(x$gamma),
-      cv = array(x$cv_score_gamma)
+      parameter = array(spatpca_object$gamma),
+      cv = array(spatpca_object$cv_score_gamma)
     )
   )
   result <-
-    ggplot(cv_dataframe, aes(x = parameter, y = cv, color = type)) +
+    ggplot(cv_dataframe,
+           aes(x = parameter, y = cv, color = type)) +
     geom_line(size = 1.5) +
     facet_grid(scales = "free", . ~ type)
 
