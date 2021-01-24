@@ -32,8 +32,8 @@
 #' \item{tau1}{Sequence of tau1-values used in the process.}
 #' \item{tau2}{Sequence of tau2-values used in the process.}
 #' \item{gamma}{Sequence of gamma-values used in the process.}
-#' \item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
-#' \item{x}{Input location matrix}
+#' \item{centered_Y}{If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+#' \item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 #'
 #' @details An ADMM form of the proposed objective function is written as
 #' \deqn{\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F +\tau_1\mbox{tr}(\mathbf{\Phi}^T\mathbf{\Omega}\mathbf{\Phi})+\tau_2\sum_{k=1}^K\sum_{j=1}^p |\phi_{jk}|,}
@@ -115,7 +115,6 @@ spatpca <- function(x,
                     tau1 = NULL,
                     tau2 = NULL,
                     gamma = NULL,
-                    x_new = NULL,
                     is_Y_centered = FALSE,
                     maxit = 100,
                     thr = 1e-04,
@@ -177,14 +176,7 @@ spatpca <- function(x,
     gamma <- c(0, log_scale_candidates)
   }
 
-  if (dim(x)[2] == 1) {
-    min_x <- min(x)
-    max_x <- max(x)
-    x <- (x - min_x) / (max_x - min_x)
-    if (!is.null(x_new)) {
-      x_new <- (x_new - min_x) / (max_x - min_x)
-    }
-  }
+  scaled_x <- scaleLocation(x)
 
   if (num_tau2 == 1 && tau2 > 0) {
     l2 <- ifelse(tau2 != 0,
@@ -196,9 +188,9 @@ spatpca <- function(x,
   }
 
   if (is_K_selected) {
-    cv_result <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
+    cv_result <- spatpcaCV(scaled_x, Y, M, 1, tau1, tau2, gamma, stra, maxit, thr, l2)
     for (k in 2:min(floor(n - n / M), p)) {
-      cv_new_result <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
+      cv_new_result <- spatpcaCV(scaled_x, Y, M, k, tau1, tau2, gamma, stra, maxit, thr, l2)
       difference <- cv_result$selected_gamma - cv_new_result$selected_gamma
       if (difference <= 0 || abs(difference) <= 1e-8) {
         break
@@ -208,7 +200,7 @@ spatpca <- function(x,
     selected_K <- k - 1
   }
   else {
-    cv_result <- spatpcaCV(x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
+    cv_result <- spatpcaCV(scaled_x, Y, M, K, tau1, tau2, gamma, stra, maxit, thr, l2)
     selected_K <- K
   }
 
@@ -233,8 +225,8 @@ spatpca <- function(x,
     tau1 = tau1,
     tau2 = tau2,
     gamma = gamma,
-    Yc = Y,
-    x = x
+    centered_Y = Y,
+    scaled_x = scaled_x
   )
   class(obj.cv) <- "spatpca"
   return(obj.cv)
@@ -254,14 +246,17 @@ spatpca <- function(x,
 #' @examples
 #' # 1D: artificial irregular locations
 #' x_1D <- as.matrix(seq(-5, 5, length = 10))
+#' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
+#' set.seed(1234)
+#' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
 #' rm_loc <- sample(1:50, 20)
 #' x_1Drm <- x_1D[-rm_loc]
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
-#' prediction <- predict(cv_1D, x_new = x_1Dnew)
+#' predictions <- predict(cv_1D, x_new = x_1Dnew)
 #' 
-predict <- function(spatpca_object, x_new, ...) {
+predict <- function(spatpca_object, x_new) {
   if (class(spatpca_object) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
@@ -269,24 +264,27 @@ predict <- function(spatpca_object, x_new, ...) {
     stop("New locations cannot be NULL")
   }
   x_new <- as.matrix(x_new)
-  if (ncol(x_new) != ncol(spatpca_object$x)) {
+  if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
     stop("Inconsistent dimension of locations - original dimension is ", ncol(spatpca_object$x))
   }
-  
+  scaled_x_new <- scaleLocation(x_new)
+
   predicted_eigenfn <- eigenFunction(
-    x_new,
-    spatpca_object$x,
-    spatpca_object$eigenfn)
-  
+    scaled_x_new,
+    spatpca_object$scaled_x,
+    spatpca_object$eigenfn
+  )
+
   spatial_prediction <- spatialPrediction(
     spatpca_object$eigenfn,
-    spatpca_object$Yc,
+    spatpca_object$centered_Y,
     spatpca_object$selected_gamma,
-    predicted_eigenfn)
+    predicted_eigenfn
+  )
   return(list(
     predicted_eigenfn = predicted_eigenfn,
-    prediction = spatial_prediction$predict)
-  )
+    prediction = spatial_prediction$predict
+  ))
 }
 
 
@@ -295,7 +293,7 @@ predict <- function(spatpca_object, x_new, ...) {
 #'
 #' @description Display the M-fold cross-validation results
 #'
-#' @param spatpca_object An spatpca class object for `plot` method
+#' @param x An spatpca class object for `plot` method
 #' @param ... Not used directly
 #' @seealso \link{spatpca}
 #'
@@ -309,8 +307,8 @@ predict <- function(spatpca_object, x_new, ...) {
 #' cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
 #' plot(cv_1D)
 #
-plot.spatpca <- function(spatpca_object, ...) {
-  if (class(spatpca_object) != "spatpca") {
+plot.spatpca <- function(x, ...) {
+  if (class(x) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
 
@@ -327,23 +325,25 @@ plot.spatpca <- function(spatpca_object, ...) {
   cv_dataframe <- rbind(
     data.frame(
       type = "tau1 given tau2 = 0",
-      parameter = array(spatpca_object$tau1),
-      cv = array(spatpca_object$cv_score_tau1)
+      parameter = array(x$tau1),
+      cv = array(x$cv_score_tau1)
     ),
     data.frame(
       type = "tau2 given selected tau1",
-      parameter = array(spatpca_object$tau2),
-      cv = array(spatpca_object$cv_score_tau2)
+      parameter = array(x$tau2),
+      cv = array(x$cv_score_tau2)
     ),
     data.frame(
       type = "gamma given selected tau1 and tau2",
-      parameter = array(spatpca_object$gamma),
-      cv = array(spatpca_object$cv_score_gamma)
+      parameter = array(x$gamma),
+      cv = array(x$cv_score_gamma)
     )
   )
   result <-
-    ggplot(cv_dataframe,
-           aes(x = parameter, y = cv, color = type)) +
+    ggplot(
+      cv_dataframe,
+      aes(x = parameter, y = cv, color = type)
+    ) +
     geom_line(size = 1.5) +
     facet_grid(scales = "free", . ~ type)
 

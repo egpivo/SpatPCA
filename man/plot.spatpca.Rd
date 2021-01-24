@@ -4,10 +4,10 @@
 \alias{plot.spatpca}
 \title{Display the cross-validation results}
 \usage{
-\method{plot}{spatpca}(spatpca_object, ...)
+\method{plot}{spatpca}(x, ...)
 }
 \arguments{
-\item{spatpca_object}{An spatpca class object for \code{plot} method}
+\item{x}{An spatpca class object for \code{plot} method}
 
 \item{...}{Not used directly}
 }

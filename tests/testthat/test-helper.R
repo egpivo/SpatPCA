@@ -15,3 +15,12 @@ test_that("The number of cores for RcppParallel", {
   expect_true(setCores(default_number))
   expect_null(setCores())
 })
+
+x_1D <- as.matrix(seq(-5, 5, length = 10))
+x_2D <- matrix(c(1, 2), ncol = 2)
+test_that("Scale locations", {
+  expect_equal(sum(scaleLocation(x_1D)), 5)
+  expect_equal(min(scaleLocation(x_1D)), 0)
+  expect_equal(max(scaleLocation(x_1D)), 1)
+  expect_equal(scaleLocation(x_2D), x_2D)
+})

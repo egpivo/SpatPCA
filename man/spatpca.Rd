@@ -13,7 +13,6 @@ spatpca(
   tau1 = NULL,
   tau2 = NULL,
   gamma = NULL,
-  x_new = NULL,
   is_Y_centered = FALSE,
   maxit = 100,
   thr = 1e-04,
@@ -58,8 +57,8 @@ A list of objects including
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
-\item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
-\item{x}{Input location matrix}
+\item{centered_Y}{If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+\item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 }
 \description{
 Produce spatial dominant patterns and spatial predictions at the designated locations according to the specified tuning parameters or the selected tuning parameters by the M-fold cross-validation.
