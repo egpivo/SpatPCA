@@ -71,9 +71,12 @@ jobs:
         run: |
           # XQuartz is needed by vdiffr
           brew cask install xquartz
-          # Install gfortran
-          curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-          sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+          # install gfortran 8.2 (used by CRAN)
+          wget -nv https://github.com/fxcoudert/gfortran-for-macOS/releases/download/8.2/gfortran-8.2-Mojave.dmg
+          sudo hdiutil attach gfortran*.dmg
+          sudo installer -package /Volumes/gfortran*/gfortran*/gfortran*.pkg -target /
+          sudo hdiutil detach /Volumes/gfortran-8.2-Mojave
+          rm gfortran-8*
           # Use only binary packages
           echo 'options(pkgType = "binary")' >> ~/.Rprofile
 
