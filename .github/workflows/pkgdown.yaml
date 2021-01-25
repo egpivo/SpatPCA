@@ -34,7 +34,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev
           sudo apt-get install libcurl4-openssl-dev libv8-dev libjq-dev libprotobuf-dev protobuf-compiler libgit2-dev libharfbuzz-dev libfribidi-dev
-
       - name: Install dependencies
         run: |
           install.packages("remotes")

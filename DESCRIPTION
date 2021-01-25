@@ -36,7 +36,8 @@ Suggests:
     plot3D,
     pracma,
     RColorBrewer,
-    maps
+    maps,
+    covr
 SystemRequirements: C++11, GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
