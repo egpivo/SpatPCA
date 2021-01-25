@@ -1,3 +1,4 @@
+# Acknowledge: https://github.com/r-lib/testthat/blob/master/.github/workflows/test-coverage.yaml
 on:
   push:
     branches:
@@ -8,18 +9,13 @@ on:
 
 name: test-coverage
 
-# Increment this version when we want to clear cache
-env:
-  cache-version: v1
-  r-version: 4.0
-
 jobs:
   test-coverage:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-        with:
-          r-version: ${{ env.r-version }}
 
       - uses: r-lib/actions/setup-r@master
 
@@ -29,36 +25,29 @@ jobs:
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
       - name: Cache R packages
         uses: actions/cache@v1
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ env.cache-version }}-macOS-r-${{ env.r-version }}-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ env.cache-version }}-macOS-r-${{ env.r-version }}-
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install Linux libraries
+      - name: Install X11
+        if: runner.os == 'macOS'
         run: |
-          sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-          sudo apt-get update
-          sudo apt-get install libudunits2-dev libgdal-dev libgeos-dev libproj-dev
-          sudo apt-get install libcurl4-openssl-dev libv8-dev libjq-dev libprotobuf-dev protobuf-compiler libgit2-dev libharfbuzz-dev libfribidi-dev
-
-      - name: Install system dependencies
-        run: |
-          # XQuartz is needed by vdiffr
           brew cask install xquartz
       - name: Install dependencies
         run: |
           install.packages(c("remotes"))
-          remotes::install_deps(dependencies = TRUE, type = "binary")
+          remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("covr")
         shell: Rscript {0}
 
-
       - name: Test coverage
         run: |
-          remotes::install_github("r-lib/covr")
+          options(warning.length = 8170)
           covr::codecov()
         shell: Rscript {0}
