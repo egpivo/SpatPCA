@@ -66,6 +66,17 @@ jobs:
             eval sudo $cmd
           done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
 
+      - name: Install system dependencies on macOS
+        if: runner.os == 'macOS'
+        run: |
+          # XQuartz is needed by vdiffr
+          brew cask install xquartz
+          # Install gfortran
+          curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
+          sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+          # Use only binary packages
+          echo 'options(pkgType = "binary")' >> ~/.Rprofile
+
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)

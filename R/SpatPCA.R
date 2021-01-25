@@ -81,7 +81,7 @@
 #'                K = cv$selected_K, 
 #'                tau1 = cv$selected_tau1, 
 #'                tau2 = cv$selected_tau2)
-#' predicted_eof <- preict(eof, xx_new)              
+#' predicted_eof <- predict(eof, xx_new)              
 #' quilt.plot(xx_new,
 #'            predicted_eof$predicted_eigenfn[,1],
 #'            nx = new_p, 
