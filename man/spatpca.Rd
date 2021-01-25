@@ -13,7 +13,6 @@ spatpca(
   tau1 = NULL,
   tau2 = NULL,
   gamma = NULL,
-  x_new = NULL,
   is_Y_centered = FALSE,
   maxit = 100,
   thr = 1e-04,
@@ -37,8 +36,6 @@ spatpca(
 
 \item{gamma}{Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.}
 
-\item{x_new}{New location matrix. If NULL, it is x.}
-
 \item{is_Y_centered}{If TRUE, center the columns of Y. Default is FALSE.}
 
 \item{maxit}{Maximum number of iterations. Default value is 100.}
@@ -51,7 +48,6 @@ spatpca(
 A list of objects including
 \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
 \item{selected_K}{Selected K based on CV. Execute the algorithm when \code{is_K_selected} is \code{TRUE}.}
-\item{prediction}{Prediction of Y at the new locations, x_new.}
 \item{selected_tau1}{Selected tau1.}
 \item{selected_tau2}{Selected tau2.}
 \item{selected_gamma}{Selected gamma.}
@@ -61,7 +57,8 @@ A list of objects including
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
-\item{Yc}{If is_Y_centered is TRUE, Yc is the centered Y; else, Yc is equal to Y.}
+\item{centered_Y}{If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+\item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 }
 \description{
 Produce spatial dominant patterns and spatial predictions at the designated locations according to the specified tuning parameters or the selected tuning parameters by the M-fold cross-validation.
@@ -84,19 +81,6 @@ lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
 
 \donttest{
-# The following examples will be executed more than 5 secs or including other libraries.
-## 1D: artificial irregular locations
-rm_loc <- sample(1:50, 20)
-x_1Drm <- x_1D[-rm_loc]
-Y_1Drm <- Y_1D[, -rm_loc]
-x_1Dnew <- as.matrix(seq(-5, 5, length = 100))
-cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, x_new = x_1Dnew)
-plot(x_1Dnew, cv_1D$eigenfn, type = "l", main = "eigenfunction")
-plot(cv_1D$prediction[, 50],
-     xlab = "n",
-     ylab = "prediction",
-     type = "l",
-     main = paste("prediction at x = ", x_1Dnew[50]))
 ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
 library(fields)
 library(pracma)
@@ -123,9 +107,10 @@ eof <- spatpca(x = xx,
                Y = YY,
                K = cv$selected_K, 
                tau1 = cv$selected_tau1, 
-               tau2 = cv$selected_tau2, 
-               x_new = xx_new)
-quilt.plot(xx_new, eof$eigenfn[,1],
+               tau2 = cv$selected_tau2)
+predicted_eof <- preict(eof, xx_new)              
+quilt.plot(xx_new,
+           predicted_eof$predicted_eigenfn[,1],
            nx = new_p, 
            ny = new_p, 
            xlab = "lon.", 
@@ -152,6 +137,9 @@ isosurf3D(x, y, z,
 }
 \references{
 Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. \emph{Journal of Computational and Graphical Statistics} \bold{26} 14-25.
+}
+\seealso{
+\link{predict}
 }
 \author{
 Wen-Ting Wang and Hsin-Cheng Huang

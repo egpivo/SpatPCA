@@ -3,7 +3,6 @@
 #'
 #' Internal function: Set the number of cores for parallel computing
 #'
-#'
 #' @keywords internal
 #' @param num_cores Number of number of cores for parallel computing. Default is NULL.
 #' @return Logical
@@ -26,4 +25,22 @@ setCores <- function(num_cores = NULL) {
       error = print
     )
   }
+}
+
+#'
+#' Internal function: Scale one-dimension locations
+#'
+#' @keywords internal
+#' @param location Location matrix
+#' @return scaled location matrix
+#'
+scaleLocation <- function(location) {
+  if (dim(location)[2] == 1) {
+    min_location <- min(location)
+    max_location <- max(location)
+    scaled_location <- (location - min_location) / (max_location - min_location)
+  } else {
+    scaled_location <- location
+  }
+  return(scaled_location)
 }
