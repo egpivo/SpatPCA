@@ -125,11 +125,11 @@ spatpca <- function(x,
   x <- as.matrix(x)
   p <- ncol(Y)
   n <- nrow(Y)
+  if (p < 3) {
+    stop("Number of locations must be larger than 2.")
+  }
   if (nrow(x) != p) {
     stop("The number of rows of x should be equal to the number of columns of Y.")
-  }
-  if (nrow(x) < 3) {
-    stop("Number of locations must be larger than 2.")
   }
   if (ncol(x) > 3) {
     stop("Dimension of locations must be less than 4.")
@@ -233,16 +233,14 @@ spatpca <- function(x,
 }
 
 
-#' @title  Spatial predictions on new locations
+#' @title  Spatial dominant patterns on new locations
 #'
-#' @description Predict on new locations with the estimated spatial structures.
+#' @description Estimate K eigenfunctions on new locations
 #' 
 #' @param spatpca_object An `spatpca` class object 
 #' @param x_new New location matrix.
 #' @seealso \link{spatpca}
-#' @return 
-#' \item{predicted_eigenfn}{Eigenfunction values on new locations.}
-#' \item{prediction}{Predictions of Y at the new locations, x_new.}
+#' @return {K Eigenfunction values on new locations.}
 #' @examples
 #' # 1D: artificial irregular locations
 #' x_1D <- as.matrix(seq(-5, 5, length = 10))
@@ -254,19 +252,10 @@ spatpca <- function(x,
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
-#' predictions <- predict(cv_1D, x_new = x_1Dnew)
+#' dominant_patterns <- predict_eigenfunction(cv_1D, x_new = x_1Dnew)
 #' 
-predict <- function(spatpca_object, x_new) {
-  if (class(spatpca_object) != "spatpca") {
-    stop("Invalid object! Please enter a `spatpca` object")
-  }
-  if (is.null(x_new)) {
-    stop("New locations cannot be NULL")
-  }
-  x_new <- as.matrix(x_new)
-  if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
-    stop("Inconsistent dimension of locations - original dimension is ", ncol(spatpca_object$x))
-  }
+predict_eigenfunction <- function(spatpca_object, x_new) {
+  check_new_locations_for_spatpca_object(spatpca_object, x_new)
   scaled_x_new <- scaleLocation(x_new)
 
   predicted_eigenfn <- eigenFunction(
@@ -274,17 +263,44 @@ predict <- function(spatpca_object, x_new) {
     spatpca_object$scaled_x,
     spatpca_object$eigenfn
   )
+  return(predicted_eigenfn)
+}
+
+#' @title  Spatial predictions on new locations
+#'
+#' @description Predict on new locations with the estimated spatial structures.
+#' 
+#' @param spatpca_object An `spatpca` class object 
+#' @param x_new New location matrix.
+#' @seealso \link{spatpca}
+#' @return Predictions of Y at the new locations, x_new.
+#' @examples
+#' # 1D: artificial irregular locations
+#' x_1D <- as.matrix(seq(-5, 5, length = 10))
+#' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
+#' set.seed(1234)
+#' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
+#' rm_loc <- sample(1:50, 20)
+#' x_1Drm <- x_1D[-rm_loc]
+#' Y_1Drm <- Y_1D[, -rm_loc]
+#' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
+#' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
+#' predictions <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
+#' 
+predict_on_new_locations <- function(spatpca_object, x_new, eigen_estimate = NULL) {
+  check_new_locations_for_spatpca_object(spatpca_object, x_new)
+
+  if (is.null(eigen_estimate)) {
+    eigen_estimate <- predict_eigenfunction(spatpca_object, x_new)
+  }
 
   spatial_prediction <- spatialPrediction(
     spatpca_object$eigenfn,
     spatpca_object$centered_Y,
     spatpca_object$selected_gamma,
-    predicted_eigenfn
+    eigen_estimate
   )
-  return(list(
-    predicted_eigenfn = predicted_eigenfn,
-    prediction = spatial_prediction$predict
-  ))
+  return(spatial_prediction$predict)
 }
 
 

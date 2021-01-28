@@ -9,6 +9,26 @@ Y_1D <- {
   rnorm(n = 100, sd = 3) %*% t(Phi_1D) +
     matrix(rnorm(n = 100 * 10), 100, 10)
 }
+# Test invalid input
+test_that("check input of spatpca", {
+  expect_error(
+    spatpca(x = as.matrix(1), Y = Y_1D, num_cores = num_cores),
+    cat("The number of rows of x should be equal to the number of columns of Y.")
+  )
+  expect_error(
+    spatpca(x = matrix(1:10, ncol = 10), Y = matrix(1), num_cores = num_cores),
+    cat("Number of locations must be larger than 2.")
+  )
+  expect_error(
+    spatpca(x = matrix(1:10, ncol = 10), Y = Y_1D, num_cores = num_cores),
+    cat("Dimension of locations must be less than 4.")
+  )
+  expect_error(
+    spatpca(x = x_1D, Y = Y_1D, M = 1000, num_cores = num_cores),
+    cat("Number of folds must be less than sample size.")
+  )
+})
+
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
@@ -50,19 +70,11 @@ test_that("cross-validation plot", {
 })
 
 # Test `predict`
-
 x_1Dnew <- as.matrix(seq(6, 7, length = 4))
-prediction <- predict(cv_1D, x_new = x_1Dnew)
+prediction <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
+dominant_pattern_on_new_sites <- predict_eigenfunction(cv_1D, x_new = x_1Dnew)
 
-test_that("cross-validation plot", {
-  expect_error(
-    predict(cv_1D, NULL),
-    cat("New locations cannot be NULL")
-  )
-  expect_error(
-    predict(cv_1D, matrix(c(1, 2), ncol = 2)),
-    cat("Inconsistent dimension of locations - original dimension is 1")
-  )
-  expect_equal(ncol(prediction$prediction), 4)
-  expect_equal(nrow(prediction$predicted_eigenfn), 4)
+test_that("prediction", {
+  expect_equal(ncol(prediction), 4)
+  expect_equal(nrow(dominant_pattern_on_new_sites), 4)
 })
