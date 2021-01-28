@@ -223,7 +223,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
     <p>Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. <em>Journal of Computational and Graphical Statistics</em> <b>26</b> 14-25.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='predict.html'>predict</a></p></div>
+    <div class='dont-index'><p><a href='https://rdrr.io/r/stats/predict.html'>predict</a></p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Wen-Ting Wang and Hsin-Cheng Huang</p>
@@ -276,9 +276,9 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
                K <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_K</span>, 
                tau1 <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_tau1</span>, 
                tau2 <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_tau2</span><span class='op'>)</span>
-<span class='va'>predicted_eof</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predict.html'>predict</a></span><span class='op'>(</span><span class='va'>eof</span>, <span class='va'>xx_new</span><span class='op'>)</span>              
+<span class='va'>predicted_eof</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predict_eigenfunction.html'>predict_eigenfunction</a></span><span class='op'>(</span><span class='va'>eof</span>, <span class='va'>xx_new</span><span class='op'>)</span>              
 <span class='fu'><a href='https://rdrr.io/pkg/fields/man/quilt.plot.html'>quilt.plot</a></span><span class='op'>(</span><span class='va'>xx_new</span>,
-           <span class='va'>predicted_eof</span><span class='op'>$</span><span class='va'>predicted_eigenfn</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span>,
+           <span class='va'>predicted_eof</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span>,
            nx <span class='op'>=</span> <span class='va'>new_p</span>, 
            ny <span class='op'>=</span> <span class='va'>new_p</span>, 
            xlab <span class='op'>=</span> <span class='st'>"lon."</span>, 
