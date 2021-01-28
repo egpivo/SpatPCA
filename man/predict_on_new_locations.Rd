@@ -18,7 +18,7 @@ predict_on_new_locations(
 \item{eigen_patterns_on_new_site}{Eigen-patterns on x_new}
 }
 \value{
-Predictions of Y at the new locations, x_new.
+A prediction matrix of Y at the new locations, x_new.
 }
 \description{
 Predict on new locations with the estimated spatial structures.

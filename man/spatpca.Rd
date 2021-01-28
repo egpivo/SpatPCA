@@ -108,9 +108,9 @@ eof <- spatpca(x = xx,
                K = cv$selected_K, 
                tau1 = cv$selected_tau1, 
                tau2 = cv$selected_tau2)
-predicted_eof <- predict(eof, xx_new)              
+predicted_eof <- predict_eigenfunction(eof, xx_new)              
 quilt.plot(xx_new,
-           predicted_eof$predicted_eigenfn[,1],
+           predicted_eof[,1],
            nx = new_p, 
            ny = new_p, 
            xlab = "lon.", 

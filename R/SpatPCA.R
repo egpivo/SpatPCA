@@ -81,9 +81,9 @@
 #'                K = cv$selected_K, 
 #'                tau1 = cv$selected_tau1, 
 #'                tau2 = cv$selected_tau2)
-#' predicted_eof <- predict(eof, xx_new)              
+#' predicted_eof <- predict_eigenfunction(eof, xx_new)              
 #' quilt.plot(xx_new,
-#'            predicted_eof$predicted_eigenfn[,1],
+#'            predicted_eof[,1],
 #'            nx = new_p, 
 #'            ny = new_p, 
 #'            xlab = "lon.", 
@@ -240,7 +240,7 @@ spatpca <- function(x,
 #' @param spatpca_object An `spatpca` class object 
 #' @param x_new New location matrix.
 #' @seealso \link{spatpca}
-#' @return {K Eigenfunction values on new locations.}
+#' @return {A matrix with K Eigenfunction values on new locations.}
 #' @examples
 #' # 1D: artificial irregular locations
 #' x_1D <- as.matrix(seq(-5, 5, length = 10))
@@ -274,7 +274,7 @@ predict_eigenfunction <- function(spatpca_object, x_new) {
 #' @param x_new New location matrix.
 #' @param eigen_patterns_on_new_site Eigen-patterns on x_new
 #' @seealso \link{spatpca}
-#' @return Predictions of Y at the new locations, x_new.
+#' @return A prediction matrix of Y at the new locations, x_new.
 #' @examples
 #' # 1D: artificial irregular locations
 #' x_1D <- as.matrix(seq(-5, 5, length = 10))

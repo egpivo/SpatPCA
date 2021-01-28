@@ -12,7 +12,7 @@ predict_eigenfunction(spatpca_object, x_new)
 \item{x_new}{New location matrix.}
 }
 \value{
-{K Eigenfunction values on new locations.}
+{A matrix with K Eigenfunction values on new locations.}
 }
 \description{
 Estimate K eigenfunctions on new locations
