@@ -4,12 +4,18 @@
 \alias{predict_on_new_locations}
 \title{Spatial predictions on new locations}
 \usage{
-predict_on_new_locations(spatpca_object, x_new, eigen_estimate = NULL)
+predict_on_new_locations(
+  spatpca_object,
+  x_new,
+  eigen_patterns_on_new_site = NULL
+)
 }
 \arguments{
 \item{spatpca_object}{An \code{spatpca} class object}
 
 \item{x_new}{New location matrix.}
+
+\item{eigen_patterns_on_new_site}{Eigen-patterns on x_new}
 }
 \value{
 Predictions of Y at the new locations, x_new.

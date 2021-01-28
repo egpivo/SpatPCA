@@ -272,6 +272,7 @@ predict_eigenfunction <- function(spatpca_object, x_new) {
 #' 
 #' @param spatpca_object An `spatpca` class object 
 #' @param x_new New location matrix.
+#' @param eigen_patterns_on_new_site Eigen-patterns on x_new
 #' @seealso \link{spatpca}
 #' @return Predictions of Y at the new locations, x_new.
 #' @examples
@@ -287,18 +288,18 @@ predict_eigenfunction <- function(spatpca_object, x_new) {
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
 #' predictions <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
 #' 
-predict_on_new_locations <- function(spatpca_object, x_new, eigen_estimate = NULL) {
+predict_on_new_locations <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
   check_new_locations_for_spatpca_object(spatpca_object, x_new)
 
-  if (is.null(eigen_estimate)) {
-    eigen_estimate <- predict_eigenfunction(spatpca_object, x_new)
+  if (is.null(eigen_patterns_on_new_site)) {
+    eigen_patterns_on_new_site <- predict_eigenfunction(spatpca_object, x_new)
   }
 
   spatial_prediction <- spatialPrediction(
     spatpca_object$eigenfn,
     spatpca_object$centered_Y,
     spatpca_object$selected_gamma,
-    eigen_estimate
+    eigen_patterns_on_new_site
   )
   return(spatial_prediction$predict)
 }
