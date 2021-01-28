@@ -40,7 +40,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           # XQuartz is needed by vdiffr
-          brew cask install xquartz
+          brew install --cask xquartz
           # install gfortran 8.2 (used by CRAN)
           wget -nv https://github.com/fxcoudert/gfortran-for-macOS/releases/download/8.2/gfortran-8.2-Mojave.dmg
           sudo hdiutil attach gfortran*.dmg

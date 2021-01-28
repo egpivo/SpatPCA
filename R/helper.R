@@ -44,3 +44,26 @@ scaleLocation <- function(location) {
   }
   return(scaled_location)
 }
+
+
+#'
+#' Internal function: Validate new locations for a spatpca object
+#'
+#' @keywords internal
+#' @param spatpca_object An `spatpca` class object 
+#' @param x_new New location matrix.
+#' @return NULL
+#'
+check_new_locations_for_spatpca_object <- function(spatpca_object, x_new){
+  if (class(spatpca_object) != "spatpca") {
+    stop("Invalid object! Please enter a `spatpca` object")
+  }
+  if (is.null(x_new)) {
+    stop("New locations cannot be NULL")
+  }
+  x_new <- as.matrix(x_new)
+  if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
+    stop("Inconsistent dimension of locations - original dimension is ", 
+         ncol(spatpca_object$x))
+  }
+}
