@@ -137,7 +137,7 @@
   tau1 <span class='op'>=</span> <span class='cn'>NULL</span>,
   tau2 <span class='op'>=</span> <span class='cn'>NULL</span>,
   gamma <span class='op'>=</span> <span class='cn'>NULL</span>,
-  is_Y_centered <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  is_Y_detrended <span class='op'>=</span> <span class='cn'>FALSE</span>,
   maxit <span class='op'>=</span> <span class='fl'>100</span>,
   thr <span class='op'>=</span> <span class='fl'>1e-04</span>,
   num_cores <span class='op'>=</span> <span class='cn'>NULL</span>
@@ -156,7 +156,7 @@
     </tr>
     <tr>
       <th>M</th>
-      <td><p>Optional number of folds; default is 5.</p></td>
+      <td><p>Optional number of folds for cross validation; default is 5.</p></td>
     </tr>
     <tr>
       <th>K</th>
@@ -179,7 +179,7 @@
       <td><p>Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.</p></td>
     </tr>
     <tr>
-      <th>is_Y_centered</th>
+      <th>is_Y_detrended</th>
       <td><p>If TRUE, center the columns of Y. Default is FALSE.</p></td>
     </tr>
     <tr>
@@ -210,7 +210,7 @@
 <dt>tau1</dt><dd><p>Sequence of tau1-values used in the process.</p></dd>
 <dt>tau2</dt><dd><p>Sequence of tau2-values used in the process.</p></dd>
 <dt>gamma</dt><dd><p>Sequence of gamma-values used in the process.</p></dd>
-<dt>centered_Y</dt><dd><p>If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.</p></dd>
+<dt>detrended_Y</dt><dd><p>If is_Y_detrended is TRUE, detrended_Y means Y is detrended; else, detrended_Y is equal to Y.</p></dd>
 <dt>scaled_x</dt><dd><p>Input location matrix. Only scale when it is one-dimensional</p></dd>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -223,7 +223,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
     <p>Wang, W.-T. and Huang, H.-C. (2017). Regularized principal component analysis for spatial data. <em>Journal of Computational and Graphical Statistics</em> <b>26</b> 14-25.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='https://rdrr.io/r/stats/predict.html'>predict</a></p></div>
+    <div class='dont-index'><p><a href='predict.html'>predict</a></p></div>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>Wen-Ting Wang and Hsin-Cheng Huang</p>
@@ -252,14 +252,17 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    backsolve, forwardsolve</span></div><div class='output co'>#&gt; <span class='message'>See https://github.com/NCAR/Fields for</span>
 #&gt; <span class='message'> an extensive vignette, other supplements and source code </span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>pracma</span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>maps</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Attaching package: ‘pracma’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:SpatPCA’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    detrend</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>maps</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='va'>ozone2</span><span class='op'>)</span>
 <span class='va'>x</span> <span class='op'>&lt;-</span> <span class='va'>ozone2</span><span class='op'>$</span><span class='va'>lon.lat</span>
 <span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='va'>ozone2</span><span class='op'>$</span><span class='va'>y</span>
 <span class='va'>date</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.Date.html'>as.Date</a></span><span class='op'>(</span><span class='va'>ozone2</span><span class='op'>$</span><span class='va'>date</span>, format <span class='op'>=</span> <span class='st'>"%y%m%d"</span><span class='op'>)</span>
 <span class='va'>rmna</span> <span class='op'>&lt;-</span> <span class='op'>!</span><span class='fu'><a href='https://rdrr.io/r/base/colSums.html'>colSums</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>YY</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>[</span>, <span class='va'>rmna</span><span class='op'>]</span>, nrow <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>YY</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/pracma/man/detrend.html'>detrend</a></span><span class='op'>(</span><span class='va'>YY</span>, <span class='st'>"linear"</span><span class='op'>)</span>
+<span class='va'>YY</span> <span class='op'>&lt;-</span> <span class='fu'><a href='detrend.html'>detrend</a></span><span class='op'>(</span><span class='va'>YY</span>, <span class='st'>"linear"</span><span class='op'>)</span>
 <span class='va'>xx</span> <span class='op'>&lt;-</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>rmna</span>, <span class='op'>]</span>
 <span class='va'>cv</span> <span class='op'>&lt;-</span> <span class='fu'>spatpca</span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>xx</span>, Y <span class='op'>=</span> <span class='va'>YY</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/pkg/fields/man/quilt.plot.html'>quilt.plot</a></span><span class='op'>(</span><span class='va'>xx</span>, <span class='va'>cv</span><span class='op'>$</span><span class='va'>eigenfn</span><span class='op'>[</span>, <span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span>
@@ -276,7 +279,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
                K <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_K</span>, 
                tau1 <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_tau1</span>, 
                tau2 <span class='op'>=</span> <span class='va'>cv</span><span class='op'>$</span><span class='va'>selected_tau2</span><span class='op'>)</span>
-<span class='va'>predicted_eof</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predict_eigenfunction.html'>predict_eigenfunction</a></span><span class='op'>(</span><span class='va'>eof</span>, <span class='va'>xx_new</span><span class='op'>)</span>              
+<span class='va'>predicted_eof</span> <span class='op'>&lt;-</span> <span class='fu'><a href='predictEigenfunction.html'>predictEigenfunction</a></span><span class='op'>(</span><span class='va'>eof</span>, <span class='va'>xx_new</span><span class='op'>)</span>              
 <span class='fu'><a href='https://rdrr.io/pkg/fields/man/quilt.plot.html'>quilt.plot</a></span><span class='op'>(</span><span class='va'>xx_new</span>,
            <span class='va'>predicted_eof</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span>,
            nx <span class='op'>=</span> <span class='va'>new_p</span>, 

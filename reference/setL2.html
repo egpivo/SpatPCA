@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • SpatPCA</title>
+<title>Internal function: Set tuning parameter - l2 — setL2 • SpatPCA</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Internal function: Set tuning parameter - l2 — setL2" />
+<meta property="og:description" content="Internal function: Set tuning parameter - l2" />
 
 
 
@@ -60,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -116,72 +117,33 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Internal function: Set tuning parameter - l2</h1>
+    <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/helper.R'><code>R/helper.R</code></a></small>
+    <div class="hidden name"><code>setL2.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Internal function: Set tuning parameter - l2</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>setL2</span><span class='op'>(</span><span class='va'>tau2</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="SpatPCA-package.html">SpatPCA-package</a></code> </p>
-        </td>
-        <td><p>Regularized Principal Component Analysis for Spatial Data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.spatpca.html">plot(<i>&lt;spatpca&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Display the cross-validation results</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="predict.html">predict()</a></code> </p>
-        </td>
-        <td><p>Spatial predictions on new locations</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="predictEigenfunction.html">predictEigenfunction()</a></code> </p>
-        </td>
-        <td><p>Spatial dominant patterns on new locations</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="spatpca.html">spatpca()</a></code> </p>
-        </td>
-        <td><p>Regularized PCA for spatial data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="thinPlateSplineMatrix.html">thinPlateSplineMatrix()</a></code> </p>
-        </td>
-        <td><p>Thin-plane spline matrix</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>tau2</th>
+      <td><p>Vector of a nonnegative sparseness parameter sequence. Default is NULL.</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Modified vector of a nonnegative tuning parameter sequence for ADMM use</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

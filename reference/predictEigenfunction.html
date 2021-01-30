@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Spatial predictions on new locations — predict • SpatPCA</title>
+<title>Spatial dominant patterns on new locations — predictEigenfunction • SpatPCA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Spatial predictions on new locations — predict" />
-<meta property="og:description" content="Predict on new locations with the estimated spatial structures." />
+<meta property="og:title" content="Spatial dominant patterns on new locations — predictEigenfunction" />
+<meta property="og:description" content="Estimate K eigenfunctions on new locations" />
 
 
 
@@ -119,16 +119,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Spatial predictions on new locations</h1>
+    <h1>Spatial dominant patterns on new locations</h1>
     <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/SpatPCA.R'><code>R/SpatPCA.R</code></a></small>
-    <div class="hidden name"><code>predict.Rd</code></div>
+    <div class="hidden name"><code>predictEigenfunction.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Predict on new locations with the estimated spatial structures.</p>
+    <p>Estimate K eigenfunctions on new locations</p>
     </div>
 
-    <pre class="usage"><span class='fu'>predict</span><span class='op'>(</span><span class='va'>spatpca_object</span>, <span class='va'>x_new</span>, eigen_patterns_on_new_site <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>predictEigenfunction</span><span class='op'>(</span><span class='va'>spatpca_object</span>, <span class='va'>x_new</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -141,15 +141,11 @@
       <th>x_new</th>
       <td><p>New location matrix.</p></td>
     </tr>
-    <tr>
-      <th>eigen_patterns_on_new_site</th>
-      <td><p>Eigen-patterns on x_new</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A prediction matrix of Y at the new locations, x_new.</p>
+    <p>A matrix with K Eigenfunction values on new locations.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><a href='spatpca.html'>spatpca</a></p></div>
@@ -165,7 +161,7 @@
 <span class='va'>Y_1Drm</span> <span class='op'>&lt;-</span> <span class='va'>Y_1D</span><span class='op'>[</span>, <span class='op'>-</span><span class='va'>rm_loc</span><span class='op'>]</span>
 <span class='va'>x_1Dnew</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>5</span>, <span class='fl'>5</span>, length <span class='op'>=</span> <span class='fl'>20</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>cv_1D</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spatpca.html'>spatpca</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>x_1Drm</span>, Y <span class='op'>=</span> <span class='va'>Y_1Drm</span>, tau2 <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, num_cores <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
-<span class='va'>predictions</span> <span class='op'>&lt;-</span> <span class='fu'>predict</span><span class='op'>(</span><span class='va'>cv_1D</span>, x_new <span class='op'>=</span> <span class='va'>x_1Dnew</span><span class='op'>)</span>
+<span class='va'>dominant_patterns</span> <span class='op'>&lt;-</span> <span class='fu'>predictEigenfunction</span><span class='op'>(</span><span class='va'>cv_1D</span>, x_new <span class='op'>=</span> <span class='va'>x_1Dnew</span><span class='op'>)</span>
 
 </div></pre>
   </div>
