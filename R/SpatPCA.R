@@ -26,10 +26,10 @@ spatpcaCVWithSelectingK <- function(x, Y, M, tau1, tau2, gamma, shuffle_split, m
   for (k in 2:upper_bound) {
     cv_selection <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
     difference <- prev_cv_selection$selected_gamma - cv_selection$selected_gamma
+    prev_cv_selection <- cv_selection
     if (difference <= 0 || abs(difference) <= 1e-8) {
       break
     }
-    prev_cv_selection <- cv_selection
   }
   return(list(cv_result = cv_selection, selected_K = k - 1))
 }

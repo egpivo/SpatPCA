@@ -3,10 +3,15 @@ pesudo_sequence <- seq(-5, 5, length = 2)
 two_dim_location <-
   as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 
+three_dim_location <- 
+  as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence, z = pesudo_sequence))
+
 # thinPlateMatrix
-thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
+thin_plate_matrix_2D <- thinPlateSplineMatrix(two_dim_location)
+thin_plate_matrix_3D <- thinPlateSplineMatrix(three_dim_location)
 test_that("Thin-Plate Spline Matrix", {
-  expect_lte(norm(thin_plate_matrix, "F") - 0.362588, tol)
+  expect_lte(norm(thin_plate_matrix_2D, "F") - 0.362588, tol)
+  expect_lte(norm(thin_plate_matrix_3D, "F") - 8.191034, tol)
 })
 
 # spatialPrediction
