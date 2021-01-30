@@ -4,7 +4,7 @@
 \alias{setNumberEigenfunctions}
 \title{Internal function: Set the number of eigenfunctions for a spatpca object}
 \usage{
-setNumberEigenfunctions(K, M, n, p)
+setNumberEigenfunctions(K, Y, M)
 }
 \arguments{
 \item{K}{Optional user-supplied number of eigenfunctions.}

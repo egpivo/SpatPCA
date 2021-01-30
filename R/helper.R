@@ -97,6 +97,20 @@ checkInputData <- function(Y, x, M) {
 }
 
 #'
+#' Internal function: Fetch the upper bound of the number of eigenfunctions
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @param M Number of folds for cross-validation
+#' @return NULL
+#'
+fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
+  n <- nrow(Y)
+  p <- ncol(Y)
+  return(min(floor(n - n / M), p))
+}
+
+#'
 #' Internal function: Set the number of eigenfunctions for a spatpca object
 #'
 #' @keywords internal
@@ -106,10 +120,11 @@ checkInputData <- function(Y, x, M) {
 #' @param p Number of columns of Y
 #' @return NULL
 #'
-setNumberEigenfunctions <- function(K, M, n, p) {
+setNumberEigenfunctions <- function(K, Y, M) {
+  upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
   if (!is.null(K)) {
-    if (K > min(floor(n - n / M), p)) {
-      K <- min(floor(n - n / M), p)
+    if (K > upper_bound) {
+      K <- upper_bound
       warning("K must be smaller than min(floor(n - n/M), p). Set K as ", K)
     }
   }

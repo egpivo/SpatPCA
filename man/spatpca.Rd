@@ -57,7 +57,7 @@ A list of objects including
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
-\item{centered_Y}{If is_Y_detrended is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+\item{detrended_Y}{If is_Y_detrended is TRUE, detrended_Y means Y is detrended; else, detrended_Y is equal to Y.}
 \item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 }
 \description{

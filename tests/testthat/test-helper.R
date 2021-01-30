@@ -73,9 +73,6 @@ test_that("check input of spatpca", {
     checkInputData(x = x_1D, Y = Y_1D, M = 1000),
     cat("Number of folds must be less than sample size.")
   )
-  expect_null(setNumberEigenfunctions(NULL))
-  expect_warning(setNumberEigenfunctions(300, 5, 100, 10))
-  expect_warning(setNumberEigenfunctions(3, 5, 100, 10), NA)
 })
 
 # Test detrend
@@ -85,6 +82,13 @@ test_that("check detrending", {
 })
 
 # Test tuning parameters
+test_that("check the number of eigenfunctons", {
+  expect_equal(fetchUpperBoundNumberEigenfunctions(Y_1D, 5), 4)
+  expect_null(setNumberEigenfunctions(NULL, Y_1D, 5))
+  expect_warning(setNumberEigenfunctions(300, Y_1D, 5))
+  expect_warning(setNumberEigenfunctions(3, Y_1D, 5), NA)
+})
+
 test_that("check turning parameter - tau1", {
   expect_equal(min(setTau1(NULL, 5)), 0)
   expect_equal(max(setTau1(NULL, 5)), 1)

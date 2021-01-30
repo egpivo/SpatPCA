@@ -14,9 +14,9 @@ cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 cv_1D_fixed_K <- spatpca(x = x_1D, Y = Y_1D, K = 1, num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-expected_selected_tau1_R_3.6_higher <- 0.0021544359
+expected_selected_tau1_R_3.6_higher <- 0.01
 expected_selected_tau1_R_3.6_lower <- 0.0004644359
-expected_selected_gamma_R_3.6_higher <- 0.2137642
+expected_selected_gamma_R_3.6_higher <- 0.2762995
 expected_selected_gamma_R_3.6_lower <- 0.2762986
 
 # Test
@@ -60,4 +60,21 @@ dominant_pattern_on_new_sites <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 test_that("prediction", {
   expect_equal(ncol(prediction), 4)
   expect_equal(nrow(dominant_pattern_on_new_sites), 4)
+})
+
+
+# Test auxiliary function - CV with selecting K
+M <- 3
+shuffle_split <- sample(rep(1:M, length.out = nrow(Y_1D)))
+tau1 <- setTau1(NULL, M)
+tau2 <- setTau2(NULL, M)
+l2 <- setL2(tau2)
+setCores(2)
+cv_with_k_seleted <- spatpcaCVWithSelectingK(x_1D, Y_1D, M, tau1, tau2, 1, shuffle_split, 10, 1e-04, l2)
+
+test_that("auxiliary function for selecting K", {
+  expect_equal(cv_with_k_seleted$selected_K, 1)
+  expect_equal(cv_with_k_seleted$cv_result$selected_gamma, 1)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 0)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau2, 0)
 })
