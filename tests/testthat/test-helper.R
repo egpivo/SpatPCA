@@ -83,3 +83,28 @@ test_that("check detrending", {
   expect_equal(detrend(Y_1D, FALSE), Y_1D)
   expect_lte(sum(detrend(Y_1D, TRUE)), tol)
 })
+
+# Test tuning parameters
+test_that("check turning parameter - tau1", {
+  expect_equal(min(setTau1(NULL, 5)), 0)
+  expect_equal(max(setTau1(NULL, 5)), 1)
+  expect_lte(median(setTau1(NULL, 5)), 0.0004641589)
+  expect_equal(median(setTau1(NULL, 1)), 1)
+  expect_equal(setTau1(c(1, 2), 5), c(1, 2))
+  expect_equal(setTau1(c(1, 2), 1), 2)
+})
+
+test_that("check turning parameter - tau2", {
+  expect_equal(setTau2(NULL, 5), 0)
+  expect_equal(setTau2(NULL, 1), 0)
+  expect_equal(setTau2(c(1, 2), 5), c(1, 2))
+  expect_equal(setTau2(c(1, 2), 1), 2)
+})
+
+test_that("check inner turning parameter - L2", {
+  expect_equal(setL2(c(1, 2)), 1)
+  expect_equal(setL2(-1), 1)
+  expect_equal(max(setL2(1)), 1)
+  expect_equal(min(setL2(1)), 0)
+  expect_lte(median(setL2(1)) - 0.005994843, tol)
+})

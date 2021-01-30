@@ -11,6 +11,7 @@ Y_1D <- {
 }
 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
+cv_1D_fixed_K <- spatpca(x = x_1D, Y = Y_1D, K = 1, num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.0021544359
@@ -36,6 +37,7 @@ test_that("Selected tuning parameters", {
     tol
   )
   expect_null(cv_1D$selected_K)
+  expect_equal(cv_1D_fixed_K$selected_K, 1)
 })
 
 test_that("Number of threads", {

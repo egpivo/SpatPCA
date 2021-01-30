@@ -122,31 +122,17 @@ spatpca <- function(x,
   call2 <- match.call()
   checkInputData(Y, x, M)
   setCores(num_cores)
+  # Initialize candidates of tuning parameters
+  tau1 <- setTau1(tau1, M)
+  tau2 <- setTau2(tau2, M)
+  l2 <- setL2(tau2)
 
   x <- as.matrix(x)
   Y <- detrend(Y, is_Y_detrended)
   p <- ncol(Y)
   n <- nrow(Y)
   K <- setNumberEigenfunctions(K, M, n, p)
-
-  # Initialize candidates of tuning parameters
-  if (is.null(tau2)) {
-    tau2 <- 0
-    num_tau2 <- 1
-  } else {
-    num_tau2 <- length(tau2)
-  }
-  if (is.null(tau1)) {
-    num_tau1 <- 11
-    tau1 <- c(0, exp(seq(log(1e-6), 0, length = num_tau1 - 1)))
-  } else {
-    num_tau1 <- length(tau1)
-  }
-
-  if (M < 2 && (num_tau1 > 1 || num_tau2 > 1)) {
-    num_tau1 <- num_tau2 <- 1
-    warning("Only produce the result based on the largest tau1 and largest tau2.")
-  }
+  scaled_x <- scaleLocation(x)
 
   stra <- sample(rep(1:M, length.out = nrow(Y)))
   if (is.null(gamma)) {
@@ -156,17 +142,6 @@ spatpca <- function(x,
     log_scale_candidates <-
       seq(log(max_gamma / 1e4), log(max_gamma), length = num_gamma - 1)
     gamma <- c(0, log_scale_candidates)
-  }
-
-  scaled_x <- scaleLocation(x)
-
-  if (num_tau2 == 1 && tau2 > 0) {
-    l2 <- ifelse(tau2 != 0,
-      c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))),
-      tau2
-    )
-  } else {
-    l2 <- 1
   }
 
   if (is_K_selected) {

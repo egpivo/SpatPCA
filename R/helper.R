@@ -117,6 +117,64 @@ setNumberEigenfunctions <- function(K, M, n, p) {
 }
 
 #'
+#' Internal function: Set tuning parameter - tau1
+#'
+#' @keywords internal
+#' @param tau1 numeric vector of a nonnegative smoothness parameter sequence. Default is NULL.
+#' @param M Number of folds for cross-validation
+#' @return modified numeric vector of a nonnegative smoothness parameter sequence.
+#'
+setTau1 <- function(tau1, M) {
+  if (is.null(tau1)) {
+    modified_tau1 <- c(0, exp(seq(log(1e-6), 0, length = 10)))
+  } else {
+    modified_tau1 <- tau1
+  }
+
+  if (M < 2) {
+    return(max(modified_tau1))
+  } else {
+    return(modified_tau1)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - tau2
+#'
+#' @keywords internal
+#' @param tau2 numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @param M Number of folds for cross-validation
+#' @return modified numeric vector of a nonnegative sparseness parameter sequence.
+#'
+setTau2 <- function(tau2, M) {
+  if (is.null(tau2)) {
+    modified_tau2 <- 0
+  } else {
+    modified_tau2 <- tau2
+  }
+  if (M < 2) {
+    return(max(modified_tau2))
+  } else {
+    return(modified_tau2)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - l2
+#'
+#' @keywords internal
+#' @param tau2 numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @return modified numeric vector of a nonnegative tuning parameter sequence for ADMM use
+#'
+setL2 <- function(tau2) {
+  if (length(tau2) == 1 && tau2 > 0) {
+    return(c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))))
+  } else {
+    return(1)
+  }
+}
+
+#'
 #' Internal function: Detrend Y by column-wise centering
 #'
 #' @keywords internal
