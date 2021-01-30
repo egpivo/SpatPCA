@@ -45,16 +45,15 @@ scaleLocation <- function(location) {
   return(scaled_location)
 }
 
-
 #'
 #' Internal function: Validate new locations for a spatpca object
 #'
 #' @keywords internal
-#' @param spatpca_object An `spatpca` class object 
+#' @param spatpca_object An `spatpca` class object
 #' @param x_new New location matrix.
 #' @return NULL
 #'
-check_new_locations_for_spatpca_object <- function(spatpca_object, x_new){
+checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new) {
   if (class(spatpca_object) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
@@ -63,7 +62,162 @@ check_new_locations_for_spatpca_object <- function(spatpca_object, x_new){
   }
   x_new <- as.matrix(x_new)
   if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
-    stop("Inconsistent dimension of locations - original dimension is ", 
-         ncol(spatpca_object$x))
+    stop(
+      "Inconsistent dimension of locations - original dimension is ",
+      ncol(spatpca_object$x)
+    )
+  }
+}
+
+#'
+#' Internal function: Validate input data for a spatpca object
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @param x Location matrix.
+#' @param M Number of folds for cross-validation
+#' @return NULL
+#'
+checkInputData <- function(Y, x, M) {
+  x <- as.matrix(x)
+  p <- ncol(Y)
+  n <- nrow(Y)
+  if (p < 3) {
+    stop("Number of locations must be larger than 2.")
+  }
+  if (nrow(x) != p) {
+    stop("The number of rows of x should be equal to the number of columns of Y.")
+  }
+  if (ncol(x) > 3) {
+    stop("Dimension of locations must be less than 4.")
+  }
+  if (M >= n) {
+    stop("Number of folds must be less than sample size.")
+  }
+}
+
+#'
+#' Internal function: Fetch the upper bound of the number of eigenfunctions
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @param M Number of folds for cross-validation
+#' @return NULL
+#'
+fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
+  n <- nrow(Y)
+  p <- ncol(Y)
+  return(min(floor(n - n / M), p))
+}
+
+#'
+#' Internal function: Set the number of eigenfunctions for a spatpca object
+#'
+#' @keywords internal
+#' @param K Optional user-supplied number of eigenfunctions.
+#' @param M Number of folds for cross-validation
+#' @param n Number of rows of Y
+#' @param p Number of columns of Y
+#' @return NULL
+#'
+setNumberEigenfunctions <- function(K, Y, M) {
+  upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
+  if (!is.null(K)) {
+    if (K > upper_bound) {
+      K <- upper_bound
+      warning("K must be smaller than min(floor(n - n/M), p). Set K as ", K)
+    }
+  }
+  return(K)
+}
+
+#'
+#' Internal function: Set tuning parameter - tau1
+#'
+#' @keywords internal
+#' @param tau1 Vector of a nonnegative smoothness parameter sequence. Default is NULL.
+#' @param M Number of folds for cross-validation
+#' @return Modified vector of a nonnegative smoothness parameter sequence.
+#'
+setTau1 <- function(tau1, M) {
+  if (is.null(tau1)) {
+    modified_tau1 <- c(0, exp(seq(log(1e-6), 0, length = 10)))
+  } else {
+    modified_tau1 <- tau1
+  }
+
+  if (M < 2) {
+    return(max(modified_tau1))
+  } else {
+    return(modified_tau1)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - tau2
+#'
+#' @keywords internal
+#' @param tau2 Vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @param M Number of folds for cross-validation
+#' @return Modified vector of a nonnegative sparseness parameter sequence.
+#'
+setTau2 <- function(tau2, M) {
+  if (is.null(tau2)) {
+    modified_tau2 <- 0
+  } else {
+    modified_tau2 <- tau2
+  }
+  if (M < 2) {
+    return(max(modified_tau2))
+  } else {
+    return(modified_tau2)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - l2
+#'
+#' @keywords internal
+#' @param tau2 Vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @return Modified vector of a nonnegative tuning parameter sequence for ADMM use
+#'
+setL2 <- function(tau2) {
+  if (length(tau2) == 1 && tau2 > 0) {
+    return(c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))))
+  } else {
+    return(1)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - gaama
+#'
+#' @keywords internal
+#' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. Default is NULL.
+#' @param Y Data matrix
+#' @return Modified vector of a nonnegative hyper parameter sequence for tuning eigenvalues.
+#'
+setGamma <- function(gamma, Y) {
+  if (is.null(gamma)) {
+    svd_Y_partial <- svd(Y)
+    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y)
+    return(c(0, exp(seq(log(max_gamma / 1e4), log(max_gamma), length = 10))))
+  } else {
+    return(gamma)
+  }
+}
+
+#'
+#' Internal function: Detrend Y by column-wise centering
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @return Detrended data matrix
+#'
+detrend <- function(Y, is_Y_detrended) {
+  if (is_Y_detrended) {
+    return(Y - rep(colMeans(Y), rep.int(nrow(Y), ncol(Y))))
+  } else {
+    return(Y)
   }
 }

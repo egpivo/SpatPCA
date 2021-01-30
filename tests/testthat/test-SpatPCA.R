@@ -9,33 +9,15 @@ Y_1D <- {
   rnorm(n = 100, sd = 3) %*% t(Phi_1D) +
     matrix(rnorm(n = 100 * 10), 100, 10)
 }
-# Test invalid input
-test_that("check input of spatpca", {
-  expect_error(
-    spatpca(x = as.matrix(1), Y = Y_1D, num_cores = num_cores),
-    cat("The number of rows of x should be equal to the number of columns of Y.")
-  )
-  expect_error(
-    spatpca(x = matrix(1:10, ncol = 10), Y = matrix(1), num_cores = num_cores),
-    cat("Number of locations must be larger than 2.")
-  )
-  expect_error(
-    spatpca(x = matrix(1:10, ncol = 10), Y = Y_1D, num_cores = num_cores),
-    cat("Dimension of locations must be less than 4.")
-  )
-  expect_error(
-    spatpca(x = x_1D, Y = Y_1D, M = 1000, num_cores = num_cores),
-    cat("Number of folds must be less than sample size.")
-  )
-})
 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
+cv_1D_fixed_K_multiple_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau2 = c(0, 1), num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
-expected_selected_tau1_R_3.6_higher <- 0.0021544359
-expected_selected_tau1_R_3.6_lower <- 0.0004644359
-expected_selected_gamma_R_3.6_higher <- 0.2137642
-expected_selected_gamma_R_3.6_lower <- 0.2762986
+expected_selected_tau1_R_3.6_higher <- 0.00046416
+expected_selected_tau1_R_3.6_lower <- 0.01
+expected_selected_gamma_R_3.6_higher <- 0.44503397
+expected_selected_gamma_R_3.6_lower <- 0.4737518
 
 # Test
 test_that("Selected tuning parameters", {
@@ -55,6 +37,9 @@ test_that("Selected tuning parameters", {
     tol
   )
   expect_null(cv_1D$selected_K)
+  expect_equal(cv_1D_fixed_K_multiple_tau2$selected_K, 1)
+  expect_lte(abs(cv_1D_fixed_K_multiple_tau2$selected_tau1 - 0.002154435), tol)
+  expect_equal(cv_1D_fixed_K_multiple_tau2$selected_tau2, 1)
 })
 
 test_that("Number of threads", {
@@ -71,10 +56,27 @@ test_that("cross-validation plot", {
 
 # Test `predict`
 x_1Dnew <- as.matrix(seq(6, 7, length = 4))
-prediction <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
-dominant_pattern_on_new_sites <- predict_eigenfunction(cv_1D, x_new = x_1Dnew)
+prediction <- predict(cv_1D, x_new = x_1Dnew)
+dominant_pattern_on_new_sites <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 
 test_that("prediction", {
   expect_equal(ncol(prediction), 4)
   expect_equal(nrow(dominant_pattern_on_new_sites), 4)
+})
+
+
+# Test auxiliary function - CV with selecting K
+M <- 3
+shuffle_split <- sample(rep(1:M, length.out = nrow(Y_1D)))
+tau1 <- setTau1(NULL, M)
+tau2 <- setTau2(NULL, M)
+l2 <- setL2(tau2)
+setCores(2)
+cv_with_k_seleted <- spatpcaCVWithSelectingK(x_1D, Y_1D, M, tau1, tau2, 1, shuffle_split, 10, 1e-04, l2)
+
+test_that("auxiliary function for selecting K", {
+  expect_equal(cv_with_k_seleted$selected_K, 1)
+  expect_equal(cv_with_k_seleted$cv_result$selected_gamma, 1)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 0)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau2, 0)
 })
