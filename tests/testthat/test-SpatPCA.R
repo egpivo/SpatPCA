@@ -16,7 +16,7 @@ cv_1D_fixed_K <- spatpca(x = x_1D, Y = Y_1D, K = 1, num_cores = num_cores)
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.01
 expected_selected_tau1_R_3.6_lower <- 0.0004644359
-expected_selected_gamma_R_3.6_higher <- 0.2762995
+expected_selected_gamma_R_3.6_higher <- 0.4737518
 expected_selected_gamma_R_3.6_lower <- 0.2762986
 
 # Test

@@ -135,9 +135,9 @@ setNumberEigenfunctions <- function(K, Y, M) {
 #' Internal function: Set tuning parameter - tau1
 #'
 #' @keywords internal
-#' @param tau1 numeric vector of a nonnegative smoothness parameter sequence. Default is NULL.
+#' @param tau1 Vector of a nonnegative smoothness parameter sequence. Default is NULL.
 #' @param M Number of folds for cross-validation
-#' @return modified numeric vector of a nonnegative smoothness parameter sequence.
+#' @return Modified vector of a nonnegative smoothness parameter sequence.
 #'
 setTau1 <- function(tau1, M) {
   if (is.null(tau1)) {
@@ -157,9 +157,9 @@ setTau1 <- function(tau1, M) {
 #' Internal function: Set tuning parameter - tau2
 #'
 #' @keywords internal
-#' @param tau2 numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @param tau2 Vector of a nonnegative sparseness parameter sequence. Default is NULL.
 #' @param M Number of folds for cross-validation
-#' @return modified numeric vector of a nonnegative sparseness parameter sequence.
+#' @return Modified vector of a nonnegative sparseness parameter sequence.
 #'
 setTau2 <- function(tau2, M) {
   if (is.null(tau2)) {
@@ -178,14 +178,32 @@ setTau2 <- function(tau2, M) {
 #' Internal function: Set tuning parameter - l2
 #'
 #' @keywords internal
-#' @param tau2 numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.
-#' @return modified numeric vector of a nonnegative tuning parameter sequence for ADMM use
+#' @param tau2 Vector of a nonnegative sparseness parameter sequence. Default is NULL.
+#' @return Modified vector of a nonnegative tuning parameter sequence for ADMM use
 #'
 setL2 <- function(tau2) {
   if (length(tau2) == 1 && tau2 > 0) {
     return(c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))))
   } else {
     return(1)
+  }
+}
+
+#'
+#' Internal function: Set tuning parameter - gaama
+#'
+#' @keywords internal
+#' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. Default is NULL.
+#' @param Y Data matrix
+#' @return Modified vector of a nonnegative hyper parameter sequence for tuning eigenvalues.
+#'
+setGamma <- function(gamma, Y) {
+  if (is.null(gamma)) {
+    svd_Y_partial <- svd(Y)
+    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y)
+    return(c(0, exp(seq(log(max_gamma / 1e4), log(max_gamma), length = 10))))
+  } else {
+    return(gamma)
   }
 }
 

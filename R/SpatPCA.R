@@ -10,7 +10,7 @@
 #' @param M The number of folds for cross validation; default is 5.
 #' @param tau1 Vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
-#' @param gamma Vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
+#' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.
 #' @param shuffle_split Vector of indeces for random splitting Y into training and test sets 
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
@@ -156,28 +156,22 @@ spatpca <- function(x,
   call2 <- match.call()
   checkInputData(Y, x, M)
   setCores(num_cores)
-  # Initialize candidates of tuning parameters
-  tau1 <- setTau1(tau1, M)
-  tau2 <- setTau2(tau2, M)
-  l2 <- setL2(tau2)
 
+  # Transform main objects
   x <- as.matrix(x)
   Y <- detrend(Y, is_Y_detrended)
   K <- setNumberEigenfunctions(K, Y, M)
   p <- ncol(Y)
   n <- nrow(Y)
   scaled_x <- scaleLocation(x)
-
   shuffle_split <- sample(rep(1:M, length.out = nrow(Y)))
 
-  if (is.null(gamma)) {
-    num_gamma <- 11
-    svd_Y_partial <- svd(Y[which(shuffle_split != 1), ])
-    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y[which(shuffle_split != 1), ])
-    log_scale_candidates <-
-      seq(log(max_gamma / 1e4), log(max_gamma), length = num_gamma - 1)
-    gamma <- c(0, log_scale_candidates)
-  }
+  # Initialize candidates of tuning parameters
+  tau1 <- setTau1(tau1, M)
+  tau2 <- setTau2(tau2, M)
+  l2 <- setL2(tau2)
+  gamma <- setGamma(gamma, Y[which(shuffle_split != 1), ])
+
 
   if (is_K_selected) {
     cv_with_selected_k <- spatpcaCVWithSelectingK(scaled_x, Y, M, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
@@ -216,7 +210,6 @@ spatpca <- function(x,
   class(obj.cv) <- "spatpca"
   return(obj.cv)
 }
-
 
 #' @title  Spatial dominant patterns on new locations
 #'
@@ -288,7 +281,6 @@ predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
   )
   return(spatial_prediction$predict)
 }
-
 
 #'
 #' @title  Display the cross-validation results

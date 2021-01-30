@@ -105,10 +105,17 @@ test_that("check turning parameter - tau2", {
   expect_equal(setTau2(c(1, 2), 1), 2)
 })
 
-test_that("check inner turning parameter - L2", {
+test_that("check inner turning parameter based on tau2 - l2", {
   expect_equal(setL2(c(1, 2)), 1)
   expect_equal(setL2(-1), 1)
   expect_equal(max(setL2(1)), 1)
   expect_equal(min(setL2(1)), 0)
   expect_lte(median(setL2(1)) - 0.005994843, tol)
+})
+
+test_that("check turning parameter - gamma", {
+  expect_equal(setGamma(c(1, 2)), c(1, 2))
+  expect_lte(max(setGamma(NULL, Y_1D)) - 11.14708, tol)
+  expect_equal(min(setGamma(NULL, Y_1D)), 0)
+  expect_lte(median(setGamma(NULL, Y_1D)) - 0.06682497, tol)
 })
