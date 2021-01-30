@@ -7,12 +7,12 @@
 setTau1(tau1, M)
 }
 \arguments{
-\item{tau1}{numeric vector of a nonnegative smoothness parameter sequence. Default is NULL.}
+\item{tau1}{Vector of a nonnegative smoothness parameter sequence. Default is NULL.}
 
 \item{M}{Number of folds for cross-validation}
 }
 \value{
-modified numeric vector of a nonnegative smoothness parameter sequence.
+Modified vector of a nonnegative smoothness parameter sequence.
 }
 \description{
 Internal function: Set tuning parameter - tau1

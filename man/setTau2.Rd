@@ -7,12 +7,12 @@
 setTau2(tau2, M)
 }
 \arguments{
-\item{tau2}{numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.}
+\item{tau2}{Vector of a nonnegative sparseness parameter sequence. Default is NULL.}
 
 \item{M}{Number of folds for cross-validation}
 }
 \value{
-modified numeric vector of a nonnegative sparseness parameter sequence.
+Modified vector of a nonnegative sparseness parameter sequence.
 }
 \description{
 Internal function: Set tuning parameter - tau2

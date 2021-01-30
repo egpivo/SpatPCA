@@ -28,7 +28,7 @@ spatpcaCVWithSelectingK(
 
 \item{tau2}{Vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.}
 
-\item{gamma}{Vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.}
+\item{gamma}{Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.}
 
 \item{shuffle_split}{Vector of indeces for random splitting Y into training and test sets}
 

@@ -7,10 +7,10 @@
 setL2(tau2)
 }
 \arguments{
-\item{tau2}{numeric vector of a nonnegative sparseness parameter sequence. Default is NULL.}
+\item{tau2}{Vector of a nonnegative sparseness parameter sequence. Default is NULL.}
 }
 \value{
-modified numeric vector of a nonnegative tuning parameter sequence for ADMM use
+Modified vector of a nonnegative tuning parameter sequence for ADMM use
 }
 \description{
 Internal function: Set tuning parameter - l2
