@@ -13,7 +13,7 @@
 #' @param tau2 Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
 #' @param M Optional number of folds for cross validation; default is 5.
-#' @param is_Y_centered If TRUE, center the columns of Y. Default is FALSE.
+#' @param is_Y_detrended If TRUE, center the columns of Y. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param num_cores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
@@ -32,7 +32,7 @@
 #' \item{tau1}{Sequence of tau1-values used in the process.}
 #' \item{tau2}{Sequence of tau2-values used in the process.}
 #' \item{gamma}{Sequence of gamma-values used in the process.}
-#' \item{centered_Y}{If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+#' \item{centered_Y}{If is_Y_detrended is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
 #' \item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 #'
 #' @details An ADMM form of the proposed objective function is written as
@@ -115,7 +115,7 @@ spatpca <- function(x,
                     tau1 = NULL,
                     tau2 = NULL,
                     gamma = NULL,
-                    is_Y_centered = FALSE,
+                    is_Y_detrended = FALSE,
                     maxit = 100,
                     thr = 1e-04,
                     num_cores = NULL) {
@@ -124,14 +124,11 @@ spatpca <- function(x,
   setCores(num_cores)
 
   x <- as.matrix(x)
+  Y <- detrend(Y, is_Y_detrended)
   p <- ncol(Y)
   n <- nrow(Y)
   K <- setNumberEigenfunctions(K, M, n, p)
 
-  # Remove the mean trend of Y
-  if (is_Y_centered) {
-    Y <- Y - apply(Y, 2, "mean")
-  }
   # Initialize candidates of tuning parameters
   if (is.null(tau2)) {
     tau2 <- 0

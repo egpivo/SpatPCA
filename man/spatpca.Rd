@@ -13,7 +13,7 @@ spatpca(
   tau1 = NULL,
   tau2 = NULL,
   gamma = NULL,
-  is_Y_centered = FALSE,
+  is_Y_detrended = FALSE,
   maxit = 100,
   thr = 1e-04,
   num_cores = NULL
@@ -36,7 +36,7 @@ spatpca(
 
 \item{gamma}{Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.}
 
-\item{is_Y_centered}{If TRUE, center the columns of Y. Default is FALSE.}
+\item{is_Y_detrended}{If TRUE, center the columns of Y. Default is FALSE.}
 
 \item{maxit}{Maximum number of iterations. Default value is 100.}
 
@@ -57,7 +57,7 @@ A list of objects including
 \item{tau1}{Sequence of tau1-values used in the process.}
 \item{tau2}{Sequence of tau2-values used in the process.}
 \item{gamma}{Sequence of gamma-values used in the process.}
-\item{centered_Y}{If is_Y_centered is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
+\item{centered_Y}{If is_Y_detrended is TRUE, centered_Y is the centered Y; else, centered_Y is equal to Y.}
 \item{scaled_x}{Input location matrix. Only scale when it is one-dimensional}
 }
 \description{

@@ -49,11 +49,11 @@ scaleLocation <- function(location) {
 #' Internal function: Validate new locations for a spatpca object
 #'
 #' @keywords internal
-#' @param spatpca_object An `spatpca` class object 
+#' @param spatpca_object An `spatpca` class object
 #' @param x_new New location matrix.
 #' @return NULL
 #'
-checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new){
+checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new) {
   if (class(spatpca_object) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
@@ -62,8 +62,10 @@ checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new){
   }
   x_new <- as.matrix(x_new)
   if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
-    stop("Inconsistent dimension of locations - original dimension is ", 
-         ncol(spatpca_object$x))
+    stop(
+      "Inconsistent dimension of locations - original dimension is ",
+      ncol(spatpca_object$x)
+    )
   }
 }
 
@@ -76,7 +78,7 @@ checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new){
 #' @param M Number of folds for cross-validation
 #' @return NULL
 #'
-checkInputData <- function(Y, x, M){
+checkInputData <- function(Y, x, M) {
   x <- as.matrix(x)
   p <- ncol(Y)
   n <- nrow(Y)
@@ -104,7 +106,7 @@ checkInputData <- function(Y, x, M){
 #' @param p Number of columns of Y
 #' @return NULL
 #'
-setNumberEigenfunctions <- function(K, M, n, p){
+setNumberEigenfunctions <- function(K, M, n, p) {
   if (!is.null(K)) {
     if (K > min(floor(n - n / M), p)) {
       K <- min(floor(n - n / M), p)
@@ -112,4 +114,19 @@ setNumberEigenfunctions <- function(K, M, n, p){
     }
   }
   return(K)
+}
+
+#'
+#' Internal function: Detrend Y by column-wise centering
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @return Detrended data matrix
+#'
+detrend <- function(Y, is_Y_detrended) {
+  if (is_Y_detrended) {
+    return(Y - rep(colMeans(Y), rep.int(nrow(Y), ncol(Y))))
+  } else {
+    return(Y)
+  }
 }

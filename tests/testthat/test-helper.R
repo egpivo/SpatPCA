@@ -43,7 +43,7 @@ test_that("check new locations for a spatpca object", {
   expect_error(
     checkNewLocationsForSpatpcaObject(NULL, NULL),
     cat("Invalid object! Please enter a `spatpca` object")
-  )  
+  )
   expect_error(
     checkNewLocationsForSpatpcaObject(cv_1D, NULL),
     cat("New locations cannot be NULL")
@@ -54,7 +54,6 @@ test_that("check new locations for a spatpca object", {
   )
   expect_null(checkNewLocationsForSpatpcaObject(cv_1D, x_1Dnew))
 })
-
 
 # Test invalid input
 test_that("check input of spatpca", {
@@ -67,7 +66,7 @@ test_that("check input of spatpca", {
     cat("Number of locations must be larger than 2.")
   )
   expect_error(
-    checkInputData(x = matrix(1:10, ncol = 10), Y = Y_1D),
+    checkInputData(x = matrix(1:40, ncol = 10), Y = Y_1D),
     cat("Dimension of locations must be less than 4.")
   )
   expect_error(
@@ -79,6 +78,8 @@ test_that("check input of spatpca", {
   expect_warning(setNumberEigenfunctions(3, 5, 100, 10), NA)
 })
 
-
-
-
+# Test detrend
+test_that("check detrending", {
+  expect_equal(detrend(Y_1D, FALSE), Y_1D)
+  expect_lte(sum(detrend(Y_1D, TRUE)), tol)
+})
