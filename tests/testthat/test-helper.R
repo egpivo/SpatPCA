@@ -41,13 +41,17 @@ x_1Dnew <- as.matrix(seq(6, 7, length = 4))
 # Test `predict`
 test_that("check new locations for a spatpca object", {
   expect_error(
-    check_new_locations_for_spatpca_object(cv_1D, NULL),
+    checkNewLocationsForSpatpcaObject(NULL, NULL),
+    cat("Invalid object! Please enter a `spatpca` object")
+  )  
+  expect_error(
+    checkNewLocationsForSpatpcaObject(cv_1D, NULL),
     cat("New locations cannot be NULL")
   )
   expect_error(
-    check_new_locations_for_spatpca_object(cv_1D, matrix(c(1, 2), ncol = 2)),
+    checkNewLocationsForSpatpcaObject(cv_1D, matrix(c(1, 2), ncol = 2)),
     cat("Inconsistent dimension of locations - original dimension is 1")
   )
-  expect_null(check_new_locations_for_spatpca_object(cv_1D, x_1Dnew))
+  expect_null(checkNewLocationsForSpatpcaObject(cv_1D, x_1Dnew))
 })
 
