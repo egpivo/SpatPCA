@@ -12,7 +12,7 @@
 #' @param tau1 Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
-#' @param M Optional number of folds; default is 5.
+#' @param M Optional number of folds for cross validation; default is 5.
 #' @param is_Y_centered If TRUE, center the columns of Y. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
@@ -120,29 +120,14 @@ spatpca <- function(x,
                     thr = 1e-04,
                     num_cores = NULL) {
   call2 <- match.call()
+  checkInputData(Y, x, M)
   setCores(num_cores)
 
   x <- as.matrix(x)
   p <- ncol(Y)
   n <- nrow(Y)
-  if (p < 3) {
-    stop("Number of locations must be larger than 2.")
-  }
-  if (nrow(x) != p) {
-    stop("The number of rows of x should be equal to the number of columns of Y.")
-  }
-  if (ncol(x) > 3) {
-    stop("Dimension of locations must be less than 4.")
-  }
-  if (M >= n) {
-    stop("Number of folds must be less than sample size.")
-  }
-  if (!is.null(K)) {
-    if (K > min(floor(n - n / M), p)) {
-      K <- min(floor(n - n / M), p)
-      warning("K must be smaller than min(floor(n - n/M), p).")
-    }
-  }
+  K <- setNumberEigenfunctions(K, M, n, p)
+
   # Remove the mean trend of Y
   if (is_Y_centered) {
     Y <- Y - apply(Y, 2, "mean")

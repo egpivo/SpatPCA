@@ -45,7 +45,6 @@ scaleLocation <- function(location) {
   return(scaled_location)
 }
 
-
 #'
 #' Internal function: Validate new locations for a spatpca object
 #'
@@ -66,4 +65,51 @@ checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new){
     stop("Inconsistent dimension of locations - original dimension is ", 
          ncol(spatpca_object$x))
   }
+}
+
+#'
+#' Internal function: Validate input data for a spatpca object
+#'
+#' @keywords internal
+#' @param Y Data matrix
+#' @param x Location matrix.
+#' @param M Number of folds for cross-validation
+#' @return NULL
+#'
+checkInputData <- function(Y, x, M){
+  x <- as.matrix(x)
+  p <- ncol(Y)
+  n <- nrow(Y)
+  if (p < 3) {
+    stop("Number of locations must be larger than 2.")
+  }
+  if (nrow(x) != p) {
+    stop("The number of rows of x should be equal to the number of columns of Y.")
+  }
+  if (ncol(x) > 3) {
+    stop("Dimension of locations must be less than 4.")
+  }
+  if (M >= n) {
+    stop("Number of folds must be less than sample size.")
+  }
+}
+
+#'
+#' Internal function: Set the number of eigenfunctions for a spatpca object
+#'
+#' @keywords internal
+#' @param K Optional user-supplied number of eigenfunctions.
+#' @param M Number of folds for cross-validation
+#' @param n Number of rows of Y
+#' @param p Number of columns of Y
+#' @return NULL
+#'
+setNumberEigenfunctions <- function(K, M, n, p){
+  if (!is.null(K)) {
+    if (K > min(floor(n - n / M), p)) {
+      K <- min(floor(n - n / M), p)
+      warning("K must be smaller than min(floor(n - n/M), p). Set K as ", K)
+    }
+  }
+  return(K)
 }

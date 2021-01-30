@@ -24,7 +24,7 @@ spatpca(
 
 \item{Y}{Data matrix (\eqn{n \times p}) stores the values at \eqn{p} locations with sample size \eqn{n}.}
 
-\item{M}{Optional number of folds; default is 5.}
+\item{M}{Optional number of folds for cross validation; default is 5.}
 
 \item{K}{Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or is_K_selected is TRUE, K is selected automatically.}
 
@@ -108,7 +108,7 @@ eof <- spatpca(x = xx,
                K = cv$selected_K, 
                tau1 = cv$selected_tau1, 
                tau2 = cv$selected_tau2)
-predicted_eof <- predict_eigenfunction(eof, xx_new)              
+predicted_eof <- predictEigenfunction(eof, xx_new)              
 quilt.plot(xx_new,
            predicted_eof[,1],
            nx = new_p, 

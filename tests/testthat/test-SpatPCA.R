@@ -9,25 +9,6 @@ Y_1D <- {
   rnorm(n = 100, sd = 3) %*% t(Phi_1D) +
     matrix(rnorm(n = 100 * 10), 100, 10)
 }
-# Test invalid input
-test_that("check input of spatpca", {
-  expect_error(
-    spatpca(x = as.matrix(1), Y = Y_1D, num_cores = num_cores),
-    cat("The number of rows of x should be equal to the number of columns of Y.")
-  )
-  expect_error(
-    spatpca(x = matrix(1:10, ncol = 10), Y = matrix(1), num_cores = num_cores),
-    cat("Number of locations must be larger than 2.")
-  )
-  expect_error(
-    spatpca(x = matrix(1:10, ncol = 10), Y = Y_1D, num_cores = num_cores),
-    cat("Dimension of locations must be less than 4.")
-  )
-  expect_error(
-    spatpca(x = x_1D, Y = Y_1D, M = 1000, num_cores = num_cores),
-    cat("Number of folds must be less than sample size.")
-  )
-})
 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 

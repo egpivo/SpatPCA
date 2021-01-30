@@ -55,3 +55,30 @@ test_that("check new locations for a spatpca object", {
   expect_null(checkNewLocationsForSpatpcaObject(cv_1D, x_1Dnew))
 })
 
+
+# Test invalid input
+test_that("check input of spatpca", {
+  expect_error(
+    checkInputData(x = as.matrix(1), Y = Y_1D),
+    cat("The number of rows of x should be equal to the number of columns of Y.")
+  )
+  expect_error(
+    checkInputData(x = matrix(1:10, ncol = 10), Y = matrix(1)),
+    cat("Number of locations must be larger than 2.")
+  )
+  expect_error(
+    checkInputData(x = matrix(1:10, ncol = 10), Y = Y_1D),
+    cat("Dimension of locations must be less than 4.")
+  )
+  expect_error(
+    checkInputData(x = x_1D, Y = Y_1D, M = 1000),
+    cat("Number of folds must be less than sample size.")
+  )
+  expect_null(setNumberEigenfunctions(NULL))
+  expect_warning(setNumberEigenfunctions(300, 5, 100, 10))
+  expect_warning(setNumberEigenfunctions(3, 5, 100, 10), NA)
+})
+
+
+
+
