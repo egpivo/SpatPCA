@@ -81,7 +81,7 @@
 #'                K = cv$selected_K, 
 #'                tau1 = cv$selected_tau1, 
 #'                tau2 = cv$selected_tau2)
-#' predicted_eof <- predict_eigenfunction(eof, xx_new)              
+#' predicted_eof <- predictEigenfunction(eof, xx_new)              
 #' quilt.plot(xx_new,
 #'            predicted_eof[,1],
 #'            nx = new_p, 
@@ -252,10 +252,10 @@ spatpca <- function(x,
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
-#' dominant_patterns <- predict_eigenfunction(cv_1D, x_new = x_1Dnew)
+#' dominant_patterns <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 #' 
-predict_eigenfunction <- function(spatpca_object, x_new) {
-  check_new_locations_for_spatpca_object(spatpca_object, x_new)
+predictEigenfunction <- function(spatpca_object, x_new) {
+  checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
   scaled_x_new <- scaleLocation(x_new)
 
   predicted_eigenfn <- eigenFunction(
@@ -286,13 +286,13 @@ predict_eigenfunction <- function(spatpca_object, x_new) {
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
-#' predictions <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
+#' predictions <- predict(cv_1D, x_new = x_1Dnew)
 #' 
-predict_on_new_locations <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
-  check_new_locations_for_spatpca_object(spatpca_object, x_new)
+predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
+  checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
 
   if (is.null(eigen_patterns_on_new_site)) {
-    eigen_patterns_on_new_site <- predict_eigenfunction(spatpca_object, x_new)
+    eigen_patterns_on_new_site <- predictEigenfunction(spatpca_object, x_new)
   }
 
   spatial_prediction <- spatialPrediction(

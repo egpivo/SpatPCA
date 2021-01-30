@@ -71,8 +71,8 @@ test_that("cross-validation plot", {
 
 # Test `predict`
 x_1Dnew <- as.matrix(seq(6, 7, length = 4))
-prediction <- predict_on_new_locations(cv_1D, x_new = x_1Dnew)
-dominant_pattern_on_new_sites <- predict_eigenfunction(cv_1D, x_new = x_1Dnew)
+prediction <- predict(cv_1D, x_new = x_1Dnew)
+dominant_pattern_on_new_sites <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 
 test_that("prediction", {
   expect_equal(ncol(prediction), 4)

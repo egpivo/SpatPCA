@@ -54,7 +54,7 @@ scaleLocation <- function(location) {
 #' @param x_new New location matrix.
 #' @return NULL
 #'
-check_new_locations_for_spatpca_object <- function(spatpca_object, x_new){
+checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new){
   if (class(spatpca_object) != "spatpca") {
     stop("Invalid object! Please enter a `spatpca` object")
   }
