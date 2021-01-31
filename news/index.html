@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Internal function: Set the number of eigenfunctions for a spatpca object — setNumberEigenfunctions • SpatPCA</title>
+<title>Changelog • SpatPCA</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,7 @@
 
 
 
-<meta property="og:title" content="Internal function: Set the number of eigenfunctions for a spatpca object — setNumberEigenfunctions" />
-<meta property="og:description" content="Internal function: Set the number of eigenfunctions for a spatpca object" />
+<meta property="og:title" content="Changelog" />
 
 
 
@@ -61,7 +60,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -122,45 +121,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Internal function: Set the number of eigenfunctions for a spatpca object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/R/helper.R'><code>R/helper.R</code></a></small>
-    <div class="hidden name"><code>setNumberEigenfunctions.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/egpivo/SpatPCA/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>Internal function: Set the number of eigenfunctions for a spatpca object</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>setNumberEigenfunctions</span><span class='op'>(</span><span class='va'>K</span>, <span class='va'>Y</span>, <span class='va'>M</span><span class='op'>)</span></pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>K</th>
-      <td><p>Optional user-supplied number of eigenfunctions.</p></td>
-    </tr>
-    <tr>
-      <th>M</th>
-      <td><p>Number of folds for cross-validation</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>Number of rows of Y</p></td>
-    </tr>
-    <tr>
-      <th>p</th>
-      <td><p>Number of columns of Y</p></td>
-    </tr>
-    </table>
-
-
+    <div id="spatpca-v1300-release-date-2021-01-31" class="section level2">
+<h2 class="hasAnchor">
+<a href="#spatpca-v1300-release-date-2021-01-31" class="anchor"></a>SpatPCA v1.3.0.0 (Release date: 2021-01-31)</h2>
+<div id="overview" class="section level4">
+<h4 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h4>
+<p>In this release, we take care of the perspective of software quality by refactoring code for better readability and adding unit-tests. Accordingly, we add multiple features by separating implicit functions from <code>spatpca</code>.</p>
+</div>
+<div id="new-features" class="section level4">
+<h4 class="hasAnchor">
+<a href="#new-features" class="anchor"></a>NEW FEATURES</h4>
+<ol>
+<li>
+<code><a href="../reference/thinPlateSplineMatrix.html">thinPlateSplineMatrix()</a></code> for producing a thin-plane spline matrix</li>
+<li>
+<code><a href="../reference/predictEigenfunction.html">predictEigenfunction()</a></code>for estimating K dominant patterns on new sites</li>
+<li>
+<code><a href="../reference/predict.html">predict()</a></code> for predicting new target variable <code>Y</code> on new sites<br>
+</li>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> for <code>spatpca</code> objects for plotting M-fold CV results</li>
+</ol>
+</div>
+<div id="maintenance" class="section level4">
+<h4 class="hasAnchor">
+<a href="#maintenance" class="anchor"></a>MAINTENANCE</h4>
+<ul>
+<li>Add unit tests with code coverage <code>87%</code>
+</li>
+</ul>
+</div>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 
