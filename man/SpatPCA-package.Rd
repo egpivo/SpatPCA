@@ -3,7 +3,7 @@
 \docType{package}
 \title{Regularized Principal Component Analysis for Spatial Data}
 \description{
-A new regularization approach to estimate the leading spatial patterns via smoothness and sparseness penalties, and spatial predctions for spatial data that may be irregularly located in space (including 1D, 2D and 3D), and obtain the spatial prediction at the designated locations.
+A new regularization approach to estimate the leading spatial patterns via smoothness and sparseness penalties, and spatial predictions for spatial data that may be irregularly located in space (including 1D, 2D and 3D), and obtain the spatial prediction at the designated locations.
 }
 \details{\tabular{ll}{
 Package:\tab SpatPCA\cr

@@ -11,7 +11,7 @@
 #' @param tau1 Vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.
-#' @param shuffle_split Vector of indeces for random splitting Y into training and test sets 
+#' @param shuffle_split Vector of indices for random splitting Y into training and test sets 
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param l2 Vector of a nonnegative tuning parameter sequence for ADMM use

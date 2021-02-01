@@ -48,7 +48,7 @@ struct thinPlateSpline: public RcppParallel::Worker {
 
 //' @title Thin-plane spline matrix
 //' 
-//' @description Produce a thin-plane spline matrix based on a given location matric
+//' @description Produce a thin-plane spline matrix based on a given location matrix
 //' 
 //' @param location A location matrix
 //' @return A thin-plane spline matrix
@@ -84,7 +84,7 @@ arma::mat thinPlateSplineMatrix(const arma::mat location) {
 //' @param new_location A location matrix
 //' @param original_location A location matrix
 //' @param Phi An eigenvector matrix
-//' @return A predictive estimte matrix
+//' @return A predictive estimate matrix
 //' @examples
 //' pesudo_sequence <- seq(-5, 5, length = 2)
 //' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
@@ -708,9 +708,9 @@ List spatpcaCV(
 //' @param gammar A gamma value
 //' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 //' @return A list of objects
-//' \item{prediction}{A vector of spatial predicitons}
+//' \item{prediction}{A vector of spatial predictions}
 //' \item{estimated_covariance}{An estimated covariance matrix.}
-//' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
+//' \item{eigenvalue}{A vector of estimated eigenvalues.}
 //' \item{error}{Error rate for the ADMM algorithm}
 // [[Rcpp::export]]
 List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction) {

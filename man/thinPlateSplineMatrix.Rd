@@ -13,7 +13,7 @@ thinPlateSplineMatrix(location)
 A thin-plane spline matrix
 }
 \description{
-Produce a thin-plane spline matrix based on a given location matric
+Produce a thin-plane spline matrix based on a given location matrix
 }
 \examples{
 pesudo_sequence <- seq(-5, 5, length = 5)
