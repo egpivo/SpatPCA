@@ -1,12 +1,12 @@
 ---
-title: "Capture the Dominant Spatial Patten with One-Dimensional Locations"
+title: "Capture the Dominant Spatial Pattern with One-Dimensional Locations"
 author: "Wen-Ting Wang"
 output:
     rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 4
 vignette: >
-  %\VignetteIndexEntry{Capture the Dominant Spatial Patten with One-Dimensional Locations}
+  %\VignetteIndexEntry{Capture the Dominant Spatial Pattern with One-Dimensional Locations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -35,7 +35,7 @@ library(gifski)
 base_theme <- theme_classic(base_size = 18, base_family = "Times")
 ```
 #### True spatial pattern (eigenfunction)
-The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
+The underlying spatial pattern below indicates realizations will vary dramatically at the center and be almost unchanged at the both ends of the curve.
 ```{r}
 set.seed(1024)
 position <- matrix(seq(-5, 5, length = 100))
@@ -93,7 +93,7 @@ realizations <- rnorm(n = 100, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = 1
 ```
 
 ### Animate realizations
-It is hard to see a crystal clear spatial pattern via the simluated sample shown below.
+It is hard to see a crystal clear spatial pattern via the simulated sample shown below.
 ```{r, animation.hook="gifski"}
 for (i in 1:100) {
   plot(x = position, y = realizations[i, ], ylim = c(-10, 10), ylab = "realization")

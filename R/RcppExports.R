@@ -3,7 +3,7 @@
 
 #' @title Thin-plane spline matrix
 #' 
-#' @description Produce a thin-plane spline matrix based on a given location matric
+#' @description Produce a thin-plane spline matrix based on a given location matrix
 #' 
 #' @param location A location matrix
 #' @return A thin-plane spline matrix
@@ -23,7 +23,7 @@ thinPlateSplineMatrix <- function(location) {
 #' @param new_location A location matrix
 #' @param original_location A location matrix
 #' @param Phi An eigenvector matrix
-#' @return A predictive estimte matrix
+#' @return A predictive estimate matrix
 #' @examples
 #' pesudo_sequence <- seq(-5, 5, length = 2)
 #' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
@@ -59,9 +59,9 @@ spatpcaCV <- function(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r
 #' @param gammar A gamma value
 #' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 #' @return A list of objects
-#' \item{prediction}{A vector of spatial predicitons}
+#' \item{prediction}{A vector of spatial predictions}
 #' \item{estimated_covariance}{An estimated covariance matrix.}
-#' \item{eigenvalue}{A vecotor of estimated eigenvalues.}
+#' \item{eigenvalue}{A vector of estimated eigenvalues.}
 #' \item{error}{Error rate for the ADMM algorithm}
 spatialPrediction <- function(phir, Yr, gamma, predicted_eignefunction) {
     .Call(`_SpatPCA_spatialPrediction`, phir, Yr, gamma, predicted_eignefunction)

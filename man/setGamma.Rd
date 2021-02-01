@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{setGamma}
 \alias{setGamma}
-\title{Internal function: Set tuning parameter - gaama}
+\title{Internal function: Set tuning parameter - gamma}
 \usage{
 setGamma(gamma, Y)
 }
@@ -15,6 +15,6 @@ setGamma(gamma, Y)
 Modified vector of a nonnegative hyper parameter sequence for tuning eigenvalues.
 }
 \description{
-Internal function: Set tuning parameter - gaama
+Internal function: Set tuning parameter - gamma
 }
 \keyword{internal}

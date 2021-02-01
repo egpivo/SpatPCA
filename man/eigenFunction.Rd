@@ -14,7 +14,7 @@ eigenFunction(new_location, original_location, Phi)
 \item{Phi}{An eigenvector matrix}
 }
 \value{
-A predictive estimte matrix
+A predictive estimate matrix
 }
 \description{
 Produce Eigen-function values based on new locations

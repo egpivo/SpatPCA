@@ -190,7 +190,7 @@ setL2 <- function(tau2) {
 }
 
 #'
-#' Internal function: Set tuning parameter - gaama
+#' Internal function: Set tuning parameter - gamma
 #'
 #' @keywords internal
 #' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. Default is NULL.

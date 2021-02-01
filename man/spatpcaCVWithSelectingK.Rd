@@ -30,7 +30,7 @@ spatpcaCVWithSelectingK(
 
 \item{gamma}{Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.}
 
-\item{shuffle_split}{Vector of indeces for random splitting Y into training and test sets}
+\item{shuffle_split}{Vector of indices for random splitting Y into training and test sets}
 
 \item{maxit}{Maximum number of iterations. Default value is 100.}
 

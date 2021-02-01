@@ -1,12 +1,12 @@
 ---
-title: "Capture the Dominant Spatial Patten with Two-Dimensional Locations"
+title: "Capture the Dominant Spatial Pattern with Two-Dimensional Locations"
 author: "Wen-Ting Wang"
 output:
     rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 4
 vignette: >
-  %\VignetteIndexEntry{Capture the Dominant Spatial Patten with Two-Dimensional Locations}
+  %\VignetteIndexEntry{Capture the Dominant Spatial Pattern with Two-Dimensional Locations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -46,7 +46,7 @@ coltab <- scico(128, palette = 'vik')
 color_scale_limit <- c(-.28, .28)
 ```
 #### True spatial pattern (eigenfunction)
-- The underlying spatial pattern below indicates realizations will vary dramatically at the center and almost unchange at the both ends of the curve.
+- The underlying spatial pattern below indicates realizations will vary dramatically at the center and be almost unchanged at the both ends of the curve.
 ```{r, out.width = '100%'}
 set.seed(1024)
 p <- 30
@@ -103,7 +103,7 @@ for (i in 1:n) {
 ```
 
 #### Apply `SpatPCA::spatpca`
-We add a candidate set of `tau2` to see how **SpatPCA** obtain a localized smoothe pattern.
+We add a candidate set of `tau2` to see how **SpatPCA** obtain a localized smooth pattern.
 ```{r}
 tau2 <- c(0, exp(seq(log(10), log(400), length = 10)))
 cv <- spatpca(x = expanded_location, Y = realizations, tau2 = tau2)

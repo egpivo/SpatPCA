@@ -17,9 +17,9 @@ spatialPrediction(phir, Yr, gamma, predicted_eignefunction)
 }
 \value{
 A list of objects
-\item{prediction}{A vector of spatial predicitons}
+\item{prediction}{A vector of spatial predictions}
 \item{estimated_covariance}{An estimated covariance matrix.}
-\item{eigenvalue}{A vecotor of estimated eigenvalues.}
+\item{eigenvalue}{A vector of estimated eigenvalues.}
 \item{error}{Error rate for the ADMM algorithm}
 }
 \description{
