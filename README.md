@@ -32,8 +32,8 @@ To compile C++ code with the package [`RcppArmadillo`](https://CRAN.R-project.or
  * Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal
 
 ```
-curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
-sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+brew update
+brew install gcc
 ```
 More details can be found [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
 
