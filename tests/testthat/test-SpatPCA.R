@@ -90,9 +90,9 @@ d <- expand.grid(x, y, z)
 Phi_3D <- rowSums(exp(-d^2)) / norm(as.matrix(rowSums(exp(-d^2))), "F")
 Y_3D <- rnorm(n = 100, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * p^3), 100, p^3)
 cv_3D <- spatpca(x = d, Y = Y_3D, num_cores = 2)
-predict <- spatialPrediction(x, Y_3D[1:2, ], 1, cv_3D$eigenfn)
+predict <- eigenFunction(matrix(c(0, 0, 0), 1, 3), as.matrix(d), cv_3D$eigenfn)
 
 test_that("3D case", {
   expect_equal(dim(cv_3D$eigenfn), c(64, 2))
-  expect_lte(abs(predict$eigenvalue - 64.44706), 1e-4)
+  expect_lte(sum(abs(predict - c(0.232199, 0.007501031))), tol)
 })
