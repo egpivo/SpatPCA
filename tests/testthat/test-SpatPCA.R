@@ -83,13 +83,16 @@ test_that("auxiliary function for selecting K", {
 
 
 # 3-D
-p <- 10
+set.seed(1234)
+p <- 4
 x <- y <- z <- as.matrix(seq(-5, 5, length = p))
 d <- expand.grid(x, y, z)
 Phi_3D <- rowSums(exp(-d^2)) / norm(as.matrix(rowSums(exp(-d^2))), "F")
 Y_3D <- rnorm(n = 100, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * p^3), 100, p^3)
 cv_3D <- spatpca(x = d, Y = Y_3D, num_cores = 2)
+predict <- spatialPrediction(x, Y_3D[1:2, ], 1, cv_3D$eigenfn)
 
 test_that("3D case", {
-  expect_equal(dim(cv_3D$eigenfn), c(1000, 2))
+  expect_equal(dim(cv_3D$eigenfn), c(64, 2))
+  expect_lte(abs(predict$eigenvalue - 64.44706), 1e-4)
 })
