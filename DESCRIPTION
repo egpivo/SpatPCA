@@ -28,7 +28,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 2.1.0),
-    dplyr (>= 1.0.3),
+    dplyr,
     gifski,
     tidyr,
     fields,
