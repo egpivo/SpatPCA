@@ -13,7 +13,7 @@ Y_1D <- {
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 cv_1D_fixed_K_multiple_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau2 = c(0, 1), num_cores = num_cores)
 cv_1D_fixed_K_multiple_gamma <- spatpca(x = x_1D, Y = Y_1D, K = 1, gamma = c(0, 1), num_cores = num_cores)
-cv_1D_fixed_K_fixed_tau1_fixed_tau2_ <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 10, tau2 = 100, num_cores = num_cores)
+cv_1D_fixed_K_fixed_tau1_fixed_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 10, tau2 = 100, num_cores = num_cores)
 cv_1D_fixed_K_fixed_tau1_fixed_tau2_multiple_gamma <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 0, tau2 = 0, gamma = c(0, 0.5, 1), num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
