@@ -12,6 +12,9 @@ Y_1D <- {
 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 cv_1D_fixed_K_multiple_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau2 = c(0, 1), num_cores = num_cores)
+cv_1D_fixed_K_multiple_gamma <- spatpca(x = x_1D, Y = Y_1D, K = 1, gamma = c(0, 1), num_cores = num_cores)
+cv_1D_fixed_K_fixed_tau1_fixed_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 10, tau2 = 100, num_cores = num_cores)
+cv_1D_fixed_K_fixed_tau1_fixed_tau2_multiple_gamma <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 0, tau2 = 0, gamma = c(0, 0.5, 1), num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.00046416
@@ -40,6 +43,10 @@ test_that("Selected tuning parameters", {
   expect_equal(cv_1D_fixed_K_multiple_tau2$selected_K, 1)
   expect_lte(abs(cv_1D_fixed_K_multiple_tau2$selected_tau1 - 0.002154435), tol)
   expect_equal(cv_1D_fixed_K_multiple_tau2$selected_tau2, 1)
+  expect_equal(cv_1D_fixed_K_multiple_gamma$selected_gamma, 0)
+  expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2$selected_tau1, 10)
+  expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2$selected_tau2, 100)
+  expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2_multiple_gamma$selected_gamma, 0)
 })
 
 test_that("Number of threads", {
@@ -66,6 +73,7 @@ test_that("prediction", {
 
 
 # Test auxiliary function - CV with selecting K
+set.seed(1234)
 M <- 3
 shuffle_split <- sample(rep(1:M, length.out = nrow(Y_1D)))
 tau1 <- setTau1(NULL, M)
@@ -77,6 +85,22 @@ cv_with_k_seleted <- spatpcaCVWithSelectingK(x_1D, Y_1D, M, tau1, tau2, 1, shuff
 test_that("auxiliary function for selecting K", {
   expect_equal(cv_with_k_seleted$selected_K, 1)
   expect_equal(cv_with_k_seleted$cv_result$selected_gamma, 1)
-  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 0)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 1)
   expect_equal(cv_with_k_seleted$cv_result$selected_tau2, 0)
+})
+
+
+# 3-D
+set.seed(1234)
+p <- 4
+x <- y <- z <- as.matrix(seq(-5, 5, length = p))
+d <- expand.grid(x, y, z)
+Phi_3D <- rowSums(exp(-d^2)) / norm(as.matrix(rowSums(exp(-d^2))), "F")
+Y_3D <- rnorm(n = 100, sd = 3) %*% t(Phi_3D) + matrix(rnorm(n = 100 * p^3), 100, p^3)
+cv_3D <- spatpca(x = d, Y = Y_3D, num_cores = 2)
+predict <- eigenFunction(matrix(c(0, 0, 0), 1, 3), as.matrix(d), cv_3D$eigenfn)
+
+test_that("3D case", {
+  expect_equal(dim(cv_3D$eigenfn), c(64, 2))
+  expect_lte(sum(abs(predict - c(0.232199, 0.007501031))), tol)
 })

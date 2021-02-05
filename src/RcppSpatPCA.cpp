@@ -109,37 +109,37 @@ arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_l
   mat eigen_fn(pnew, K);
   double psum, r;
 
-  for(unsigned newi = 0; newi < pnew ; newi++) {
+  for(unsigned new_i = 0; new_i < pnew ; new_i++) {
     for(unsigned i = 0; i < K; i++) {
       psum = 0;
       for(unsigned j = 0; j < p; j++) {
         if(d == 1) {  
-          r = norm(new_location.row(newi) - original_location.row(j), "f");
+          r = norm(new_location.row(new_i) - original_location.row(j), "f");
           if(r != 0)
             psum += para(j, i) * pow(r, 3) / 12;
         }
         else if(d == 2) {
-          r = sqrt(pow(new_location(newi, 0) - original_location(j, 0), 2) + 
-            (pow(new_location(newi, 1) - original_location(j, 1), 2)));
+          r = sqrt(pow(new_location(new_i, 0) - original_location(j, 0), 2) + 
+            (pow(new_location(new_i, 1) - original_location(j, 1), 2)));
           if(r != 0)
             psum += para(j, i) * r * r * log(r) / (8.0 * datum::pi);
         }
         else if(d == 3) {
-          double r = sqrt(pow(new_location(newi, 0) - original_location(j, 0), 2) +
-                          pow(new_location(newi, 1) - original_location(j, 1), 2) +
-                          pow(new_location(newi, 2) - original_location(j, 2), 2));
+          double r = sqrt(pow(new_location(new_i, 0) - original_location(j, 0), 2) +
+                          pow(new_location(new_i, 1) - original_location(j, 1), 2) +
+                          pow(new_location(new_i, 2) - original_location(j, 2), 2));
           if(r != 0)
             psum -= para(j, i) * r / (8.0 * datum::pi);
         }
       }
       if(d == 1)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) + para(p, i);
+        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) + para(p, i);
       else if(d == 2)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) +
-          para(p + 2, i) * new_location(newi, 1) + para(p, i);
+        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) +
+          para(p + 2, i) * new_location(new_i, 1) + para(p, i);
       else if(d == 3)
-        eigen_fn(newi, i) = psum + para(p + 1, i) * new_location(newi, 0) +
-          para(p + 2, i) * new_location(newi, 1) + para(p + 3, i) * new_location(newi, 2) + para(p, i); 
+        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) +
+          para(p + 2, i) * new_location(new_i, 1) + para(p + 3, i) * new_location(new_i, 2) + para(p, i); 
     }
   }
   
