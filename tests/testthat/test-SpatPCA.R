@@ -12,6 +12,8 @@ Y_1D <- {
 
 cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = num_cores)
 cv_1D_fixed_K_multiple_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau2 = c(0, 1), num_cores = num_cores)
+cv_1D_fixed_K_multiple_gamma <- spatpca(x = x_1D, Y = Y_1D, K = 1, gamma = c(0, 1), num_cores = num_cores)
+cv_1D_fixed_K_fixed_tau1_fixed_tau2 <- spatpca(x = x_1D, Y = Y_1D, K = 1, tau1 = 10, tau2 = 100, num_cores = num_cores)
 
 used_number_cores <- as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.00046416
@@ -40,6 +42,9 @@ test_that("Selected tuning parameters", {
   expect_equal(cv_1D_fixed_K_multiple_tau2$selected_K, 1)
   expect_lte(abs(cv_1D_fixed_K_multiple_tau2$selected_tau1 - 0.002154435), tol)
   expect_equal(cv_1D_fixed_K_multiple_tau2$selected_tau2, 1)
+  expect_equal(cv_1D_fixed_K_multiple_gamma$selected_gamma, 0)
+  expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2$selected_tau1, 10)
+  expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2$selected_tau2, 100)
 })
 
 test_that("Number of threads", {
@@ -66,6 +71,7 @@ test_that("prediction", {
 
 
 # Test auxiliary function - CV with selecting K
+set.seed(1234)
 M <- 3
 shuffle_split <- sample(rep(1:M, length.out = nrow(Y_1D)))
 tau1 <- setTau1(NULL, M)
@@ -77,7 +83,7 @@ cv_with_k_seleted <- spatpcaCVWithSelectingK(x_1D, Y_1D, M, tau1, tau2, 1, shuff
 test_that("auxiliary function for selecting K", {
   expect_equal(cv_with_k_seleted$selected_K, 1)
   expect_equal(cv_with_k_seleted$cv_result$selected_gamma, 1)
-  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 0)
+  expect_equal(cv_with_k_seleted$cv_result$selected_tau1, 1)
   expect_equal(cv_with_k_seleted$cv_result$selected_tau2, 0)
 })
 
