@@ -53,8 +53,8 @@ test_that("Selected tuning parameters", {
   expect_equal(cv_1D_fixed_K_fixed_tau1_fixed_tau2_multiple_gamma$selected_gamma, 0)
   expect_equal(cv_1D_fixed_K_fixed_tau1$selected_tau1, 10)
   expect_equal(sum(cv_1D_fixed_K_fixed_tau1$cv_score_tau1), 0)
-  expect_equal(estimated_eigenvalue_large_gamma, 0)
-  expect_lte(abs(estimated_eigenvalue_large_gamma - 2.88446), tol)
+  expect_equal(sum(estimated_eigenvalue_large_gamma), 0)
+  expect_lte(abs(sum(estimated_eigenvalue_medium_gamma) - 2.88446), tol)
 })
 
 
