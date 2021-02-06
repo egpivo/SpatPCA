@@ -61,7 +61,7 @@ estimated_signle_eigenvalue_medium_gamma <-
   spatialPrediction(
     cv_1D_fixed_K_fixed_tau1$eigenfn,
     cv_1D_fixed_K_fixed_tau1$detrended_Y,
-    4,
+    5,
     cv_1D_fixed_K_fixed_tau1$eigenfn
   )$eigenvalue
 
@@ -73,13 +73,19 @@ cv_1D_fixed_K_zero_tau1_zero_tau2 <- spatpca(
     tau2 = 0,
     num_cores = num_cores
   )
-estimated_eigenvalue_medium_gamma <-
-  spatialPrediction(
+estimated_eigenvalue_small_gamma <- spatialPrediction(
     cv_1D_fixed_K_zero_tau1_zero_tau2$eigenfn,
     cv_1D_fixed_K_zero_tau1_zero_tau2$detrended_Y,
     0.5,
     cv_1D_fixed_K_zero_tau1_zero_tau2$eigenfn
   )$eigenvalue
+
+estimated_eigenvalue_medium_gamma <- spatialPrediction(
+  cv_1D_fixed_K_zero_tau1_zero_tau2$eigenfn,
+  cv_1D_fixed_K_zero_tau1_zero_tau2$detrended_Y,
+  10,
+  cv_1D_fixed_K_zero_tau1_zero_tau2$eigenfn
+)$eigenvalue
 
 
 used_number_cores <-
@@ -125,8 +131,9 @@ test_that("Selected tuning parameters", {
   expect_equal(cv_1D_fixed_K_fixed_tau1$selected_tau1, 10)
   expect_equal(sum(cv_1D_fixed_K_fixed_tau1$cv_score_tau1), 0)
   expect_equal(sum(estimated_eigenvalue_large_gamma), 0)
+  expect_equal(sum(estimated_eigenvalue_medium_gamma), 0)
+  expect_lte(abs(sum(estimated_eigenvalue_small_gamma) - 9.397599), tol)
   expect_lte(sum(estimated_signle_eigenvalue_medium_gamma) - 0.1066821, tol)
-  expect_lte(abs(sum(estimated_eigenvalue_medium_gamma) - 9.397599), tol)
 })
 
 
