@@ -738,7 +738,7 @@ List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, Numer
   
   if(Sc2[0] > gamma) {
     error = (total_variance - tempSc + K * gamma) / (p - tempL);
-    temp = Sc2[tempL - 1];  
+    temp = Sc2[tempL - 1];
     while(temp - gamma < error) {
       if(tempL == 1) {
         error = (total_variance - Sc2[0] + gamma) / (p - 1);
