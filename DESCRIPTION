@@ -37,7 +37,8 @@ Suggests:
     pracma,
     RColorBrewer,
     maps,
-    covr
+    covr,
+    styler
 SystemRequirements: C++11, GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
