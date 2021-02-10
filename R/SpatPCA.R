@@ -225,7 +225,7 @@ spatpca <- function(x,
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
 #' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
-#' rm_loc <- sample(1:50, 20)
+#' rm_loc <- sample(1:10, 2)
 #' x_1Drm <- x_1D[-rm_loc]
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
@@ -259,7 +259,7 @@ predictEigenfunction <- function(spatpca_object, x_new) {
 #' Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 #' set.seed(1234)
 #' Y_1D <- rnorm(n = 100, sd = 3) %*% t(Phi_1D) + matrix(rnorm(n = 100 * 10), 100, 10)
-#' rm_loc <- sample(1:50, 20)
+#' rm_loc <- sample(1:10, 3)
 #' x_1Drm <- x_1D[-rm_loc]
 #' Y_1Drm <- Y_1D[, -rm_loc]
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
