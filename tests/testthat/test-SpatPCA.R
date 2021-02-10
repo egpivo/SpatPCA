@@ -91,7 +91,7 @@ estimated_eigenvalue_medium_gamma <- spatialPrediction(
 used_number_cores <-
   as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.00046416
-expected_selected_tau1_R_3.6_lower <- 0.01
+expected_selected_tau1_R_3.6_lower <- 0.01169
 expected_selected_gamma_R_3.6_higher <- 0.44503397
 expected_selected_gamma_R_3.6_lower <- 0.4737518
 
