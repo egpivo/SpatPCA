@@ -13,12 +13,6 @@
 
 
 ### Installation
-To get the current released version from CRAN:
-
-```r
-install.packages("SpatPCA")
-```
-
 To get the current development version from GitHub:
 
 ```r
