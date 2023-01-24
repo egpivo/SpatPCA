@@ -302,7 +302,7 @@ predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
 #' plot(cv_1D)
 #
 plot.spatpca <- function(x, ...) {
-  if (class(x) != "spatpca") {
+  if (! inherits(x, "spatpca")) {
     stop("Invalid object! Please enter a `spatpca` object")
   }
 
@@ -338,7 +338,7 @@ plot.spatpca <- function(x, ...) {
       cv_dataframe,
       aes(x = parameter, y = cv, color = type)
     ) +
-    geom_line(size = 1.5) +
+    geom_line(linewidth = 1.5) +
     facet_grid(scales = "free", . ~ type)
 
   return(suppressMessages(print(result)))

@@ -54,7 +54,7 @@ scaleLocation <- function(location) {
 #' @return NULL
 #'
 checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new) {
-  if (class(spatpca_object) != "spatpca") {
+  if (! inherits(spatpca_object,  "spatpca")) {
     stop("Invalid object! Please enter a `spatpca` object")
   }
   if (is.null(x_new)) {
