@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Regularized Principal Component Analysis for Spatial Data">
-<meta property="og:description" content="Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigenfunctions
+<meta property="og:description" content="Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigen-functions
   by using the alternating direction method of multipliers algorithm (Wang and Huang, 2017, &lt;DOI:10.1080/10618600.2016.1157483&gt;). The
   method can be applied to either regularly or irregularly spaced data, including 1D, 2D, and 3D.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.3.5</span>
       </span>
     </div>
 
@@ -45,7 +45,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -65,7 +65,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/egpivo/SpatPCA/">
+  <a href="https://github.com/egpivo/SpatPCA/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -82,13 +82,13 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="spatpca-package" class="section level2">
-<h2 class="hasAnchor">
-<a href="#spatpca-package" class="anchor"></a>SpatPCA Package</h2>
-
-<div id="description" class="section level3">
-<h3 class="hasAnchor">
-<a href="#description" class="anchor"></a>Description</h3>
+<div class="section level2">
+<h2 id="spatpca-package">SpatPCA Package<a class="anchor" aria-label="anchor" href="#spatpca-package"></a>
+</h2>
+<p><a href="https://github.com/egpivo/SpatPCA/actions" class="external-link"><img src="https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://codecov.io/github/egpivo/SpatpCA?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg" alt="Coverage Status"></a></p>
+<div class="section level3">
+<h3 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
+</h3>
 <p><strong><em>SpatPCA</em></strong> is an R package that facilitates regularized principal component analysis,</p>
 <ul>
 <li>seeking the dominant patterns (eigenfunctions), which can be smooth and localized</li>
@@ -97,31 +97,22 @@
 <li>by the alternating direction method of multipliers (ADMM) algorithm</li>
 </ul>
 </div>
-<div id="installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h3>
-<p>To get the current released version from CRAN:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"SpatPCA"</span><span class="op">)</span></code></pre></div>
-<p>To get the current development version from GitHub:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"egpivo/SpatPCA"</span><span class="op">)</span></code></pre></div>
-<p>To compile C++ code with the package <a href="https://CRAN.R-project.org/package=RcppArmadillo" class="external-link"><code>RcppArmadillo</code></a>,</p>
+<div class="section level3">
+<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h3>
+<p>To get the current development version from GitHub: <code>r    devtools::install_github("egpivo/SpatPCA")</code> To compile C++ code with the package <a href="https://CRAN.R-project.org/package=RcppArmadillo" class="external-link"><code>RcppArmadillo</code></a>,</p>
 <ul>
 <li>Windows users require <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>
 </li>
-<li>Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal</li>
+<li>Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal <code>brew update     brew install gcc</code> The detailed solution is describd <a href="http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/" class="external-link">here</a>, or download and install the library <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases" class="external-link"><code>gfortran</code></a> to solve the error <code>ld: library not found for -lgfortran</code>.</li>
 </ul>
-<pre><code>brew update
-brew install gcc</code></pre>
-<p>More details can be found <a href="http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/" class="external-link">here</a>.</p>
 </div>
-<div id="usage" class="section level3">
-<h3 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/egpivo/SpatPCA" class="external-link">SpatPCA</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/spatpca.html">spatpca</a></span><span class="op">(</span><span class="va">position</span>, <span class="va">realizations</span><span class="op">)</span></code></pre></div>
+<div class="section level3">
+<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/egpivo/SpatPCA" class="external-link">SpatPCA</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/spatpca.html">spatpca</a></span><span class="op">(</span><span class="va">position</span>, <span class="va">realizations</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>Input: realizations with the corresponding position</li>
 <li>Output: return the most dominant eigenfunctions automatically.</li>
@@ -129,24 +120,24 @@ brew install gcc</code></pre>
 </li>
 </ul>
 </div>
-<div id="author" class="section level3">
-<h3 class="hasAnchor">
-<a href="#author" class="anchor"></a>Author</h3>
+<div class="section level3">
+<h3 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>
+</h3>
 <p><a href="https://www.linkedin.com/in/wen-ting-wang-6083a17b" title="Wen-Ting Wang" class="external-link">Wen-Ting Wang</a> and <a href="http://www.stat.sinica.edu.tw/hchuang/" title="Hsin-Cheng Huang" class="external-link">Hsin-Cheng Huang</a></p>
 </div>
-<div id="maintainer" class="section level3">
-<h3 class="hasAnchor">
-<a href="#maintainer" class="anchor"></a>Maintainer</h3>
+<div class="section level3">
+<h3 id="maintainer">Maintainer<a class="anchor" aria-label="anchor" href="#maintainer"></a>
+</h3>
 <p><a href="https://www.linkedin.com/in/wen-ting-wang-6083a17b" title="Wen-Ting Wang" class="external-link">Wen-Ting Wang</a></p>
 </div>
-<div id="reference" class="section level3">
-<h3 class="hasAnchor">
-<a href="#reference" class="anchor"></a>Reference</h3>
+<div class="section level3">
+<h3 id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h3>
 <p>Wang, W.-T. and Huang, H.-C. (2017). <a href="https://arxiv.org/pdf/1501.03221v3.pdf," title="Regularized principal component analysis for spatial data" class="external-link">Regularized principal component analysis for spatial data</a>. <em>Journal of Computational and Graphical Statistics</em>, <strong>26</strong>, 14-25.</p>
 </div>
-<div id="license" class="section level3">
-<h3 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h3>
+<div class="section level3">
+<h3 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h3>
 <p>GPL-3</p>
 </div>
 </div>
@@ -156,38 +147,36 @@ brew install gcc</code></pre>
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=SpatPCA">https://​cloud.r-project.org/​package=SpatPCA</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/egpivo/SpatPCA/">https://​github.com/​egpivo/​SpatPCA/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/egpivo/SpatPCA/issues">https://​github.com/​egpivo/​SpatPCA/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=SpatPCA" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/egpivo/SpatPCA/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/egpivo/SpatPCA/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></li>
+<li><a href="https://www.r-project.org/Licenses/GPL-3" class="external-link">GPL-3</a></li>
 </ul>
 </div>
 
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing SpatPCA</a></li>
+</ul>
+</div>
 
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Wen-Ting Wang <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-3051-7302" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li>Hsin-Cheng Huang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5613-349X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Wen-Ting Wang <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-3051-7302" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Hsin-Cheng Huang <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-5613-349X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/egpivo/SpatPCA/actions" class="external-link"><img src="https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
-<li><a href="https://codecov.io/github/egpivo/SpatpCA?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg" alt="Coverage Status"></a></li>
-</ul>
-</div>
+
 
   </div>
 </div>
@@ -200,7 +189,7 @@ brew install gcc</code></pre>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

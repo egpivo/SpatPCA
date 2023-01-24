@@ -1,8 +1,8 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1.9000
-pkgdown_sha: 93e8e8dd2a785d18670888b4856621b3963ffa8c
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
 articles:
   demo-one-dim-location: demo-one-dim-location.html
   demo-two-dim-location: demo-two-dim-location.html
-last_built: 2021-02-21T13:26Z
+last_built: 2023-01-24T12:54Z
 
