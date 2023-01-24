@@ -14,20 +14,18 @@
 
 ### Installation
 To get the current development version from GitHub:
-
-```r
-devtools::install_github("egpivo/SpatPCA")
-```
+   ```r
+   devtools::install_github("egpivo/SpatPCA")
+   ```
 To compile C++ code with the package [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo),
 
  * Windows users require [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/)
  * Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal
-
-```
-brew update
-brew install gcc
-```
-More details can be found [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/).
+    ```
+    brew update
+    brew install gcc
+    ```
+    The detailed solution is describd [here](http://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to solve the error `ld: library not found for -lgfortran`.
 
 ### Usage
 ```r
