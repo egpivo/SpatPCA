@@ -302,7 +302,7 @@ predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
 #' plot(cv_1D)
 #
 plot.spatpca <- function(x, ...) {
-  if (class(x) != "spatpca") {
+  if (! inherits(x, "spatpca")) {
     stop("Invalid object! Please enter a `spatpca` object")
   }
 
