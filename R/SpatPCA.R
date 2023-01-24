@@ -338,7 +338,7 @@ plot.spatpca <- function(x, ...) {
       cv_dataframe,
       aes(x = parameter, y = cv, color = type)
     ) +
-    geom_line(size = 1.5) +
+    geom_line(linewidth = 1.5) +
     facet_grid(scales = "free", . ~ type)
 
   return(suppressMessages(print(result)))
