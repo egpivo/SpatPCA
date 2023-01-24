@@ -1,6 +1,6 @@
 Package: SpatPCA
 Title: Regularized Principal Component Analysis for Spatial Data
-Version: 1.3.3.4
+Version: 1.3.3.5
 Authors@R: c(person(
                 given = "Wen-Ting",
                 family = "Wang",
@@ -22,8 +22,11 @@ Description: Provide regularized principal component analysis incorporating smoo
 License: GPL-3
 LazyData: true
 ByteCompile: true
-Imports: Rcpp, RcppParallel, ggplot2
-LinkingTo: Rcpp, RcppArmadillo, RcppParallel
+Imports:
+  Rcpp (>= 1.0.10),
+  RcppParallel,
+  RcppArmadillo,
+  ggplot2
 Suggests: 
     knitr,
     rmarkdown,
@@ -42,7 +45,7 @@ Suggests:
 SystemRequirements: C++11, GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/egpivo/SpatPCA
 BugReports: https://github.com/egpivo/SpatPCA/issues
