@@ -1,4 +1,5 @@
 # generate 1-D data with a given seed
+Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
 set.seed(1234)
 tol <- 1e-6
 num_cores <- 2

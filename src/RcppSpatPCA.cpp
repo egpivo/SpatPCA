@@ -20,7 +20,7 @@ struct thinPlateSpline: public RcppParallel::Worker {
 
   void operator()(std::size_t begin, std::size_t end) {
     for(std::size_t i = begin; i < end; i++) {
-      for(unsigned j = 0; j < p; ++j) {
+      for(int j = 0; j < p; ++j) {
         if(j > i) {
           if(d == 1) {
             double r = sqrt(pow(P(i, 0) - P(j, 0), 2));
@@ -40,7 +40,7 @@ struct thinPlateSpline: public RcppParallel::Worker {
       }  
       
       L(i, p) = 1;
-      for(unsigned k = 0; k < d; ++k)
+      for(int k = 0; k < d; ++k)
         L(i, p + k + 1) = P(i, k);
     }
   }
@@ -109,10 +109,10 @@ arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_l
   mat eigen_fn(pnew, K);
   double psum, r;
 
-  for(unsigned new_i = 0; new_i < pnew ; new_i++) {
-    for(unsigned i = 0; i < K; i++) {
+  for(int new_i = 0; new_i < pnew ; new_i++) {
+    for(int i = 0; i < K; i++) {
       psum = 0;
-      for(unsigned j = 0; j < p; j++) {
+      for(int j = 0; j < p; j++) {
         if(d == 1) {  
           r = norm(new_location.row(new_i) - original_location.row(j), "f");
           if(r != 0)
@@ -497,7 +497,7 @@ struct spatpcaCVPhi3: public RcppParallel::Worker {
       one_vector.ones(decreasing_transformed_eigenvalues.n_elem);
       zero_vector.zeros(decreasing_transformed_eigenvalues.n_elem);
 
-      for(unsigned int gj = 0; gj < gamma.n_elem; gj++) {
+      for(int gj = 0; gj < gamma.n_elem; gj++) {
         total_transformed_eigenvalues = previous_total_transformed_eigenvalues;
         tempL = K;
         if(decreasing_transformed_eigenvalues[0] > gamma[gj]) {
@@ -583,7 +583,7 @@ List spatpcaCV(
       mat Y_train, Y_validation; 
       mat svd_U, Phi_oldg;
       vec singular_value;
-      for(unsigned k = 0; k < M; ++k) {
+      for(int k = 0; k < M; ++k) {
         Y_train = Y.rows(find(nk != (k + 1)));
         Y_validation = Y.rows(find(nk == (k + 1)));
         svd_econ(svd_U, singular_value, Phi_oldg, Y_train, "right");
@@ -611,7 +611,7 @@ List spatpcaCV(
       mat svd_U, Phi_oldg;
       vec singular_value;
 
-      for(unsigned k = 0; k < M; ++k) {
+      for(int k = 0; k < M; ++k) {
         Y_train = Y.rows(find(nk != (k + 1)));
         gram_matrix_Y_train.slice(k) = Y_train.t() * Y_train;
         svd_econ(svd_U, singular_value, Phi_oldg, Y_train, "right");
@@ -636,7 +636,7 @@ List spatpcaCV(
       mat svd_U, Phi_oldg;
       vec singular_values;
 
-      for(unsigned k = 0; k < M; ++k) {
+      for(int k = 0; k < M; ++k) {
         Y_train = Y.rows(find(nk != (k + 1)));
         gram_matrix_Y_train.slice(k) = Y_train.t() * Y_train;
         svd_econ(svd_U, singular_values, Phi_oldg, Y_train, "right");
