@@ -46,7 +46,7 @@ Suggests:
     covr,
     styler,
     V8
-SystemRequirements: C++11, GNU make
+SystemRequirements: C++17, GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
 RoxygenNote: 7.2.3
