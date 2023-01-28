@@ -1,3 +1,16 @@
+## SpatPCA v1.3.3.7 (Release date: 2023-01-28)
+#### Overview 
+In this release, we focus on package maintenance.
+
+#### MAINTENANCE
+- Enhance code coverage over `99%`
+- Update deprecated R settings and GitHub workflow files
+- Fix memory leak errors caused by `tbb` backend in RcppParallel when testing the package on the platform `Debian Linux, R-devel, GCC ASAN/UBSAN`
+- Enhance the readability of the resultant plot by adding math expression
+- Fix grammar errors
+
+
+
 ## SpatPCA v1.3.3.0 (Release date: 2021-01-31)
 #### Overview 
 In this release, we take care of the perspective of software quality by refactoring code for better readability and adding unit-tests. Accordingly, we add multiple features by separating implicit functions from `spatpca`.
