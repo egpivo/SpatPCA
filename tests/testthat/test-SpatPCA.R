@@ -172,7 +172,7 @@ tau2 <- setTau2(NULL, M)
 l2 <- setL2(tau2)
 setCores(2)
 cv_with_k_seleted <-
-  spatpcaCVWithSelectingK(x_1D, Y_1D, M, tau1, tau2, 1, shuffle_split, 10, 1e-04, l2)
+  spatpcaCVWithSelectedK(x_1D, Y_1D, M, tau1, tau2, 1, shuffle_split, 10, 1e-04, l2)
 
 test_that("auxiliary function for selecting K", {
   expect_equal(cv_with_k_seleted$selected_K, 1)

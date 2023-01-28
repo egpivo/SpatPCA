@@ -16,7 +16,7 @@ Authors@R: c(person(
                 comment = c(ORCID = "0000-0002-5613-349X")
               )
             )
-Description: Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigen-functions
+Description: Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigenfunctions
   by using the alternating direction method of multipliers algorithm (Wang and Huang, 2017, <DOI:10.1080/10618600.2016.1157483>). The
   method can be applied to either regularly or irregularly spaced data, including 1D, 2D, and 3D.
 License: GPL-3
