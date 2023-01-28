@@ -8,13 +8,13 @@
 #' @param x Location matrix
 #' @param Y Data matrix
 #' @param M The number of folds for cross validation; default is 5.
-#' @param tau1 Vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
-#' @param tau2 Vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
-#' @param gamma Vector of a nonnegative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.
+#' @param tau1 Vector of a non-negative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
+#' @param tau2 Vector of a non-negative sparseness parameter sequence. If NULL, none of tau2 is used.
+#' @param gamma Vector of a non-negative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.
 #' @param shuffle_split Vector of indices for random splitting Y into training and test sets 
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
-#' @param l2 Vector of a nonnegative tuning parameter sequence for ADMM use
+#' @param l2 Vector of a non-negative tuning parameter sequence for ADMM use
 #' @return A list of objects including
 #' \item{cv_result}{A list of resultant objects produced by `spatpcaCV`}
 #' \item{selected_K}{Selected K based on CV.}
@@ -43,9 +43,9 @@ spatpcaCVWithSelectingK <- function(x, Y, M, tau1, tau2, gamma, shuffle_split, m
 #' @param Y Data matrix (\eqn{n \times p}) stores the values at \eqn{p} locations with sample size \eqn{n}.
 #' @param K Optional user-supplied number of eigenfunctions; default is NULL. If K is NULL or is_K_selected is TRUE, K is selected automatically.
 #' @param is_K_selected If TRUE, K is selected automatically; otherwise, is_K_selected is set to be user-supplied K. Default depends on user-supplied K.
-#' @param tau1 Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
-#' @param tau2 Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.
-#' @param gamma Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.
+#' @param tau1 Optional user-supplied numeric vector of a non-negative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
+#' @param tau2 Optional user-supplied numeric vector of a non-negative sparseness parameter sequence. If NULL, none of tau2 is used.
+#' @param gamma Optional user-supplied numeric vector of a non-negative tuning parameter sequence. If NULL, 10 values in a range are used.
 #' @param M Optional number of folds for cross validation; default is 5.
 #' @param is_Y_detrended If TRUE, center the columns of Y. Default is FALSE.
 #' @param maxit Maximum number of iterations. Default value is 100.
@@ -316,30 +316,53 @@ plot.spatpca <- function(x, ...) {
         plot.title = element_text(hjust = 0.5)
       )
   )
+  tau1_hat_string = paste(
+    c("hat(tau)[1]==", formatC(x$selected_tau1, format = "f", digits = 3)),
+    collapse = ""
+  )
+  tau2_hat_string = paste(
+    c("hat(tau)[2]==", formatC(x$selected_tau2, format = "f", digits = 3)),
+    collapse = ""
+  )
+
+  parameter_types = c(
+    "tau[1]~'|'~tau[2]==0",
+    paste(c("tau[2]~'|'~", tau1_hat_string), collapse=""),
+    paste(c("gamma~'|'~list(", tau1_hat_string, ",", tau2_hat_string, ")"),collapse="")
+  )
+  
+  
   cv_dataframe <- rbind(
     data.frame(
-      type = "tau1 given tau2 = 0",
+      type = parameter_types[1],
       parameter = array(x$tau1),
       cv = array(x$cv_score_tau1)
     ),
     data.frame(
-      type = "tau2 given selected tau1",
+      type = parameter_types[2],
       parameter = array(x$tau2),
       cv = array(x$cv_score_tau2)
     ),
     data.frame(
-      type = "gamma given selected tau1 and tau2",
+      type = parameter_types[3],
       parameter = array(x$gamma),
       cv = array(x$cv_score_gamma)
     )
+    
   )
+  cv_dataframe$type = factor(cv_dataframe$type, levels=parameter_types)
+
   result <-
     ggplot(
       cv_dataframe,
       aes(x = parameter, y = cv, color = type)
     ) +
-    geom_line(linewidth = 1.5) +
-    facet_grid(scales = "free", . ~ type)
+    geom_line(linewidth = 1.5)+
+    facet_grid(
+      scales = "free",
+      . ~ type,
+      labeller = labeller(type=label_parsed)) 
 
   return(suppressMessages(print(result)))
 }
+
