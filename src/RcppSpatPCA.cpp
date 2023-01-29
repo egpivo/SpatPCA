@@ -6,6 +6,7 @@
 #include <Rcpp.h>
 #include <iostream>
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::plugins(cpp17)]]                                        
 
 using namespace Rcpp;
 using namespace std;
