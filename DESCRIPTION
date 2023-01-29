@@ -1,6 +1,6 @@
 Package: SpatPCA
 Title: Regularized Principal Component Analysis for Spatial Data
-Version: 1.3.3.7
+Version: 1.3.3.8
 Authors@R: c(person(
                 given = "Wen-Ting",
                 family = "Wang",
