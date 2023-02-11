@@ -27,7 +27,7 @@ Depends:
     R (>= 3.4.0)
 Imports:
   Rcpp (>= 1.0.10),
-  RcppParallel,
+  RcppParallel (>= 5.1.6),
   ggplot2
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Suggests:
