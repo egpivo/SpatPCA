@@ -5,6 +5,3 @@ if (!testthat:::on_cran()) {
   Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
   test_check("SpatPCA")
 }
-
-
-

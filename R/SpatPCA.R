@@ -4,14 +4,14 @@
 #' Internal function: M-fold CV of SpatPCA with selected K
 #'
 #' @keywords internal
-#' 
+#'
 #' @param x Location matrix
 #' @param Y Data matrix
 #' @param M The number of folds for cross validation; default is 5.
 #' @param tau1 Vector of a non-negative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.
 #' @param tau2 Vector of a non-negative sparseness parameter sequence. If NULL, none of tau2 is used.
 #' @param gamma Vector of a non-negative hyper parameter sequence for tuning eigenvalues. If NULL, 10 values in a range are used.
-#' @param shuffle_split Vector of indices for random splitting Y into training and test sets 
+#' @param shuffle_split Vector of indices for random splitting Y into training and test sets
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param l2 Vector of a non-negative tuning parameter sequence for ADMM use
@@ -19,20 +19,33 @@
 #' \item{cv_result}{A list of resultant objects produced by `spatpcaCV`}
 #' \item{selected_K}{Selected K based on CV.}
 #'
-spatpcaCVWithSelectedK <- function(x, Y, M, tau1, tau2, gamma, shuffle_split, maxit, thr, l2) {
-  upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
-  prev_cv_selection <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
-  
-  for (k in 2:upper_bound) {
-    cv_selection <- spatpcaCV(x, Y, M, k, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
-    difference <- prev_cv_selection$selected_gamma - cv_selection$selected_gamma
-    prev_cv_selection <- cv_selection
-    if (difference <= 0 || abs(difference) <= 1e-8) {
-      break
+spatpcaCVWithSelectedK <-
+  function(x,
+           Y,
+           M,
+           tau1,
+           tau2,
+           gamma,
+           shuffle_split,
+           maxit,
+           thr,
+           l2) {
+    upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
+    prev_cv_selection <-
+      spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
+    
+    for (k in 2:upper_bound) {
+      cv_selection <-
+        spatpcaCV(x, Y, M, k, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
+      difference <-
+        prev_cv_selection$selected_gamma - cv_selection$selected_gamma
+      prev_cv_selection <- cv_selection
+      if (difference <= 0 || abs(difference) <= 1e-8) {
+        break
+      }
     }
+    return(list(cv_result = cv_selection, selected_K = k - 1))
   }
-  return(list(cv_result = cv_selection, selected_K = k - 1))
-}
 
 #'
 #' @title  Regularized PCA for spatial data
@@ -51,9 +64,9 @@ spatpcaCVWithSelectedK <- function(x, Y, M, tau1, tau2, gamma, shuffle_split, ma
 #' @param maxit Maximum number of iterations. Default value is 100.
 #' @param thr Threshold for convergence. Default value is \eqn{10^{-4}}.
 #' @param num_cores Number of cores used to parallel computing. Default value is NULL (See `RcppParallel::defaultNumThreads()`)
-#' 
+#'
 #' @seealso \link{predict}
-#' 
+#'
 #' @return A list of objects including
 #' \item{eigenfn}{Estimated eigenfunctions at the new locations, x_new.}
 #' \item{selected_K}{Selected K based on CV. Execute the algorithm when `is_K_selected` is `TRUE`.}
@@ -112,15 +125,15 @@ spatpcaCVWithSelectedK <- function(x, Y, M, tau1, tau2, gamma, shuffle_split, ma
 #' xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
 #' eof <- spatpca(x = xx,
 #'                Y = YY,
-#'                K = cv$selected_K, 
-#'                tau1 = cv$selected_tau1, 
+#'                K = cv$selected_K,
+#'                tau1 = cv$selected_tau1,
 #'                tau2 = cv$selected_tau2)
-#' predicted_eof <- predictEigenfunction(eof, xx_new)              
+#' predicted_eof <- predictEigenfunction(eof, xx_new)
 #' quilt.plot(xx_new,
 #'            predicted_eof[,1],
-#'            nx = new_p, 
-#'            ny = new_p, 
-#'            xlab = "lon.", 
+#'            nx = new_p,
+#'            ny = new_p,
+#'            xlab = "lon.",
 #'            ylab = "lat.")
 #' map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 #' map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
@@ -156,7 +169,7 @@ spatpca <- function(x,
   call2 <- match.call()
   checkInputData(Y, x, M)
   setCores(num_cores)
-
+  
   # Transform main objects
   x <- as.matrix(x)
   Y <- detrend(Y, is_Y_detrended)
@@ -165,24 +178,45 @@ spatpca <- function(x,
   n <- nrow(Y)
   scaled_x <- scaleLocation(x)
   shuffle_split <- sample(rep(1:M, length.out = nrow(Y)))
-
+  
   # Initialize candidates of tuning parameters
   tau1 <- setTau1(tau1, M)
   tau2 <- setTau2(tau2, M)
   l2 <- setL2(tau2)
-  gamma <- setGamma(gamma, Y[which(shuffle_split != 1), ])
-
-
+  gamma <- setGamma(gamma, Y[which(shuffle_split != 1),])
+  
+  
   if (is_K_selected) {
-    cv_with_selected_k <- spatpcaCVWithSelectedK(scaled_x, Y, M, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
+    cv_with_selected_k <-
+      spatpcaCVWithSelectedK(scaled_x,
+                             Y,
+                             M,
+                             tau1,
+                             tau2,
+                             gamma,
+                             shuffle_split,
+                             maxit,
+                             thr,
+                             l2)
     cv_result <- cv_with_selected_k$cv_result
     selected_K <- cv_with_selected_k$selected_K
   }
   else {
-    cv_result <- spatpcaCV(scaled_x, Y, M, K, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
+    cv_result <-
+      spatpcaCV(scaled_x,
+                Y,
+                M,
+                K,
+                tau1,
+                tau2,
+                gamma,
+                shuffle_split,
+                maxit,
+                thr,
+                l2)
     selected_K <- K
   }
-
+  
   selected_tau1 <- cv_result$selected_tau1
   selected_tau2 <- cv_result$selected_tau2
   selected_gamma <- cv_result$selected_gamma
@@ -190,7 +224,7 @@ spatpca <- function(x,
   cv_score_tau2 <- cv_result$cv_score_tau2
   cv_score_gamma <- cv_result$cv_score_gamma
   estimated_eigenfn <- cv_result$estimated_eigenfn
-
+  
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
@@ -214,8 +248,8 @@ spatpca <- function(x,
 #' @title  Spatial dominant patterns on new locations
 #'
 #' @description Estimate K eigenfunctions on new locations
-#' 
-#' @param spatpca_object An `spatpca` class object 
+#'
+#' @param spatpca_object An `spatpca` class object
 #' @param x_new New location matrix.
 #' @seealso \link{spatpca}
 #' @return {A matrix with K Eigenfunction values on new locations.}
@@ -231,24 +265,22 @@ spatpca <- function(x,
 #' x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
 #' dominant_patterns <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
-#' 
+#'
 predictEigenfunction <- function(spatpca_object, x_new) {
   checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
   scaled_x_new <- scaleLocation(x_new)
-
-  predicted_eigenfn <- eigenFunction(
-    scaled_x_new,
-    spatpca_object$scaled_x,
-    spatpca_object$eigenfn
-  )
+  
+  predicted_eigenfn <- eigenFunction(scaled_x_new,
+                                     spatpca_object$scaled_x,
+                                     spatpca_object$eigenfn)
   return(predicted_eigenfn)
 }
 
 #' @title  Spatial predictions on new locations
 #'
 #' @description Predict the response on new locations with the estimated spatial structures.
-#' 
-#' @param spatpca_object An `spatpca` class object 
+#'
+#' @param spatpca_object An `spatpca` class object
 #' @param x_new New location matrix.
 #' @param eigen_patterns_on_new_site Eigen-patterns on x_new
 #' @seealso \link{spatpca}
@@ -265,22 +297,26 @@ predictEigenfunction <- function(spatpca_object, x_new) {
 #' new_x_1D <- as.matrix(seq(-5, 5, length = 20))
 #' cv_1D <- spatpca(x = removed_x_1D, Y = removed_Y_1D, tau2 = 1:100, num_cores = 2)
 #' predictions <- predict(cv_1D, x_new = new_x_1D)
-#' 
-predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
-  checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
-
-  if (is.null(eigen_patterns_on_new_site)) {
-    eigen_patterns_on_new_site <- predictEigenfunction(spatpca_object, x_new)
+#'
+predict <-
+  function(spatpca_object,
+           x_new,
+           eigen_patterns_on_new_site = NULL) {
+    checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
+    
+    if (is.null(eigen_patterns_on_new_site)) {
+      eigen_patterns_on_new_site <-
+        predictEigenfunction(spatpca_object, x_new)
+    }
+    
+    spatial_prediction <- spatialPrediction(
+      spatpca_object$eigenfn,
+      spatpca_object$detrended_Y,
+      spatpca_object$selected_gamma,
+      eigen_patterns_on_new_site
+    )
+    return(spatial_prediction$prediction)
   }
-
-  spatial_prediction <- spatialPrediction(
-    spatpca_object$eigenfn,
-    spatpca_object$detrended_Y,
-    spatpca_object$selected_gamma,
-    eigen_patterns_on_new_site
-  )
-  return(spatial_prediction$prediction)
-}
 
 #'
 #' @title  Display the cross-validation results
@@ -302,10 +338,10 @@ predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
 #' plot(cv_1D)
 #
 plot.spatpca <- function(x, ...) {
-  if (! inherits(x, "spatpca")) {
+  if (!inherits(x, "spatpca")) {
     stop("Invalid object! Please enter a `spatpca` object")
   }
-
+  
   # Set the default theme
   theme_set(
     theme_bw() +
@@ -316,20 +352,29 @@ plot.spatpca <- function(x, ...) {
         plot.title = element_text(hjust = 0.5)
       )
   )
-  tau1_hat_string = paste(
-    c("hat(tau)[1]==", formatC(x$selected_tau1, format = "f", digits = 3)),
-    collapse = ""
-  )
-  tau2_hat_string = paste(
-    c("hat(tau)[2]==", formatC(x$selected_tau2, format = "f", digits = 3)),
-    collapse = ""
-  )
-
-  parameter_types = c(
-    "tau[1]~'|'~tau[2]==0",
-    paste(c("tau[2]~'|'~", tau1_hat_string), collapse=""),
-    paste(c("gamma~'|'~list(", tau1_hat_string, ",", tau2_hat_string, ")"),collapse="")
-  )
+  tau1_hat_string = paste(c(
+    "hat(tau)[1]==",
+    formatC(x$selected_tau1, format = "f", digits = 3)
+  ),
+  collapse = "")
+  tau2_hat_string = paste(c(
+    "hat(tau)[2]==",
+    formatC(x$selected_tau2, format = "f", digits = 3)
+  ),
+  collapse = "")
+  
+  parameter_types = c("tau[1]~'|'~tau[2]==0",
+                      paste(c("tau[2]~'|'~", tau1_hat_string), collapse = ""),
+                      paste(
+                        c(
+                          "gamma~'|'~list(",
+                          tau1_hat_string,
+                          ",",
+                          tau2_hat_string,
+                          ")"
+                        ),
+                        collapse = ""
+                      ))
   
   
   cv_dataframe <- rbind(
@@ -350,21 +395,17 @@ plot.spatpca <- function(x, ...) {
     )
     
   )
-  cv_dataframe$type = factor(cv_dataframe$type, levels=parameter_types)
-
+  cv_dataframe$type = factor(cv_dataframe$type, levels = parameter_types)
+  
   result <-
-    ggplot(
-      cv_dataframe,
-      aes(x = parameter, y = cv, color = type)
-    ) +
-    geom_line(linewidth = 1.5)+
-    facet_grid(
-      scales = "free",
-      . ~ type,
-      labeller = labeller(type=label_parsed)) +
+    ggplot(cv_dataframe,
+           aes(x = parameter, y = cv, color = type)) +
+    geom_line(linewidth = 1.5) +
+    facet_grid(scales = "free",
+               . ~ type,
+               labeller = labeller(type = label_parsed)) +
     ggtitle("Result of K-fold CV")
-
+  
   
   return(suppressMessages(print(result)))
 }
-
