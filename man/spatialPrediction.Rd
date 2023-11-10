@@ -11,9 +11,9 @@ spatialPrediction(phir, Yr, gamma, predicted_eignefunction)
 
 \item{Yr}{A data matrix}
 
-\item{predicted_eignefunction}{A vector of values of an eigenfunction on new locations}
+\item{gamma}{A gamma value}
 
-\item{gammar}{A gamma value}
+\item{predicted_eignefunction}{A vector of values of an eigenfunction on new locations}
 }
 \value{
 A list of objects
