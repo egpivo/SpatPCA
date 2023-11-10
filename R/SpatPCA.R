@@ -19,6 +19,7 @@
 #' \item{cv_result}{A list of resultant objects produced by `spatpcaCV`}
 #' \item{selected_K}{Selected K based on CV.}
 #'
+
 spatpcaCVWithSelectedK <-
   function(x,
            Y,
@@ -31,9 +32,8 @@ spatpcaCVWithSelectedK <-
            thr,
            l2) {
     upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
-    prev_cv_selection <-
-      spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
-    
+    prev_cv_selection <- spatpcaCV(x, Y, M, 1, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
+
     for (k in 2:upper_bound) {
       cv_selection <-
         spatpcaCV(x, Y, M, k, tau1, tau2, gamma, shuffle_split, maxit, thr, l2)
@@ -169,7 +169,7 @@ spatpca <- function(x,
   call2 <- match.call()
   checkInputData(Y, x, M)
   setCores(num_cores)
-  
+
   # Transform main objects
   x <- as.matrix(x)
   Y <- detrend(Y, is_Y_detrended)
@@ -178,14 +178,13 @@ spatpca <- function(x,
   n <- nrow(Y)
   scaled_x <- scaleLocation(x)
   shuffle_split <- sample(rep(1:M, length.out = nrow(Y)))
-  
+
   # Initialize candidates of tuning parameters
   tau1 <- setTau1(tau1, M)
   tau2 <- setTau2(tau2, M)
   l2 <- setL2(tau2)
-  gamma <- setGamma(gamma, Y[which(shuffle_split != 1),])
-  
-  
+  gamma <- setGamma(gamma, Y[which(shuffle_split != 1), ])
+
   if (is_K_selected) {
     cv_with_selected_k <-
       spatpcaCVWithSelectedK(scaled_x,
@@ -216,7 +215,7 @@ spatpca <- function(x,
                 l2)
     selected_K <- K
   }
-  
+
   selected_tau1 <- cv_result$selected_tau1
   selected_tau2 <- cv_result$selected_tau2
   selected_gamma <- cv_result$selected_gamma
@@ -224,7 +223,7 @@ spatpca <- function(x,
   cv_score_tau2 <- cv_result$cv_score_tau2
   cv_score_gamma <- cv_result$cv_score_gamma
   estimated_eigenfn <- cv_result$estimated_eigenfn
-  
+
   obj.cv <- list(
     call = call2,
     eigenfn = estimated_eigenfn,
@@ -303,12 +302,12 @@ predict <-
            x_new,
            eigen_patterns_on_new_site = NULL) {
     checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
-    
+
     if (is.null(eigen_patterns_on_new_site)) {
       eigen_patterns_on_new_site <-
         predictEigenfunction(spatpca_object, x_new)
     }
-    
+
     spatial_prediction <- spatialPrediction(
       spatpca_object$eigenfn,
       spatpca_object$detrended_Y,
@@ -341,7 +340,7 @@ plot.spatpca <- function(x, ...) {
   if (!inherits(x, "spatpca")) {
     stop("Invalid object! Please enter a `spatpca` object")
   }
-  
+
   # Set the default theme
   theme_set(
     theme_bw() +
@@ -352,31 +351,25 @@ plot.spatpca <- function(x, ...) {
         plot.title = element_text(hjust = 0.5)
       )
   )
-  tau1_hat_string = paste(c(
-    "hat(tau)[1]==",
-    formatC(x$selected_tau1, format = "f", digits = 3)
-  ),
-  collapse = "")
-  tau2_hat_string = paste(c(
-    "hat(tau)[2]==",
-    formatC(x$selected_tau2, format = "f", digits = 3)
-  ),
-  collapse = "")
-  
-  parameter_types = c("tau[1]~'|'~tau[2]==0",
-                      paste(c("tau[2]~'|'~", tau1_hat_string), collapse = ""),
-                      paste(
-                        c(
-                          "gamma~'|'~list(",
-                          tau1_hat_string,
-                          ",",
-                          tau2_hat_string,
-                          ")"
-                        ),
-                        collapse = ""
-                      ))
-  
-  
+  tau1_hat_string = paste(
+    c(
+      "hat(tau)[1]==",
+      formatC(x$selected_tau1, format = "f", digits = 3)
+    ),
+    collapse = ""
+  )
+  tau2_hat_string = paste(
+    c(
+      "hat(tau)[2]==",
+     formatC(x$selected_tau2, format = "f", digits = 3)
+    ),
+    collapse = ""
+  )
+  parameter_types = c(
+    "tau[1]~'|'~tau[2]==0",
+    paste(c("tau[2]~'|'~", tau1_hat_string), collapse = ""),
+    paste(c("gamma~'|'~list(", tau1_hat_string, ",", tau2_hat_string, ")"), collapse = "")
+  )
   cv_dataframe <- rbind(
     data.frame(
       type = parameter_types[1],
@@ -393,10 +386,9 @@ plot.spatpca <- function(x, ...) {
       parameter = array(x$gamma),
       cv = array(x$cv_score_gamma)
     )
-    
   )
   cv_dataframe$type = factor(cv_dataframe$type, levels = parameter_types)
-  
+
   result <-
     ggplot(cv_dataframe,
            aes(x = parameter, y = cv, color = type)) +
@@ -405,7 +397,5 @@ plot.spatpca <- function(x, ...) {
                . ~ type,
                labeller = labeller(type = label_parsed)) +
     ggtitle("Result of K-fold CV")
-  
-  
   return(suppressMessages(print(result)))
 }

@@ -105,7 +105,7 @@ checkInputData <- function(Y, x, M) {
 #' @keywords internal
 #' @param Y Data matrix
 #' @param M Number of folds for cross-validation
-#' @return NULL
+#' @return integer
 #'
 fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
   n <- nrow(Y)
@@ -118,10 +118,9 @@ fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
 #'
 #' @keywords internal
 #' @param K Optional user-supplied number of eigenfunctions.
+#' @param Y Data matrix
 #' @param M Number of folds for cross-validation
-#' @param n Number of rows of Y
-#' @param p Number of columns of Y
-#' @return NULL
+#' @return integer
 #'
 setNumberEigenfunctions <- function(K, Y, M) {
   upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
