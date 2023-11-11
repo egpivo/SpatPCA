@@ -35,7 +35,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.4</span>
       </span>
     </div>
 
@@ -82,48 +82,55 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
+<div class="section level1">
+<div class="page-header"><h1 id="spatpca-package">SpatPCA Package<a class="anchor" aria-label="anchor" href="#spatpca-package"></a>
+</h1></div>
+<p><a href="https://github.com/egpivo/SpatPCA/actions" class="external-link"><img src="https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://app.codecov.io/github/egpivo/SpatpCA?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg" alt="Coverage Status"></a></p>
 <div class="section level2">
-<h2 id="spatpca-package">SpatPCA Package<a class="anchor" aria-label="anchor" href="#spatpca-package"></a>
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h2>
-<p><a href="https://github.com/egpivo/SpatPCA/actions" class="external-link"><img src="https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://codecov.io/github/egpivo/SpatpCA?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg" alt="Coverage Status"></a></p>
-<div class="section level3">
-<h3 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
-</h3>
-<p><strong><em>SpatPCA</em></strong> is an R package that facilitates regularized principal component analysis,</p>
+<p><strong>SpatPCA</strong> is an R package designed for efficient regularized principal component analysis, providing the following features:</p>
 <ul>
-<li>seeking the dominant patterns (eigenfunctions), which can be smooth and localized</li>
-<li>computing spatial prediction (Kriging) at new locations</li>
-<li>suitable for either regularly or irregularly spaced data, including 1D, 2D, and 3D</li>
-<li>by the alternating direction method of multipliers (ADMM) algorithm</li>
+<li>Identification of dominant spatial patterns (eigenfunctions) with both smooth and localized characteristics.</li>
+<li>Spatial prediction (Kriging) at new locations.</li>
+<li>Adaptability for regularly or irregularly spaced data, spanning 1D, 2D, and 3D datasets.</li>
+<li>Implementation using the alternating direction method of multipliers (ADMM) algorithm.</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h3>
-<p>To get the current development version from GitHub: <code>r    devtools::install_github("egpivo/SpatPCA")</code> To compile C++ code with the package <a href="https://CRAN.R-project.org/package=RcppArmadillo" class="external-link"><code>RcppArmadillo</code></a>,</p>
-<ul>
-<li>Windows users require <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>
-</li>
-<li>Mac users require Xcode Command Line Tools, and install the library gfortran by typing the following lines into terminal <code>brew update     brew install gcc</code> The detailed solution is describd <a href="https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/" class="external-link">here</a>, or download and install the library <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases" class="external-link"><code>gfortran</code></a> to solve the error <code>ld: library not found for -lgfortran</code>.</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h3>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>To install the current development version from GitHub, use the following R code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"egpivo/SpatPCA"</span><span class="op">)</span></span></code></pre></div>
+<p>For compiling C++ code with the required <a href="https://CRAN.R-project.org/package=RcppArmadillo" class="external-link"><code>RcppArmadillo</code></a> and <a href="https://CRAN.R-project.org/package=RcppParallel" class="external-link"><code>RcppParallel</code></a> packages, follow these instructions:</p>
+<ul>
+<li>Windows users: Install <a href="https://CRAN.R-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>
+</li>
+<li>Mac users: Install Xcode Command Line Tools, and install the <code>gfortran</code> library. You can achieve this by running the following commands in the terminal:</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> update</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install gcc</span></code></pre></div>
+<p>For a detailed solution, refer to <a href="https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/" class="external-link">this link</a>, or download and install the library <a href="https://github.com/fxcoudert/gfortran-for-macOS/releases" class="external-link"><code>gfortran</code></a> to resolve the error <code>ld: library not found for -lgfortran</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/egpivo/SpatPCA" class="external-link">SpatPCA</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/spatpca.html">spatpca</a></span><span class="op">(</span><span class="va">position</span>, <span class="va">realizations</span><span class="op">)</span></span></code></pre></div>
 <ul>
-<li>Input: realizations with the corresponding position</li>
-<li>Output: return the most dominant eigenfunctions automatically.</li>
-<li>More details can be referred to <a href="https://egpivo.github.io/SpatPCA/articles/" class="external-link">Demo</a>
-</li>
+<li>Input: Realizations with the corresponding positions.</li>
+<li>Output: Return the most dominant eigenfunctions automatically.</li>
+<li>For more details, refer to the <a href="https://egpivo.github.io/SpatPCA/articles/" class="external-link">Demo</a>.</li>
 </ul>
-</div>
 <div class="section level3">
 <h3 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>
 </h3>
-<p><a href="https://www.linkedin.com/in/wen-ting-wang-6083a17b" class="external-link">Wen-Ting Wang</a> and <a href="https://sites.stat.sinica.edu.tw/hchuang/" class="external-link">Hsin-Cheng Huang</a></p>
+<ul>
+<li><a href="https://www.linkedin.com/in/wen-ting-wang-6083a17b" class="external-link">Wen-Ting Wang</a></li>
+<li><a href="https://sites.stat.sinica.edu.tw/hchuang/" class="external-link">Hsin-Cheng Huang</a></li>
+</ul>
 </div>
 <div class="section level3">
 <h3 id="maintainer">Maintainer<a class="anchor" aria-label="anchor" href="#maintainer"></a>
@@ -135,9 +142,10 @@
 </h3>
 <p>Wang, W.-T. and Huang, H.-C. (2017). <a href="https://arxiv.org/pdf/1501.03221v3.pdf," title="Regularized principal component analysis for spatial data" class="external-link">Regularized principal component analysis for spatial data</a>. <em>Journal of Computational and Graphical Statistics</em>, <strong>26</strong>, 14-25.</p>
 </div>
-<div class="section level3">
-<h3 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h3>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
 <p>GPL-3</p>
 </div>
 </div>

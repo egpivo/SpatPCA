@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.3.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.4</span>
       </span>
     </div>
 
@@ -214,7 +214,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class="r-in"><span><span class="co">## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dnychka/fieldsRPackage" class="external-link">fields</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: spam</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Spam version 2.9-1 (2022-08-07) is loaded.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Spam version 2.10-0 (2023-10-23) is loaded.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Type 'help( Spam)' or 'demo( spam)' for a short introduction </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> and overview of this package.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Help for individual functions is also obtained by adding the</span>
@@ -224,7 +224,6 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     backsolve, forwardsolve</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: viridis</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: viridisLite</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Try help(fields) to get started.</span>
@@ -235,11 +234,6 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     detrend</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘maps’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:viridis’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     unemp</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ozone2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">ozone2</span><span class="op">$</span><span class="va">lon.lat</span></span></span>
 <span class="r-in"><span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="va">ozone2</span><span class="op">$</span><span class="va">y</span></span></span>
@@ -253,7 +247,7 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.html" class="external-link">map</a></span><span class="op">(</span><span class="st">"state"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">xx</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">xx</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="spatpca-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.text.html" class="external-link">map.text</a></span><span class="op">(</span><span class="st">"state"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">xx</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">xx</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in map(database = "state", xlim = range(xx[, 1]), ylim = range(xx[,     2]), fill = TRUE, plot = FALSE, regions = ".", exact = FALSE,     resolution = 0):</span> object 'xx' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(cc):</span> object 'xx' not found</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">YY</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="va">cv</span><span class="op">$</span><span class="va">eigenfn</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"l"</span>, ylab <span class="op">=</span> <span class="st">"1st Principal Component"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="spatpca-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co">### new loactions</span></span></span>
@@ -263,20 +257,20 @@ $$\min_{\mathbf{\Phi}} \|\mathbf{Y}-\mathbf{Y}\mathbf{\Phi}\mathbf{\Phi}'\|^2_F 
 <span class="r-in"><span><span class="va">xx_new</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_lon</span>, y <span class="op">=</span> <span class="va">x_lat</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">eof</span> <span class="op">&lt;-</span> <span class="fu">spatpca</span><span class="op">(</span>x <span class="op">=</span> <span class="va">xx</span>,</span></span>
 <span class="r-in"><span>               Y <span class="op">=</span> <span class="va">YY</span>,</span></span>
-<span class="r-in"><span>               K <span class="op">=</span> <span class="va">cv</span><span class="op">$</span><span class="va">selected_K</span>, </span></span>
-<span class="r-in"><span>               tau1 <span class="op">=</span> <span class="va">cv</span><span class="op">$</span><span class="va">selected_tau1</span>, </span></span>
+<span class="r-in"><span>               K <span class="op">=</span> <span class="va">cv</span><span class="op">$</span><span class="va">selected_K</span>,</span></span>
+<span class="r-in"><span>               tau1 <span class="op">=</span> <span class="va">cv</span><span class="op">$</span><span class="va">selected_tau1</span>,</span></span>
 <span class="r-in"><span>               tau2 <span class="op">=</span> <span class="va">cv</span><span class="op">$</span><span class="va">selected_tau2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">predicted_eof</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictEigenfunction.html">predictEigenfunction</a></span><span class="op">(</span><span class="va">eof</span>, <span class="va">xx_new</span><span class="op">)</span>              </span></span>
+<span class="r-in"><span><span class="va">predicted_eof</span> <span class="op">&lt;-</span> <span class="fu"><a href="predictEigenfunction.html">predictEigenfunction</a></span><span class="op">(</span><span class="va">eof</span>, <span class="va">xx_new</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/fields/man/quilt.plot.html" class="external-link">quilt.plot</a></span><span class="op">(</span><span class="va">xx_new</span>,</span></span>
 <span class="r-in"><span>           <span class="va">predicted_eof</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>           nx <span class="op">=</span> <span class="va">new_p</span>, </span></span>
-<span class="r-in"><span>           ny <span class="op">=</span> <span class="va">new_p</span>, </span></span>
-<span class="r-in"><span>           xlab <span class="op">=</span> <span class="st">"lon."</span>, </span></span>
+<span class="r-in"><span>           nx <span class="op">=</span> <span class="va">new_p</span>,</span></span>
+<span class="r-in"><span>           ny <span class="op">=</span> <span class="va">new_p</span>,</span></span>
+<span class="r-in"><span>           xlab <span class="op">=</span> <span class="st">"lon."</span>,</span></span>
 <span class="r-in"><span>           ylab <span class="op">=</span> <span class="st">"lat."</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.html" class="external-link">map</a></span><span class="op">(</span><span class="st">"state"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x_lon</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x_lat</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="spatpca-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/maps/man/map.text.html" class="external-link">map.text</a></span><span class="op">(</span><span class="st">"state"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x_lon</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">x_lat</span><span class="op">)</span>, cex <span class="op">=</span> <span class="fl">2</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in map(database = "state", xlim = range(x_lon), ylim = range(x_lat),     fill = TRUE, plot = FALSE, regions = ".", exact = FALSE,     resolution = 0):</span> object 'x_lon' not found</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in eval(cc):</span> object 'x_lon' not found</span>
 <span class="r-in"><span><span class="co">## 3D: regular locations</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span></span></span>
