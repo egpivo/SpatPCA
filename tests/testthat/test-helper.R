@@ -1,16 +1,15 @@
 default_number <- RcppParallel::defaultNumThreads()
 test_that("The number of cores for RcppParallel", {
-  expect_error(
-    setCores("test"),
-    "Please enter valid type - but got character"
-  )
-  expect_error(
-    setCores(0),
-    "The number of cores is not greater than 1 - but got 0"
-  )
+  expect_error(setCores("test"),
+               "Please enter valid type - but got character")
+  expect_error(setCores(0),
+               "The number of cores is not greater than 1 - but got 0")
   expect_error(
     setCores(default_number + 1),
-    cat("The input number of cores is invalid - default is ", default_number)
+    cat(
+      "The input number of cores is invalid - default is ",
+      default_number
+    )
   )
   expect_true(setCores(default_number))
   expect_null(setCores())
@@ -30,7 +29,7 @@ tol <- 1e-6
 num_cores <- 2
 
 x_1D <- as.matrix(seq(-5, 5, length = 4))
-Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
+Phi_1D <- exp(-x_1D ^ 2) / norm(exp(-x_1D ^ 2), "F")
 Y_1D <- {
   rnorm(n = 100, sd = 3) %*% t(Phi_1D) +
     matrix(rnorm(n = 100 * 4), 100, 4)
@@ -59,16 +58,16 @@ test_that("check new locations for a spatpca object", {
 test_that("check input of spatpca", {
   expect_error(
     checkInputData(x = as.matrix(1), Y = Y_1D),
-    cat("The number of rows of x should be equal to the number of columns of Y.")
+    cat(
+      "The number of rows of x should be equal to the number of columns of Y."
+    )
   )
   expect_error(
     checkInputData(x = matrix(1:10, ncol = 10), Y = matrix(1)),
     cat("Number of locations must be larger than 2.")
   )
-  expect_error(
-    checkInputData(x = matrix(1:40, ncol = 10), Y = Y_1D),
-    cat("Dimension of locations must be less than 4.")
-  )
+  expect_error(checkInputData(x = matrix(1:40, ncol = 10), Y = Y_1D),
+               cat("Dimension of locations must be less than 4."))
   expect_error(
     checkInputData(x = x_1D, Y = Y_1D, M = 1000),
     cat("Number of folds must be less than sample size.")

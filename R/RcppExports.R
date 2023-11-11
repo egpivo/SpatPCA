@@ -56,7 +56,7 @@ spatpcaCV <- function(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r
 #' @keywords internal
 #' @param phir A matrix of estimated eigenfunctions based on original locations
 #' @param Yr A data matrix
-#' @param gammar A gamma value
+#' @param gamma A gamma value
 #' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 #' @return A list of objects
 #' \item{prediction}{A vector of spatial predictions}

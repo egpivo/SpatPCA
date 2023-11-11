@@ -12,10 +12,11 @@ setCores <- function(num_cores = NULL) {
     if (!is.numeric(num_cores)) {
       stop("Please enter valid type - but got ", class(num_cores))
     }
-
+    
     default_number <- RcppParallel::defaultNumThreads()
     if (num_cores > default_number) {
-      stop("The input number of cores is invalid - default is ", default_number)
+      stop("The input number of cores is invalid - default is ",
+           default_number)
     }
     if (num_cores < 1) {
       stop("The number of cores is not greater than 1 - but got ", num_cores)
@@ -38,7 +39,8 @@ scaleLocation <- function(location) {
   if (dim(location)[2] == 1) {
     min_location <- min(location)
     max_location <- max(location)
-    scaled_location <- (location - min_location) / (max_location - min_location)
+    scaled_location <-
+      (location - min_location) / (max_location - min_location)
   } else {
     scaled_location <- location
   }
@@ -53,21 +55,22 @@ scaleLocation <- function(location) {
 #' @param x_new New location matrix.
 #' @return NULL
 #'
-checkNewLocationsForSpatpcaObject <- function(spatpca_object, x_new) {
-  if (! inherits(spatpca_object,  "spatpca")) {
-    stop("Invalid object! Please enter a `spatpca` object")
+checkNewLocationsForSpatpcaObject <-
+  function(spatpca_object, x_new) {
+    if (!inherits(spatpca_object,  "spatpca")) {
+      stop("Invalid object! Please enter a `spatpca` object")
+    }
+    if (is.null(x_new)) {
+      stop("New locations cannot be NULL")
+    }
+    x_new <- as.matrix(x_new)
+    if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
+      stop(
+        "Inconsistent dimension of locations - original dimension is ",
+        ncol(spatpca_object$x)
+      )
+    }
   }
-  if (is.null(x_new)) {
-    stop("New locations cannot be NULL")
-  }
-  x_new <- as.matrix(x_new)
-  if (ncol(x_new) != ncol(spatpca_object$scaled_x)) {
-    stop(
-      "Inconsistent dimension of locations - original dimension is ",
-      ncol(spatpca_object$x)
-    )
-  }
-}
 
 #'
 #' Internal function: Validate input data for a spatpca object
@@ -102,7 +105,7 @@ checkInputData <- function(Y, x, M) {
 #' @keywords internal
 #' @param Y Data matrix
 #' @param M Number of folds for cross-validation
-#' @return NULL
+#' @return integer
 #'
 fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
   n <- nrow(Y)
@@ -115,10 +118,9 @@ fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
 #'
 #' @keywords internal
 #' @param K Optional user-supplied number of eigenfunctions.
+#' @param Y Data matrix
 #' @param M Number of folds for cross-validation
-#' @param n Number of rows of Y
-#' @param p Number of columns of Y
-#' @return NULL
+#' @return integer
 #'
 setNumberEigenfunctions <- function(K, Y, M) {
   upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)
@@ -145,7 +147,7 @@ setTau1 <- function(tau1, M) {
   } else {
     modified_tau1 <- tau1
   }
-
+  
   if (M < 2) {
     return(max(modified_tau1))
   } else {
@@ -183,7 +185,9 @@ setTau2 <- function(tau2, M) {
 #'
 setL2 <- function(tau2) {
   if (length(tau2) == 1 && tau2 > 0) {
-    return(c(0, exp(seq(log(tau2 / 1e4), log(tau2), length = 10))))
+    return(c(0, exp(seq(
+      log(tau2 / 1e4), log(tau2), length = 10
+    ))))
   } else {
     return(1)
   }
@@ -200,8 +204,10 @@ setL2 <- function(tau2) {
 setGamma <- function(gamma, Y) {
   if (is.null(gamma)) {
     svd_Y_partial <- svd(Y)
-    max_gamma <- svd_Y_partial$d[1]^2 / nrow(Y)
-    return(c(0, exp(seq(log(max_gamma / 1e4), log(max_gamma), length = 10))))
+    max_gamma <- svd_Y_partial$d[1] ^ 2 / nrow(Y)
+    return(c(0, exp(seq(
+      log(max_gamma / 1e4), log(max_gamma), length = 10
+    ))))
   } else {
     return(gamma)
   }

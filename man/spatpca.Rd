@@ -105,15 +105,15 @@ x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
 eof <- spatpca(x = xx,
                Y = YY,
-               K = cv$selected_K, 
-               tau1 = cv$selected_tau1, 
+               K = cv$selected_K,
+               tau1 = cv$selected_tau1,
                tau2 = cv$selected_tau2)
-predicted_eof <- predictEigenfunction(eof, xx_new)              
+predicted_eof <- predictEigenfunction(eof, xx_new)
 quilt.plot(xx_new,
            predicted_eof[,1],
-           nx = new_p, 
-           ny = new_p, 
-           xlab = "lon.", 
+           nx = new_p,
+           ny = new_p,
+           xlab = "lon.",
            ylab = "lat.")
 map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)

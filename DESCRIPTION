@@ -1,6 +1,6 @@
 Package: SpatPCA
 Title: Regularized Principal Component Analysis for Spatial Data
-Version: 1.3.3.8
+Version: 1.3.4
 Authors@R: c(person(
                 given = "Wen-Ting",
                 family = "Wang",
@@ -27,7 +27,7 @@ Depends:
     R (>= 3.4.0)
 Imports:
   Rcpp (>= 1.0.10),
-  RcppParallel,
+  RcppParallel (>= 5.1.7),
   ggplot2
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 Suggests:
@@ -46,7 +46,7 @@ Suggests:
     covr,
     styler,
     V8
-SystemRequirements: C++17, GNU make
+SystemRequirements: GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
 RoxygenNote: 7.2.3
