@@ -11,6 +11,9 @@ checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
 
 \item{x_new}{New location matrix.}
 }
+\value{
+\code{NULL}.
+}
 \description{
 Internal function: Validate new locations for a spatpca object
 }

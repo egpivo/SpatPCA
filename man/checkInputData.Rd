@@ -13,6 +13,9 @@ checkInputData(Y, x, M)
 
 \item{M}{Number of folds for cross-validation}
 }
+\value{
+\code{NULL}.
+}
 \description{
 Internal function: Validate input data for a spatpca object
 }
