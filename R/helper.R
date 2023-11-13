@@ -53,7 +53,7 @@ scaleLocation <- function(location) {
 #' @keywords internal
 #' @param spatpca_object An `spatpca` class object
 #' @param x_new New location matrix.
-#' @return NULL
+#' @return `NULL`.
 #'
 checkNewLocationsForSpatpcaObject <-
   function(spatpca_object, x_new) {
@@ -79,7 +79,7 @@ checkNewLocationsForSpatpcaObject <-
 #' @param Y Data matrix
 #' @param x Location matrix.
 #' @param M Number of folds for cross-validation
-#' @return NULL
+#' @return `NULL`.
 #'
 checkInputData <- function(Y, x, M) {
   x <- as.matrix(x)

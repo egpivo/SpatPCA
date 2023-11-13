@@ -43,14 +43,14 @@ fill_bar <- guides(fill = guide_colourbar(
     label.position = "bottom")
   )
 coltab <- scico(128, palette = 'vik')
-color_scale_limit <- c(-.28, .28)
+color_scale_limit <- c(-.8, .8)
 ```
 #### True spatial pattern (eigenfunction)
 - The underlying spatial pattern below indicates realizations will vary dramatically at the center and be almost unchanged at the both ends of the curve.
 ```{r, out.width = '100%'}
 set.seed(1024)
-p <- 30
-n <- 50
+p <- 25
+n <- 8
 location <-
   matrix(rep(seq(-5, 5, length = p), 2), nrow = p, ncol = 2)
 expanded_location <- expand.grid(location[, 1], location[, 2])
@@ -80,12 +80,13 @@ data.frame(
   - The noise follows the standard normal distribution.
 
 ```{r}
-realizations <- rnorm(n = n, sd = 10) %*% t(true_eigen_fn) + matrix(rnorm(n = n * p^2), n, p^2)
+realizations <- rnorm(n = n, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = n * p^2), n, p^2)
 ```
 
 #### Animate realizations
 - We can see simulated central realizations change in a wide range more frequently than the others.
 ```{r, animation.hook="gifski", out.width = '100%'}
+original_par <- par()
 for (i in 1:n) {
   par(mar = c(3, 3, 1, 1), family = "Times")
   image.plot(
@@ -100,6 +101,7 @@ for (i in 1:n) {
     legend.width=0.5
   )
 }
+par(original_par)
 ```
 
 #### Apply `SpatPCA::spatpca`

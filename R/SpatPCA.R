@@ -324,6 +324,7 @@ predict <-
 #'
 #' @param x An spatpca class object for `plot` method
 #' @param ... Not used directly
+#' @return `NULL`.
 #' @seealso \link{spatpca}
 #'
 #' @export
