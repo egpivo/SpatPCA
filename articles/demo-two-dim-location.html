@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.5</span>
       </span>
     </div>
 
@@ -123,7 +123,7 @@ data for capturing the most dominant spatial pattern</p>
 <span>  label.position <span class="op">=</span> <span class="st">"bottom"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">coltab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/scico/man/scico.html" class="external-link">scico</a></span><span class="op">(</span><span class="fl">128</span>, palette <span class="op">=</span> <span class="st">"vik"</span><span class="op">)</span></span>
-<span><span class="va">color_scale_limit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.28</span>, <span class="fl">.28</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">color_scale_limit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">.8</span>, <span class="fl">.8</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="true-spatial-pattern-eigenfunction">True spatial pattern (eigenfunction)<a class="anchor" aria-label="anchor" href="#true-spatial-pattern-eigenfunction"></a>
@@ -135,8 +135,8 @@ of the curve.</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1024</span><span class="op">)</span></span>
-<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">30</span></span>
-<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">50</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">8</span></span>
 <span><span class="va">location</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="va">p</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">p</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">expanded_location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span><span class="va">location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, <span class="va">location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
@@ -176,7 +176,7 @@ normally with <span class="math inline">\(\sigma=20\)</span>
 </li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">realizations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, sd <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">true_eigen_fn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span> <span class="op">*</span> <span class="va">p</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">p</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">realizations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html" class="external-link">%*%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">true_eigen_fn</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span> <span class="op">*</span> <span class="va">p</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="va">n</span>, <span class="va">p</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="animate-realizations">Animate realizations<a class="anchor" aria-label="anchor" href="#animate-realizations"></a>
@@ -186,7 +186,8 @@ normally with <span class="math inline">\(\sigma=20\)</span>
 more frequently than the others.</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<code class="sourceCode R"><span><span class="va">original_par</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, family <span class="op">=</span> <span class="st">"Times"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/fields/man/image.plot.html" class="external-link">image.plot</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">realizations</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span>, <span class="va">p</span>, <span class="va">p</span><span class="op">)</span>,</span>
@@ -201,13 +202,21 @@ more frequently than the others.</li>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p><img src="demo-two-dim-location_files/figure-html/unnamed-chunk-5-.gif" width="100%" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">original_par</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "cin" cannot be set</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "cra" cannot be set</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "csi" cannot be set</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "cxy" cannot be set</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "din" cannot be set</span></span>
+<span><span class="co">#&gt; Warning in par(original_par): graphical parameter "page" cannot be set</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="apply-spatpcaspatpca">Apply <code>SpatPCA::spatpca</code><a class="anchor" aria-label="anchor" href="#apply-spatpcaspatpca"></a>
 </h4>
 <p>We add a candidate set of <code>tau2</code> to see how
 <strong>SpatPCA</strong> obtain a localized smooth pattern.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tau2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">400</span><span class="op">)</span>, length <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spatpca.html">spatpca</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">expanded_location</span>, Y <span class="op">=</span> <span class="va">realizations</span>, tau2 <span class="op">=</span> <span class="va">tau2</span><span class="op">)</span></span>
 <span><span class="va">eigen_est</span> <span class="op">&lt;-</span> <span class="va">cv</span><span class="op">$</span><span class="va">eigenfn</span></span></code></pre></div>
@@ -217,7 +226,7 @@ more frequently than the others.</li>
 </h4>
 <p>The following figure shows that <strong>SpatPCA</strong> can find
 sparser pattern than PCA, which is close to the true pattern.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  location_dim1 <span class="op">=</span> <span class="va">expanded_location</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>,</span>
 <span>  location_dim2 <span class="op">=</span> <span class="va">expanded_location</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>,</span>
