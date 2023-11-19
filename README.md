@@ -14,19 +14,25 @@
 
 
 ## Installation
-To install the current development version from GitHub, use the following R code:
-```r
-remotes::install_github("egpivo/SpatPCA")
-```
+There are two ways to install the package:
+
+1. **Install from CRAN**:
+   ```r
+   install.packages("SpatPCA")
+   ```
+2. **Install the current development version from GitHub**:
+   ```r
+   remotes::install_github("egpivo/SpatPCA")
+   ```
 
 For compiling C++ code with the required [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo) and [`RcppParallel`](https://CRAN.R-project.org/package=RcppParallel) packages, follow these instructions:
 
 * Windows users: Install [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/)
 * Mac users: Install Xcode Command Line Tools, and install the `gfortran` library. You can achieve this by running the following commands in the terminal:
-```bash
-brew update
-brew install gcc
-```
+  ```bash
+  brew update
+  brew install gcc
+  ```
 
 For a detailed solution, refer to [this link](https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to resolve the error `ld: library not found for -lgfortran`.
 
