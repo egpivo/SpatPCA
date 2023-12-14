@@ -60,7 +60,14 @@ Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis f
 GPL-3
 
 ## Citation
-A BibTeX entry for LaTeX users is
+- To cite package ‘SpatPCA’ in publications use:
+```
+  Wang W, Huang H (2023). _SpatPCA: Regularized Principal Component Analysis for
+  Spatial Data_. R package version 1.3.5,
+  <https://CRAN.R-project.org/package=SpatPCA>.
+```
+
+- A BibTeX entry for LaTeX users is
 ```
   @Manual{,
     title = {SpatPCA: Regularized Principal Component Analysis for Spatial Data},
