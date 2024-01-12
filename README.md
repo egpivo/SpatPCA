@@ -74,7 +74,7 @@ For more details, refer to the [Demo](https://egpivo.github.io/SpatPCA/articles/
 Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221v3.pdf, "Regularized principal component analysis for spatial data"). *Journal of Computational and Graphical Statistics*, **26**, 14-25.
  
 ## License
-GPL-3
+GPL (>= 2)
 
 ## Citation
 - To cite package ‘SpatPCA’ in publications use:
