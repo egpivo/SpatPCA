@@ -1,4 +1,5 @@
-# SpatPCA Package
+# SpatPCA: Regularized Principal Component Analysis for Spatial Data
+
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/SpatPCA)](https://CRAN.R-project.org/package=SpatPCA)
 [![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/SpatPCA)](https://CRAN.R-project.org/package=SpatPCA)
 [![R build status](https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg)](https://github.com/egpivo/SpatPCA/actions)
@@ -34,7 +35,7 @@ For compiling C++ code with the required [`RcppArmadillo`](https://CRAN.R-projec
   brew install gcc
   ```
 
-For a detailed solution, refer to [this link](https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to resolve the error `ld: library not found for -lgfortran`.
+  For a detailed solution, refer to [this link](https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to resolve the error `ld: library not found for -lgfortran`.
 
 ## Usage
 ```r
@@ -46,12 +47,12 @@ spatpca(position, realizations)
 - Output: Return the most dominant eigenfunctions automatically.
 - For more details, refer to the [Demo](https://egpivo.github.io/SpatPCA/articles/).
 
-### Author
-- [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b)
+### Authors
+- [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
 - [Hsin-Cheng Huang](https://sites.stat.sinica.edu.tw/hchuang/)
  
 ### Maintainer
-[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b)
+[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
 
 ### Reference
 Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221v3.pdf, "Regularized principal component analysis for spatial data"). *Journal of Computational and Graphical Statistics*, **26**, 14-25.
@@ -62,7 +63,7 @@ GPL-3
 ## Citation
 - To cite package ‘SpatPCA’ in publications use:
 ```
-  Wang W, Huang H (2023). _SpatPCA: Regularized Principal Component Analysis for
+  Wang W, Huang H (2023). SpatPCA: Regularized Principal Component Analysis for
   Spatial Data_. R package version 1.3.5,
   <https://CRAN.R-project.org/package=SpatPCA>.
 ```
