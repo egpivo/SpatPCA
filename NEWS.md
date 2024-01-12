@@ -1,3 +1,11 @@
+## SpatPCA v1.3.6 (Release date: 2024-01-12)
+#### Overview 
+This release focuses on 
+  1. fixing the warnings from the earlier Rcpp pacakge.
+  2. adding LICENSE
+  3. refining README 
+
+
 ## SpatPCA v1.3.4 (Release date: 2023-11-11)
 #### Overview 
 This release focuses on refining the package to comply with CRAN's regulatory standards.
