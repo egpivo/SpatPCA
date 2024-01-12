@@ -1,6 +1,6 @@
 Package: SpatPCA
 Title: Regularized Principal Component Analysis for Spatial Data
-Version: 1.3.5
+Version: 1.3.6
 Authors@R: c(person(
                 given = "Wen-Ting",
                 family = "Wang",
@@ -19,14 +19,14 @@ Authors@R: c(person(
 Description: Provide regularized principal component analysis incorporating smoothness, sparseness and orthogonality of eigen-functions
   by using the alternating direction method of multipliers algorithm (Wang and Huang, 2017, <DOI:10.1080/10618600.2016.1157483>). The
   method can be applied to either regularly or irregularly spaced data, including 1D, 2D, and 3D.
-License: GPL-3
+License: GPL (>= 2)
 LazyData: true
 ByteCompile: true
 BugReports: https://github.com/egpivo/SpatPCA/issues
 Depends: 
     R (>= 3.4.0)
 Imports:
-  Rcpp (>= 1.0.10),
+  Rcpp (>= 1.0.12),
   RcppParallel (>= 5.1.7),
   ggplot2
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel

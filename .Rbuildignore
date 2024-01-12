@@ -8,3 +8,5 @@
 ^codecov\.yml$
 ^.*\.gcno$
 ^NEWS$
+LICENSE
+\.github
