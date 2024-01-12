@@ -63,14 +63,14 @@ spatpca(position, realizations)
 
 For more details, refer to the [Demo](https://egpivo.github.io/SpatPCA/articles/).
 
-### Authors
+## Authors
 - [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
 - [Hsin-Cheng Huang](https://sites.stat.sinica.edu.tw/hchuang/)
  
-### Maintainer
+## Maintainer
 [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
 
-### Reference
+## Reference
 Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221v3.pdf, "Regularized principal component analysis for spatial data"). *Journal of Computational and Graphical Statistics*, **26**, 14-25.
  
 ## License
