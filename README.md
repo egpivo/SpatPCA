@@ -3,7 +3,7 @@
 [![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![R build status](https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg)](https://github.com/egpivo/SpatPCA/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg)](https://app.codecov.io/github/egpivo/SpatpCA?branch=master)
-[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SpatPCA?color=green)](https://cran.r-project.org/package=badger)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SpatPCA?color=green)](https://cran.r-project.org/package=SpatPCA)
 [![Downloads (monthly)](https://cranlogs.r-pkg.org/badges/SpatPCA?color=brightgreen)](https://www.r-pkg.org/pkg/SpatPCA)
 [![Downloads (total)](https://cranlogs.r-pkg.org/badges/grand-total/SpatPCA?color=brightgreen)](https://www.r-pkg.org/pkg/SpatPCA)
 [![JCGS](https://img.shields.io/badge/JCGS-10.18637%2F10618600.2016.1157483-brightgreen)](https://doi.org/10.1080/10618600.2016.1157483)
