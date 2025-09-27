@@ -55,7 +55,7 @@ struct thinPlateSpline: public RcppParallel::Worker {
 //' @examples
 //' pesudo_sequence <- seq(-5, 5, length = 5)
 //' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
-//' thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
+//' thin_plate_matrix <- SpatPCA:::thinPlateSplineMatrix(two_dim_location)
 // [[Rcpp::export]]
 arma::mat thinPlateSplineMatrix(const arma::mat location) {
   int p = location.n_rows, d = location.n_cols;
@@ -90,7 +90,7 @@ arma::mat thinPlateSplineMatrix(const arma::mat location) {
 //' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 //' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 //' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-//' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
+//' thin_plate_matrix <- SpatPCA:::eigenFunction(new_location, original_location, Phi)
 // [[Rcpp::export]]
 arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
   mat L;
@@ -596,7 +596,7 @@ List spatpcaCV(
   if(tau1.n_elem > 1) {  
     spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv);
     RcppParallel::parallelFor(0, M, spatpcaCVPhi);
-    (sum(cv, 0)).min(index1);
+    index1 = (sum(cv, 0)).index_min();
     selected_tau1 = tau1[index1];  
     if(index1 > 0)
       estimated_Phi = spatpcaCore2p(gram_matrix_Y, estimated_C, estimated_Lambda2, Omega, selected_tau1, estimated_rho, maxit, tol);
@@ -657,7 +657,7 @@ List spatpcaCV(
     spatpcaCVPhi2 spatpcaCVPhi2(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, K, selected_tau1, Omega, tau2, nk, maxit, tol, cv2, tempinv_cv); 
     RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
 
-    (sum(cv2, 0)).min(index2);
+    index2 = (sum(cv2, 0)).index_min();
     selected_tau2 = tau2[index2];
 
     mat tempinv = inv_sympd((selected_tau1 * Omega) - gram_matrix_Y + (estimated_rho * Ip));
@@ -684,7 +684,7 @@ List spatpcaCV(
   spatpcaCVPhi3 spatpcaCVPhi3(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, tempinv_cv, index2, K, Omega, selected_tau1, tau2, gamma, nk, maxit, tol, cv3);
   RcppParallel::parallelFor(0, M, spatpcaCVPhi3);
   if(gamma.n_elem > 1) {
-    (sum(cv3, 0)).min(index3);
+    index3 = (sum(cv3, 0)).index_min();
     selected_gamma = gamma[index3];
   }
   else {
@@ -705,7 +705,7 @@ List spatpcaCV(
 //' @keywords internal
 //' @param phir A matrix of estimated eigenfunctions based on original locations
 //' @param Yr A data matrix
-//' @param gammar A gamma value
+//' @param gamma A gamma value
 //' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 //' @return A list of objects
 //' \item{prediction}{A vector of spatial predictions}

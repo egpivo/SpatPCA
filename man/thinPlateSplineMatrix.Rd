@@ -18,5 +18,5 @@ Produce a thin-plane spline matrix based on a given location matrix
 \examples{
 pesudo_sequence <- seq(-5, 5, length = 5)
 two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
-thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
+thin_plate_matrix <- SpatPCA:::thinPlateSplineMatrix(two_dim_location)
 }

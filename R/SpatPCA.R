@@ -232,6 +232,7 @@ spatpca <- function(x,
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
 #' dominant_patterns <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 #' 
+#' @export
 predictEigenfunction <- function(spatpca_object, x_new) {
   checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
   scaled_x_new <- scaleLocation(x_new)
@@ -266,6 +267,7 @@ predictEigenfunction <- function(spatpca_object, x_new) {
 #' cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
 #' predictions <- predict(cv_1D, x_new = x_1Dnew)
 #' 
+#' @export
 predict <- function(spatpca_object, x_new, eigen_patterns_on_new_site = NULL) {
   checkNewLocationsForSpatpcaObject(spatpca_object, x_new)
 

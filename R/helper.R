@@ -115,10 +115,9 @@ fetchUpperBoundNumberEigenfunctions <- function(Y, M) {
 #'
 #' @keywords internal
 #' @param K Optional user-supplied number of eigenfunctions.
-#' @param M Number of folds for cross-validation
-#' @param n Number of rows of Y
-#' @param p Number of columns of Y
-#' @return NULL
+#' @param Y Data matrix used to determine the upper bound.
+#' @param M Number of folds for cross-validation.
+#' @return The validated number of eigenfunctions.
 #'
 setNumberEigenfunctions <- function(K, Y, M) {
   upper_bound <- fetchUpperBoundNumberEigenfunctions(Y, M)

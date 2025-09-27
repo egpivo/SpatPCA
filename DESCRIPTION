@@ -39,10 +39,10 @@ Suggests:
     maps,
     covr,
     styler
-SystemRequirements: C++11, GNU make
+SystemRequirements: GNU make
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 URL: https://github.com/egpivo/SpatPCA
 BugReports: https://github.com/egpivo/SpatPCA/issues

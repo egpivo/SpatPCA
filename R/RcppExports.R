@@ -10,7 +10,7 @@
 #' @examples
 #' pesudo_sequence <- seq(-5, 5, length = 5)
 #' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
-#' thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
+#' thin_plate_matrix <- SpatPCA:::thinPlateSplineMatrix(two_dim_location)
 thinPlateSplineMatrix <- function(location) {
     .Call(`_SpatPCA_thinPlateSplineMatrix`, location)
 }
@@ -29,7 +29,7 @@ thinPlateSplineMatrix <- function(location) {
 #' original_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 #' new_location <- matrix(c(0.1, 0.2), nrow = 1, ncol = 2)
 #' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
-#' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
+#' thin_plate_matrix <- SpatPCA:::eigenFunction(new_location, original_location, Phi)
 eigenFunction <- function(new_location, original_location, Phi) {
     .Call(`_SpatPCA_eigenFunction`, new_location, original_location, Phi)
 }
@@ -56,7 +56,7 @@ spatpcaCV <- function(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r
 #' @keywords internal
 #' @param phir A matrix of estimated eigenfunctions based on original locations
 #' @param Yr A data matrix
-#' @param gammar A gamma value
+#' @param gamma A gamma value
 #' @param predicted_eignefunction A vector of values of an eigenfunction on new locations
 #' @return A list of objects
 #' \item{prediction}{A vector of spatial predictions}

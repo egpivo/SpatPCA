@@ -8,3 +8,7 @@
 ^codecov\.yml$
 ^.*\.gcno$
 ^NEWS$
+^\.\.[Rr]check$
+^~$
+^\.git$
+^src/.*\.o\.tmp$
