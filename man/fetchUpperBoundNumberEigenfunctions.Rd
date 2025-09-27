@@ -11,6 +11,9 @@ fetchUpperBoundNumberEigenfunctions(Y, M)
 
 \item{M}{Number of folds for cross-validation}
 }
+\value{
+integer
+}
 \description{
 Internal function: Fetch the upper bound of the number of eigenfunctions
 }

@@ -11,6 +11,9 @@
 
 \item{...}{Not used directly}
 }
+\value{
+\code{NULL}.
+}
 \description{
 Display the M-fold cross-validation results
 }

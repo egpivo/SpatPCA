@@ -30,11 +30,11 @@ spatpca(
 
 \item{is_K_selected}{If TRUE, K is selected automatically; otherwise, is_K_selected is set to be user-supplied K. Default depends on user-supplied K.}
 
-\item{tau1}{Optional user-supplied numeric vector of a nonnegative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.}
+\item{tau1}{Optional user-supplied numeric vector of a non-negative smoothness parameter sequence. If NULL, 10 tau1 values in a range are used.}
 
-\item{tau2}{Optional user-supplied numeric vector of a nonnegative sparseness parameter sequence. If NULL, none of tau2 is used.}
+\item{tau2}{Optional user-supplied numeric vector of a non-negative sparseness parameter sequence. If NULL, none of tau2 is used.}
 
-\item{gamma}{Optional user-supplied numeric vector of a nonnegative tuning parameter sequence. If NULL, 10 values in a range are used.}
+\item{gamma}{Optional user-supplied numeric vector of a non-negative tuning parameter sequence. If NULL, 10 values in a range are used.}
 
 \item{is_Y_detrended}{If TRUE, center the columns of Y. Default is FALSE.}
 
@@ -105,15 +105,15 @@ x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
 xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
 eof <- spatpca(x = xx,
                Y = YY,
-               K = cv$selected_K, 
-               tau1 = cv$selected_tau1, 
+               K = cv$selected_K,
+               tau1 = cv$selected_tau1,
                tau2 = cv$selected_tau2)
-predicted_eof <- predictEigenfunction(eof, xx_new)              
+predicted_eof <- predictEigenfunction(eof, xx_new)
 quilt.plot(xx_new,
            predicted_eof[,1],
-           nx = new_p, 
-           ny = new_p, 
-           xlab = "lon.", 
+           nx = new_p,
+           ny = new_p,
+           xlab = "lon.",
            ylab = "lat.")
 map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
 map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)

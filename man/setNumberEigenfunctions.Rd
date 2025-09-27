@@ -9,12 +9,12 @@ setNumberEigenfunctions(K, Y, M)
 \arguments{
 \item{K}{Optional user-supplied number of eigenfunctions.}
 
-\item{Y}{Data matrix used to determine the upper bound.}
+\item{Y}{Data matrix}
 
-\item{M}{Number of folds for cross-validation.}
+\item{M}{Number of folds for cross-validation}
 }
 \value{
-The validated number of eigenfunctions.
+integer
 }
 \description{
 Internal function: Set the number of eigenfunctions for a spatpca object
