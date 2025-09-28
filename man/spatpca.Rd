@@ -42,7 +42,7 @@ spatpca(
 
 \item{thr}{Threshold for convergence. Default value is \eqn{10^{-4}}.}
 
-\item{num_cores}{Number of cores used to parallel computing. Default value is NULL (See \code{RcppParallel::defaultNumThreads()})}
+\item{num_cores}{Optional numeric value indicating desired cores. The request is validated but computations run sequentially. Default value is NULL.}
 }
 \value{
 A list of objects including
@@ -69,54 +69,58 @@ An ADMM form of the proposed objective function is written as
 \eqn{\mbox{subject to $ \mathbf{\Phi}^T\mathbf{\Phi}=\mathbf{I}_K$,}} where \eqn{\mathbf{Y}} is a data matrix, \eqn{{\mathbf{\Omega}}} is a smoothness matrix, and \eqn{\mathbf{\Phi}=\{\phi_{jk}\}}.
 }
 \examples{
-# The following examples only use two threads for parallel computing.
+# The following examples run sequentially.
 ## 1D: regular locations
 x_1D <- as.matrix(seq(-5, 5, length = 50))
 Phi_1D <- exp(-x_1D^2) / norm(exp(-x_1D^2), "F")
 set.seed(1234)
 Y_1D <- rnorm(n = 100, sd = 3) \%*\% t(Phi_1D) + matrix(rnorm(n = 100 * 50), 100, 50)
-cv_1D <- spatpca(x = x_1D, Y = Y_1D, num_cores = 2)
+cv_1D <- spatpca(x = x_1D, Y = Y_1D)
 plot(x_1D, cv_1D$eigenfn[, 1], type = "l", main = "1st eigenfunction")
 lines(x_1D, svd(Y_1D)$v[, 1], col = "red")
 legend("topleft", c("SpatPCA", "PCA"), lty = 1:1, col = 1:2)
 
 \donttest{
 ## 2D: Daily 8-hour ozone averages for sites in the Midwest (USA)
-library(fields)
-library(pracma)
-library(maps)
-data(ozone2)
-x <- ozone2$lon.lat
-Y <- ozone2$y
-date <- as.Date(ozone2$date, format = "\%y\%m\%d")
-rmna <- !colSums(is.na(Y))
-YY <- matrix(Y[, rmna], nrow = nrow(Y))
-YY <- detrend(YY, "linear")
-xx <- x[rmna, ]
-cv <- spatpca(x = xx, Y = YY)
-quilt.plot(xx, cv$eigenfn[, 1])
-map("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), add = TRUE)
-map.text("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), cex = 2, add = TRUE)
-plot(date, YY \%*\% cv$eigenfn[, 1], type = "l", ylab = "1st Principal Component")
-### new loactions
-new_p <- 200
-x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
-x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
-xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
-eof <- spatpca(x = xx,
-               Y = YY,
-               K = cv$selected_K,
-               tau1 = cv$selected_tau1,
-               tau2 = cv$selected_tau2)
-predicted_eof <- predictEigenfunction(eof, xx_new)
-quilt.plot(xx_new,
-           predicted_eof[,1],
-           nx = new_p,
-           ny = new_p,
-           xlab = "lon.",
-           ylab = "lat.")
-map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
-map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
+if (requireNamespace("fields", quietly = TRUE) &&
+    requireNamespace("pracma", quietly = TRUE) &&
+    requireNamespace("maps", quietly = TRUE)) {
+  library(fields)
+  library(pracma)
+  library(maps)
+  data(ozone2)
+  x <- ozone2$lon.lat
+  Y <- ozone2$y
+  date <- as.Date(ozone2$date, format = "\%y\%m\%d")
+  rmna <- !colSums(is.na(Y))
+  YY <- matrix(Y[, rmna], nrow = nrow(Y))
+  YY <- detrend(YY, "linear")
+  xx <- x[rmna, ]
+  cv <- spatpca(x = xx, Y = YY)
+  quilt.plot(xx, cv$eigenfn[, 1])
+  map("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), add = TRUE)
+  map.text("state", xlim = range(xx[, 1]), ylim = range(xx[, 2]), cex = 2, add = TRUE)
+  plot(date, YY \%*\% cv$eigenfn[, 1], type = "l", ylab = "1st Principal Component")
+  ### new locations
+  new_p <- 200
+  x_lon <- seq(min(xx[, 1]), max(xx[, 1]), length = new_p)
+  x_lat <- seq(min(xx[, 2]), max(xx[, 2]), length = new_p)
+  xx_new <- as.matrix(expand.grid(x = x_lon, y = x_lat))
+  eof <- spatpca(x = xx,
+                 Y = YY,
+                 K = cv$selected_K,
+                 tau1 = cv$selected_tau1,
+                 tau2 = cv$selected_tau2)
+  predicted_eof <- predictEigenfunction(eof, xx_new)
+  quilt.plot(xx_new,
+             predicted_eof[,1],
+             nx = new_p,
+             ny = new_p,
+             xlab = "lon.",
+             ylab = "lat.")
+  map("state", xlim = range(x_lon), ylim = range(x_lat), add = TRUE)
+  map.text("state", xlim = range(x_lon), ylim = range(x_lat), cex = 2, add = TRUE)
+}
 ## 3D: regular locations
 p <- 10
 x <- y <- z <- as.matrix(seq(-5, 5, length = p))

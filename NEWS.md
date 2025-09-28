@@ -42,4 +42,9 @@ In this release, we take care of the perspective of software quality by refactor
 - Add unit tests with code coverage `87%`
 
 
+## SpatPCA v1.3.7 (Unreleased)
+#### Overview
+- Remove the `RcppParallel` dependency and run computation sequentially to improve compatibility with CRAN checks.
+- Replace vignette animations with static figures to avoid optional multimedia dependencies.
+- Symmetrise matrices before inversion to silence Armadillo warnings.
 

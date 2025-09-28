@@ -31,7 +31,7 @@ install.packages("SpatPCA")
 remotes::install_github("egpivo/SpatPCA")
 ```
 ### Compilation Requirements
-To compile C++ code with the required [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo) and [`RcppParallel`](https://CRAN.R-project.org/package=RcppParallel)  packages, follow these instructions based on your operating system:
+To compile C++ code with the required [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo) package, follow these instructions based on your operating system:
 
 
 #### For Windows users
@@ -39,7 +39,7 @@ Install [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/)
 
 #### For Mac users
 1. Install Xcode Command Line Tools
-2. install the `gfortran` library. You can achieve this by running the following commands in the terminal:
+2. Install the `gfortran` library. You can achieve this by running the following commands in the terminal:
   ```bash
   brew update
   brew install gcc
@@ -62,6 +62,17 @@ spatpca(position, realizations)
    - Output: Return the most dominant eigenfunctions automatically.
 
 For more details, refer to the [Demo](https://egpivo.github.io/SpatPCA/articles/).
+
+## Development
+To submit package checks to R-hub v2, source `tools/run_rhub_checks.R` and use
+
+```r
+submission <- run_rhub_checks(confirmation = TRUE)
+summarise_rhub_jobs(submission)
+```
+
+Adjust `include_os`, `platforms`, or `email` as needed. `summarise_rhub_jobs()`
+prints the submission id plus GitHub URLs where each builder’s logs appear.
 
 ## Authors
 - [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))

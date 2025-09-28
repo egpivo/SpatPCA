@@ -1,5 +1,4 @@
 # generate 1-D data with a given seed
-Sys.setenv(RCPP_PARALLEL_BACKEND = "tinythread")
 set.seed(1234)
 tol <- 1e-6
 num_cores <- 2
@@ -89,8 +88,6 @@ estimated_eigenvalue_medium_gamma <- spatialPrediction(
 )$eigenvalue
 
 
-used_number_cores <-
-  as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS", ""))
 expected_selected_tau1_R_3.6_higher <- 0.00046416
 expected_selected_tau1_R_3.6_lower <- 0.01169
 expected_selected_gamma_R_3.6_higher <- 0.44503397
@@ -130,11 +127,6 @@ test_that("Selected tuning parameters", {
              tol)
 })
 
-
-# Test environment settings
-test_that("Number of threads", {
-  expect_equal(num_cores, used_number_cores)
-})
 
 test_that("cross-validation plot", {
   expect_error(plot.spatpca("test"),

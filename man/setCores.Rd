@@ -2,17 +2,17 @@
 % Please edit documentation in R/helper.R
 \name{setCores}
 \alias{setCores}
-\title{Internal function: Set the number of cores for parallel computing}
+\title{Internal helper: validate requested core count}
 \usage{
 setCores(num_cores = NULL)
 }
 \arguments{
-\item{num_cores}{Number of number of cores for parallel computing. Default is NULL.}
+\item{num_cores}{Optional numeric value representing desired cores. Default is NULL.}
 }
 \value{
-Logical
+Logical when a numeric input is provided, otherwise NULL
 }
 \description{
-Internal function: Set the number of cores for parallel computing
+Validate the requested number of cores; computations currently run sequentially.
 }
 \keyword{internal}
