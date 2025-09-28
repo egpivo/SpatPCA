@@ -27,7 +27,7 @@ rm_loc <- sample(1:10, 2)
 x_1Drm <- x_1D[-rm_loc]
 Y_1Drm <- Y_1D[, -rm_loc]
 x_1Dnew <- as.matrix(seq(-5, 5, length = 20))
-cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100, num_cores = 2)
+cv_1D <- spatpca(x = x_1Drm, Y = Y_1Drm, tau2 = 1:100)
 dominant_patterns <- predictEigenfunction(cv_1D, x_new = x_1Dnew)
 
 }

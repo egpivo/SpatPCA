@@ -10,3 +10,5 @@ src/.DS_Store
 inst/doc
 *.gcno
 *Rplots.pdf
+tools
+*.Rproj

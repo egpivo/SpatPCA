@@ -14,8 +14,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  tidy = "styler"
+  comment = "#>"
 )
 ```
 
@@ -29,9 +28,6 @@ We have two objectives
 ```{r message=FALSE}
 library(SpatPCA)
 library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(gifski)
 base_theme <- theme_classic(base_size = 18, base_family = "Times")
 ```
 #### True spatial pattern (eigenfunction)
@@ -41,9 +37,9 @@ set.seed(1024)
 position <- matrix(seq(-5, 5, length = 100))
 true_eigen_fn <- exp(-position^2) / norm(exp(-position^2), "F")
 
-data.frame(position = position,
-           eigenfunction = true_eigen_fn) %>%
-  ggplot(aes(position, eigenfunction)) +
+plot_df <- data.frame(position = position, eigenfunction = true_eigen_fn)
+
+ggplot(plot_df, aes(position, eigenfunction)) +
   geom_line() +
   base_theme
 ```
@@ -60,10 +56,13 @@ realizations <- rnorm(n = 100, sd = 20) %*% t(true_eigen_fn) + matrix(rnorm(n = 
 
 #### Animate realizations
 We can see simulated central realizations change in a wide range more frequently than the others.
-```{r, animation.hook="gifski"}
-for (i in 1:100) {
-  plot(x = position, y = realizations[i, ], ylim = c(-10, 10), ylab = "realization")
-}
+```{r}
+subset_idx <- seq(1, 100, length.out = 9)
+matplot(
+  t(realizations[subset_idx, ]), type = "l", lty = 1,
+  ylim = c(-10, 10),
+  xlab = "position index", ylab = "realization"
+)
 ```
 
 #### Apply `SpatPCA::spatpca`
@@ -76,13 +75,21 @@ There are two comparison remarks
   1. Two estimates are similar to the true eigenfunctions
   2. **SpatPCA** can perform better at the both ends.
 ```{r}
-data.frame(position = position, 
-           true = true_eigen_fn, 
-           spatpca = eigen_est[, 1], 
-           pca = svd(realizations)$v[, 1]) %>%
-  gather(estimate, eigenfunction, -position) %>%
-  ggplot(aes(x = position, y = eigenfunction, color = estimate)) +
-  geom_line() + 
+plot_df <- data.frame(
+  position = position,
+  true = true_eigen_fn,
+  spatpca = eigen_est[, 1],
+  pca = svd(realizations)$v[, 1]
+)
+
+plot_df_long <- data.frame(
+  position = rep(plot_df$position, 3),
+  estimate = rep(c("true", "spatpca", "pca"), each = nrow(plot_df)),
+  eigenfunction = c(plot_df$true, plot_df$spatpca, plot_df$pca)
+)
+
+ggplot(plot_df_long, aes(x = position, y = eigenfunction, color = estimate)) +
+  geom_line() +
   base_theme
 ```
 
@@ -94,10 +101,13 @@ realizations <- rnorm(n = 100, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = 1
 
 ### Animate realizations
 It is hard to see a crystal clear spatial pattern via the simulated sample shown below.
-```{r, animation.hook="gifski"}
-for (i in 1:100) {
-  plot(x = position, y = realizations[i, ], ylim = c(-10, 10), ylab = "realization")
-}
+```{r}
+subset_idx <- seq(1, 100, length.out = 9)
+matplot(
+  t(realizations[subset_idx, ]), type = "l", lty = 1,
+  ylim = c(-10, 10),
+  xlab = "position index", ylab = "realization"
+)
 ```
 
 ### Compare resultant patterns
@@ -107,12 +117,20 @@ The following panel indicates that **SpatPCA** outperforms to PCA visually when 
 cv <- spatpca(x = position, Y = realizations)
 eigen_est <- cv$eigenfn
 
-data.frame(position = position, 
-           true = true_eigen_fn, 
-           spatpca = eigen_est[, 1], 
-           pca = svd(realizations)$v[, 1]) %>%
-  gather(estimate, eigenfunction, -position) %>%
-  ggplot(aes(x = position, y = eigenfunction, color = estimate)) +
-  geom_line() + 
+plot_df <- data.frame(
+  position = position,
+  true = true_eigen_fn,
+  spatpca = eigen_est[, 1],
+  pca = svd(realizations)$v[, 1]
+)
+
+plot_df_long <- data.frame(
+  position = rep(plot_df$position, 3),
+  estimate = rep(c("true", "spatpca", "pca"), each = nrow(plot_df)),
+  eigenfunction = c(plot_df$true, plot_df$spatpca, plot_df$pca)
+)
+
+ggplot(plot_df_long, aes(x = position, y = eigenfunction, color = estimate)) +
+  geom_line() +
   base_theme
 ```

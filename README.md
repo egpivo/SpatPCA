@@ -1,6 +1,5 @@
 # SpatPCA: Regularized Principal Component Analysis for Spatial Data
 
-[![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![R build status](https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg)](https://github.com/egpivo/SpatPCA/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg)](https://app.codecov.io/github/egpivo/SpatpCA?branch=master)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SpatPCA?color=green)](https://cran.r-project.org/package=SpatPCA)
@@ -31,7 +30,7 @@ install.packages("SpatPCA")
 remotes::install_github("egpivo/SpatPCA")
 ```
 ### Compilation Requirements
-To compile C++ code with the required [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo) and [`RcppParallel`](https://CRAN.R-project.org/package=RcppParallel)  packages, follow these instructions based on your operating system:
+To compile C++ code with the required [`RcppArmadillo`](https://CRAN.R-project.org/package=RcppArmadillo) package, follow these instructions based on your operating system:
 
 
 #### For Windows users
@@ -39,13 +38,13 @@ Install [Rtools](https://CRAN.R-project.org/bin/windows/Rtools/)
 
 #### For Mac users
 1. Install Xcode Command Line Tools
-2. install the `gfortran` library. You can achieve this by running the following commands in the terminal:
+2. Install the `gfortran` library. You can achieve this by running the following commands in the terminal:
   ```bash
   brew update
   brew install gcc
   ```
 
-  For a detailed solution, refer to [this link](https://thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to resolve the error `ld: library not found for -lgfortran`.
+  For a detailed solution, refer to [this link](https://blog.thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/index.html), or download and install the library [`gfortran`](https://github.com/fxcoudert/gfortran-for-macOS/releases) to resolve the error `ld: library not found for -lgfortran`.
 
 ## Usage
 To use **SpatPCA**, first load the package:
@@ -63,15 +62,27 @@ spatpca(position, realizations)
 
 For more details, refer to the [Demo](https://egpivo.github.io/SpatPCA/articles/).
 
+## Development
+To submit package checks to R-hub v2, source `tools/run_rhub_checks.R` and use
+
+```r
+submission <- run_rhub_checks(confirmation = TRUE)
+summarise_rhub_jobs(submission)
+```
+
+Adjust `include_os`, `platforms`, or `email` as needed. `summarise_rhub_jobs()`
+prints the submission id plus GitHub URLs where each builder’s logs appear.
+
 ## Authors
-- [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
+- [Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://github.com/egpivo))
 - [Hsin-Cheng Huang](https://sites.stat.sinica.edu.tw/hchuang/)
  
 ## Maintainer
-[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://www.github.com/egpivo))
+[Wen-Ting Wang](https://www.linkedin.com/in/wen-ting-wang-6083a17b) ([GitHub](https://github.com/egpivo))
 
 ## Reference
-Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221v3.pdf), "Regularized principal component analysis for spatial data"). *Journal of Computational and Graphical Statistics*, **26**, 14-25.
+Wang, W.-T. and Huang, H.-C. (2017). [Regularized principal component analysis for spatial data](https://arxiv.org/pdf/1501.03221.pdf). *Journal of Computational and Graphical Statistics*, **26**, 14-25.
+
  
 ## License
 GPL (>= 2)

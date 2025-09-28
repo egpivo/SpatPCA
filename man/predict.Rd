@@ -29,7 +29,7 @@ removed_location <- sample(1:10, 3)
 removed_x_1D <- x_1D[-removed_location]
 removed_Y_1D <- Y_1D[, -removed_location]
 new_x_1D <- as.matrix(seq(-5, 5, length = 20))
-cv_1D <- spatpca(x = removed_x_1D, Y = removed_Y_1D, tau2 = 1:100, num_cores = 2)
+cv_1D <- spatpca(x = removed_x_1D, Y = removed_Y_1D, tau2 = 1:100)
 predictions <- predict(cv_1D, x_new = new_x_1D)
 
 }

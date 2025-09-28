@@ -1,18 +1,15 @@
 // includes from the plugin
-// [[Rcpp::depends(RcppParallel)]]
 // [[Rcpp::depends(RcppArmadillo)]]
-#include <RcppParallel.h>
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <iostream>
-// [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::plugins(cpp17)]]                                        
+// [[Rcpp::plugins(cpp17)]]
 
 using namespace Rcpp;
 using namespace std;
 using namespace arma;
 
-struct thinPlateSpline: public RcppParallel::Worker {
+struct thinPlateSpline {
   const mat& P;
   mat& L;  
   int p;
@@ -58,23 +55,24 @@ struct thinPlateSpline: public RcppParallel::Worker {
 //' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 //' thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
 // [[Rcpp::export]]
-arma::mat thinPlateSplineMatrix(const arma::mat location) {
-  int p = location.n_rows, d = location.n_cols;
-  int total_size = p + d;
-  mat L, Lp, Ip;
+arma::mat thinPlateSplineMatrix(const arma::mat& location) {
+  const int p = location.n_rows, d = location.n_cols;
+  const int total_size = p + d;
   
-  L.zeros(total_size + 1, total_size + 1);
-  Ip.eye(total_size + 1, total_size + 1);
+  mat L(total_size + 1, total_size + 1, fill::zeros);
+  const mat Ip(total_size + 1, total_size + 1, fill::eye);
+  
   thinPlateSpline thin_plate_spline(location, L, p, d);
-  parallelFor(0, p, thin_plate_spline);
+  thin_plate_spline(0, p);
   L = symmatu(L);
-  Lp = inv(L + 1e-8 * Ip);   
+  
+  mat Lp = inv(L + 1e-8 * Ip);
   Lp.shed_cols(p, total_size);
   Lp.shed_rows(p, total_size);
   L.shed_cols(p, total_size);
   L.shed_rows(p, total_size);
-  mat result = Lp.t() * (L * Lp);
-  return(result);
+  
+  return Lp.t() * (L * Lp);
 }
 
 //' @title Interpolated Eigen-function
@@ -93,58 +91,59 @@ arma::mat thinPlateSplineMatrix(const arma::mat location) {
 //' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
 //' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
 // [[Rcpp::export]]
-arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi) {
-  mat L;
-  int p = original_location.n_rows, d = original_location.n_cols, K = Phi.n_cols;
-  int total_size = p + d;
-  L.zeros(total_size + 1, total_size + 1);
-  thinPlateSpline thin_plate_spline(original_location, L, p, d);
-  parallelFor(0, p, thin_plate_spline);
+arma::mat eigenFunction(const arma::mat& new_location,
+                        const arma::mat& original_location,
+                        const arma::mat& Phi) {
+  const int p = original_location.n_rows, d = original_location.n_cols, K = Phi.n_cols;
+  const int total_size = p + d;
+  
+  mat L(total_size + 1, total_size + 1, fill::zeros);
+  thinPlateSpline tps(original_location, L, p, d);
+  tps(0, p);
   L = L + L.t();
   
-  mat Phi_star, para(total_size + 1, K);
-  Phi_star.zeros(total_size + 1, K);
+  mat Phi_star(total_size + 1, K, fill::zeros);
   Phi_star.rows(0, p - 1) = Phi;
-  para = solve(L, Phi_star);
-  int pnew = new_location.n_rows;
-  mat eigen_fn(pnew, K);
-  double psum, r;
-
-  for(int new_i = 0; new_i < pnew ; new_i++) {
-    for(int i = 0; i < K; i++) {
-      psum = 0;
-      for(int j = 0; j < p; j++) {
-        if(d == 1) {  
-          r = norm(new_location.row(new_i) - original_location.row(j), "f");
-          if(r != 0)
-            psum += para(j, i) * pow(r, 3) / 12;
-        }
-        else if(d == 2) {
-          r = sqrt(pow(new_location(new_i, 0) - original_location(j, 0), 2) + 
-            (pow(new_location(new_i, 1) - original_location(j, 1), 2)));
-          if(r != 0)
-            psum += para(j, i) * r * r * log(r) / (8.0 * datum::pi);
-        }
-        else if(d == 3) {
-          double r = sqrt(pow(new_location(new_i, 0) - original_location(j, 0), 2) +
-                          pow(new_location(new_i, 1) - original_location(j, 1), 2) +
-                          pow(new_location(new_i, 2) - original_location(j, 2), 2));
-          if(r != 0)
-            psum -= para(j, i) * r / (8.0 * datum::pi);
+  
+  mat para = solve(L, Phi_star);
+  
+  const int pnew = new_location.n_rows;
+  mat eigen_fn(pnew, K, fill::zeros);
+  
+  for (int new_i = 0; new_i < pnew ; ++new_i) {
+    for (int i = 0; i < K; ++i) {
+      double psum = 0.0;
+      for (int j = 0; j < p; ++j) {
+        double r = 0.0;
+        if (d == 1) {
+          r = std::abs(new_location(new_i, 0) - original_location(j, 0));
+          if (r > 0) psum += para(j, i) * (r * r * r) / 12.0;
+        } else if (d == 2) {
+          const double dx = new_location(new_i, 0) - original_location(j, 0);
+          const double dy = new_location(new_i, 1) - original_location(j, 1);
+          r = std::sqrt(dx*dx + dy*dy);
+          if (r > 0) psum += para(j, i) * r * r * std::log(r) / (8.0 * datum::pi);
+        } else if (d == 3) {
+          const double dx = new_location(new_i, 0) - original_location(j, 0);
+          const double dy = new_location(new_i, 1) - original_location(j, 1);
+          const double dz = new_location(new_i, 2) - original_location(j, 2);
+          r = std::sqrt(dx*dx + dy*dy + dz*dz);
+          if (r > 0) psum -= para(j, i) * r / (8.0 * datum::pi);
         }
       }
-      if(d == 1)
+      if (d == 1) {
         eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) + para(p, i);
-      else if(d == 2)
-        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) +
-          para(p + 2, i) * new_location(new_i, 1) + para(p, i);
-      else if(d == 3)
-        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0) +
-          para(p + 2, i) * new_location(new_i, 1) + para(p + 3, i) * new_location(new_i, 2) + para(p, i); 
+      } else if (d == 2) {
+        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0)
+        + para(p + 2, i) * new_location(new_i, 1) + para(p, i);
+      } else { // d == 3
+        eigen_fn(new_i, i) = psum + para(p + 1, i) * new_location(new_i, 0)
+        + para(p + 2, i) * new_location(new_i, 1)
+        + para(p + 3, i) * new_location(new_i, 2) + para(p, i);
+      }
     }
   }
-  
-  return(eigen_fn);
+  return eigen_fn;
 }
 
 // user includes
@@ -163,7 +162,7 @@ void spatpcaCore2(
   vec error(2), S;
   Ip.eye(p,p);
   Sigtau1 = tau1 * Omega - gram_matrix_Y;
-  tempinv = inv_sympd(2 * Sigtau1 + rho * Ip);
+  tempinv = inv_sympd(symmatu(2 * Sigtau1 + rho * Ip));
 
   for(iter = 0; iter < maxit; iter++) {
     Phi = tempinv * ((rho * Cold) - Lambda2old);
@@ -201,7 +200,7 @@ mat spatpcaCore2p(
   Ip.eye(p, p);
   Sigtau1 = tau1 * Omega - gram_matrix_Y;
   
-  tempinv = inv_sympd(2 * Sigtau1 + rho * Ip);
+  tempinv = inv_sympd(symmatu(2 * Sigtau1 + rho * Ip));
   for(iter = 0; iter < maxit; iter++) {
     Phi = tempinv * ((rho * Cold) - Lambda2old);
     temp = Phi + (Lambda2old / rho);
@@ -223,55 +222,54 @@ mat spatpcaCore2p(
 }
 
 void spatpcaCore3(
-    const mat tempinv,
-    mat& Phi,
-    mat& R,
-    mat& C,
-    mat& Lambda1,
-    mat& Lambda2,
+    const arma::mat tempinv,
+    arma::mat& Phi,
+    arma::mat& R,
+    arma::mat& C,
+    arma::mat& Lambda1,
+    arma::mat& Lambda2,
     const double tau2,
     double rho,
     const int maxit,
     const double tol) {
-  int p = Phi.n_rows, K = Phi.n_cols, iter = 0;
-  mat temp, scaled_tau2, zero, one, U, V, difference_Phi_R, difference_Phi_C;
-  mat Phi_old = Phi, Rold = R, Cold = C, Lambda1old = Lambda1, Lambda2old = Lambda2;
-  vec error(4), S;
   
-  zero.zeros(p, K);
-  one.ones(p, K);
-  scaled_tau2 = tau2 * one / rho;
+  const int p = Phi.n_rows, K = Phi.n_cols;
+  arma::mat temp, U, V, difference_Phi_R, difference_Phi_C;
+  arma::mat Rold = R, Cold = C, Lambda1old = Lambda1, Lambda2old = Lambda2;
+  arma::vec S;
+  arma::vec err(4, arma::fill::zeros); // indices 0..3
   
+  const arma::mat zero(p, K, arma::fill::zeros);
+  const arma::mat one (p, K, arma::fill::ones);
+  const arma::mat scaled_tau2 = (tau2 / rho) * one;
   
-  for(iter = 0; iter < maxit; iter++) {
+  for (int iter = 0; iter < maxit; ++iter) {
     Phi = 0.5 * tempinv * (rho * (Rold + Cold) - (Lambda1old + Lambda2old));
-    R = sign(((Lambda1old / rho) + Phi)) % max(zero, abs(((Lambda1old / rho) + Phi)) - scaled_tau2);
+    R   = arma::sign(Lambda1old / rho + Phi) %
+      arma::max(zero, arma::abs(Lambda1old / rho + Phi) - scaled_tau2);
+    
     temp = Phi + Lambda2old / rho;
-    svd_econ(U, S, V, temp);
+    arma::svd_econ(U, S, V, temp);
     C = U.cols(0, V.n_cols - 1) * V.t();
+    
     difference_Phi_R = Phi - R;
-    difference_Phi_C = Phi - C;    
+    difference_Phi_C = Phi - C;
     Lambda1 = Lambda1old + rho * difference_Phi_R;
     Lambda2 = Lambda2old + rho * difference_Phi_C;
     
-    error[1] = norm(difference_Phi_R, "fro") / sqrt(p / 1.0);
-    error[2] = norm(R - Rold, "fro") / sqrt(p / 1.0);
-    error[3] = norm(difference_Phi_C, "fro") / sqrt(p / 1.0);
-    error[4] = norm(C - Cold, "fro") / sqrt(p / 1.0);
+    const double denom = std::sqrt(double(p) * double(K));
+    err[0] = arma::norm(difference_Phi_R, "fro") / denom;
+    err[1] = arma::norm(R - Rold,         "fro") / denom;
+    err[2] = arma::norm(difference_Phi_C, "fro") / denom;
+    err[3] = arma::norm(C - Cold,         "fro") / denom;
     
-    if(max(error) <= tol)
-      break;
-    Phi_old = Phi;
-    Rold = R;
-    Cold = C;
-    Lambda1old = Lambda1;
-    Lambda2old = Lambda2;
+    if (err.max() <= tol) break;
+    
+    Rold = R; Cold = C; Lambda1old = Lambda1; Lambda2old = Lambda2;
   }
-  
-  iter++;
 }
 
-struct spatpcaCVPhi: public RcppParallel::Worker {
+struct spatpcaCVPhi {
   const mat& Y;
   int K;
   const mat& Omega;
@@ -336,7 +334,7 @@ struct spatpcaCVPhi: public RcppParallel::Worker {
   }
 };
 
-struct spatpcaCVPhi2: public RcppParallel::Worker {
+struct spatpcaCVPhi2 {
   const mat& Y;
   const cube& gram_matrix_Y_train;
   cube& Phi_cv;
@@ -396,7 +394,7 @@ struct spatpcaCVPhi2: public RcppParallel::Worker {
       R = Phi;
       Phi_cv.slice(k) = Phi;
       Lambd2_cv.slice(k) = Lambda2;
-      tempinv.slice(k) = inv_sympd((tau1 * Omega) - gram_matrix_Y_train.slice(k) + (rho(k, 0) * Ip));
+      tempinv.slice(k) = inv_sympd(symmatu((tau1 * Omega) - gram_matrix_Y_train.slice(k) + (rho(k, 0) * Ip)));
       for(uword i = 0; i < tau2.n_elem; i++) {
         spatpcaCore3(tempinv.slice(k), Phi, R, C, Lambda1, Lambda2, tau2[i], rho(k, 0), maxit, tol);
         output(k, i) = pow(norm(Y_validation * (Ip - Phi * Phi.t()), "fro"), 2.0); 
@@ -405,7 +403,7 @@ struct spatpcaCVPhi2: public RcppParallel::Worker {
   }
 };
 
-struct spatpcaCVPhi3: public RcppParallel::Worker {
+struct spatpcaCVPhi3 {
   const mat& Y;
   const cube& gram_matrix_Y_train;
   const cube& Phi_cv;
@@ -542,25 +540,22 @@ struct spatpcaCVPhi3: public RcppParallel::Worker {
 //' @param l2r A given tau2
 //' @return A list of selected parameters
 // [[Rcpp::export]]
-List spatpcaCV(
-    NumericMatrix sxyr,
-    NumericMatrix Yr,
-    int M,
-    int K,
-    NumericVector tau1r,
-    NumericVector tau2r,
-    NumericVector gammar,
-    NumericVector nkr,
-    int maxit,
-    double tol,
-    NumericVector l2r) {
+Rcpp::List spatpcaCV(const Rcpp::NumericMatrix& sxyr,
+                     const Rcpp::NumericMatrix& Yr,
+                     int M, int K,
+                     const Rcpp::NumericVector& tau1r,
+                     const Rcpp::NumericVector& tau2r,
+                     const Rcpp::NumericVector& gammar,
+                     const Rcpp::NumericVector& nkr,
+                     int maxit, double tol,
+                     const Rcpp::NumericVector& l2r) {
   int n = Yr.nrow(), p = Yr.ncol(), d = sxyr.ncol();
-  mat Y(Yr.begin(), n, p, false), sxy(sxyr.begin(), p, d, false);
-  colvec tau1(tau1r.begin(), tau1r.size(),false);
-  colvec tau2(tau2r.begin(), tau2r.size(), false);
-  colvec gamma(gammar.begin(), gammar.size(), false);
-  colvec nk(nkr.begin(), nkr.size(), false);
-  colvec l2(l2r.begin(), l2r.size(), false);
+  mat Y(Yr.begin(), n, p), sxy(sxyr.begin(), p, d);
+  colvec tau1(tau1r.begin(), tau1r.size());
+  colvec tau2(tau2r.begin(), tau2r.size());
+  colvec gamma(gammar.begin(), gammar.size());
+  colvec nk(nkr.begin(), nkr.size());
+  colvec l2(l2r.begin(), l2r.size());
   mat cv(M, tau1.n_elem), cv3(M, gamma.n_elem), cv_score_tau1, cv_score_tau2, cv_score_gamma, Omega, svd_U, svd_V;
   double selected_tau1, selected_tau2 = 0, selected_gamma;
   mat gram_matrix_Y = Y.t() * Y;
@@ -595,9 +590,10 @@ List spatpcaCV(
   }
 
   if(tau1.n_elem > 1) {  
-    spatpcaCVPhi spatpcaCVPhi(Y, K, Omega, tau1, nk, maxit, tol, cv, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv);
-    RcppParallel::parallelFor(0, M, spatpcaCVPhi);
-    (sum(cv, 0)).min(index1);
+    spatpcaCVPhi worker(Y, K, Omega, tau1, nk, maxit, tol, cv, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv);
+    worker(0, M);
+    rowvec cv_sum = sum(cv, 0);
+    index1 = cv_sum.index_min();
     selected_tau1 = tau1[index1];  
     if(index1 > 0)
       estimated_Phi = spatpcaCore2p(gram_matrix_Y, estimated_C, estimated_Lambda2, Omega, selected_tau1, estimated_rho, maxit, tol);
@@ -622,7 +618,7 @@ List spatpcaCV(
         spatpcaCore2(gram_matrix_Y_train.slice(k), Phigg,Cgg, Lambda2gg, Omega, selected_tau1, rho_cv(k, 0), maxit, tol);
         Phi_cv.slice(k) = Phigg;
         Lambd2_cv.slice(k) = Lambda2gg;
-        tempinv_cv.slice(k) = inv_sympd((selected_tau1 * Omega) - gram_matrix_Y_train.slice(k) + (rho_cv(k, 0) * Ip));    
+        tempinv_cv.slice(k) = inv_sympd(symmatu((selected_tau1 * Omega) - gram_matrix_Y_train.slice(k) + (rho_cv(k, 0) * Ip)));
       }
     }
     else if(selected_tau1 == 0 && max(tau2) == 0) {
@@ -655,13 +651,14 @@ List spatpcaCV(
   
   if(tau2.n_elem > 1) {
     mat cv2(M, tau2.n_elem);
-    spatpcaCVPhi2 spatpcaCVPhi2(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, K, selected_tau1, Omega, tau2, nk, maxit, tol, cv2, tempinv_cv); 
-    RcppParallel::parallelFor(0, M, spatpcaCVPhi2);
+    spatpcaCVPhi2 worker2(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, K, selected_tau1, Omega, tau2, nk, maxit, tol, cv2, tempinv_cv);
+    worker2(0, M);
 
-    (sum(cv2, 0)).min(index2);
+    rowvec cv2_sum = sum(cv2, 0);
+    index2 = cv2_sum.index_min();
     selected_tau2 = tau2[index2];
 
-    mat tempinv = inv_sympd((selected_tau1 * Omega) - gram_matrix_Y + (estimated_rho * Ip));
+    mat tempinv = inv_sympd(symmatu((selected_tau1 * Omega) - gram_matrix_Y + (estimated_rho * Ip)));
     mat estimated_R = estimated_Phi;
     mat estimated_Lambda1 = 0 * estimated_Phi;
 
@@ -673,7 +670,7 @@ List spatpcaCV(
   else {  
     selected_tau2 = max(tau2);
     if(selected_tau2 > 0) {
-      mat tempinv = inv_sympd((selected_tau1 * Omega) - gram_matrix_Y + (estimated_rho * Ip));
+      mat tempinv = inv_sympd(symmatu((selected_tau1 * Omega) - gram_matrix_Y + (estimated_rho * Ip)));
       mat estimated_R= estimated_Phi;
       mat estimated_Lambda1 = 0 * estimated_Phi;
       for(uword i = 0; i < l2.n_elem; i++)
@@ -682,10 +679,11 @@ List spatpcaCV(
     cv_score_tau2.zeros(1);
   }
   
-  spatpcaCVPhi3 spatpcaCVPhi3(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, tempinv_cv, index2, K, Omega, selected_tau1, tau2, gamma, nk, maxit, tol, cv3);
-  RcppParallel::parallelFor(0, M, spatpcaCVPhi3);
+  spatpcaCVPhi3 worker3(Y, gram_matrix_Y_train, Phi_cv, Lambd2_cv, rho_cv, tempinv_cv, index2, K, Omega, selected_tau1, tau2, gamma, nk, maxit, tol, cv3);
+  worker3(0, M);
   if(gamma.n_elem > 1) {
-    (sum(cv3, 0)).min(index3);
+    rowvec cv3_sum = sum(cv3, 0);
+    index3 = cv3_sum.index_min();
     selected_gamma = gamma[index3];
   }
   else {
@@ -714,11 +712,16 @@ List spatpcaCV(
 //' \item{eigenvalue}{A vector of estimated eigenvalues.}
 //' \item{error}{Error rate for the ADMM algorithm}
 // [[Rcpp::export]]
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction) {
+Rcpp::List spatialPrediction(const Rcpp::NumericMatrix& phir,
+                             const Rcpp::NumericMatrix& Yr,
+                             double gamma,
+                             const Rcpp::NumericMatrix& predicted_eignefunction) {
   int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = predicted_eignefunction.nrow() ;
-  mat phi(phir.begin(), p, K, false);
-  mat predicted_phi(predicted_eignefunction.begin(), p2, K, false);
-  mat Y(Yr.begin(), n, p, false);
+
+  mat phi(phir.begin(), p, K);
+  mat predicted_phi(predicted_eignefunction.begin(), p2, K);
+  mat Y(Yr.begin(), n, p);
+  
   mat transformed_eigenvectors, decreasing_transformed_eigenvectors;
   vec transformed_eigenvalues, decreasing_transformed_eigenvalues;
   

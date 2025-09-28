@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.align = "center",
-  dpi = 300,
-  tidy = "styler"
+  dpi = 300
 )
 ```
 
@@ -29,11 +28,6 @@ Represent how to use **SpatPCA** for two-dimensional data for capturing the most
 ```{r message=FALSE}
 library(SpatPCA)
 library(ggplot2)
-library(dplyr)
-library(tidyr)
-library(gifski)
-library(fields)
-library(scico)
 
 base_theme <- theme_minimal(base_size = 10, base_family = "Times") +
   theme(legend.position = "bottom")
@@ -42,9 +36,13 @@ fill_bar <- guides(fill = guide_colourbar(
     barheight = 0.5,
     label.position = "bottom")
   )
-coltab <- scico(128, palette = 'vik')
+coltab <- with(
+  list(),
+  colorRampPalette(c("#3b4cc0", "#f7f7f7", "#b40426"))(128)
+)
 color_scale_limit <- c(-.8, .8)
 ```
+Selected realizations are displayed as static images below.
 #### True spatial pattern (eigenfunction)
 - The underlying spatial pattern below indicates realizations will vary dramatically at the center and be almost unchanged at the both ends of the curve.
 ```{r, out.width = '100%'}
@@ -59,13 +57,14 @@ unnormalized_eigen_fn <-
 true_eigen_fn <-
   unnormalized_eigen_fn / norm(t(unnormalized_eigen_fn), "F")
 
-data.frame(
+plot_df <- data.frame(
   location_dim1 = expanded_location[, 1],
   location_dim2 = expanded_location[, 2],
   eigenfunction = true_eigen_fn
-) %>%
-  ggplot(aes(location_dim1, location_dim2)) +
-  geom_tile(aes(fill = eigenfunction))  +
+)
+
+ggplot(plot_df, aes(location_dim1, location_dim2)) +
+  geom_tile(aes(fill = eigenfunction)) +
   scale_fill_gradientn(colours = coltab, limits = color_scale_limit) +
   base_theme +
   labs(title = "True Eigenfunction", fill = "") +
@@ -85,23 +84,19 @@ realizations <- rnorm(n = n, sd = 3) %*% t(true_eigen_fn) + matrix(rnorm(n = n *
 
 #### Animate realizations
 - We can see simulated central realizations change in a wide range more frequently than the others.
-```{r, animation.hook="gifski", out.width = '100%'}
-original_par <- par()
-for (i in 1:n) {
-  par(mar = c(3, 3, 1, 1), family = "Times")
-  image.plot(
-    matrix(realizations[i, ], p, p),
-    main = paste0(i, "-th realization"),
-    zlim = c(-10, 10),
-    col = coltab,
-    horizontal = TRUE,
-    cex.main = 0.8,
-    cex.axis = 0.5,
-    axis.args=list(cex.axis=0.5),
-    legend.width=0.5
-  )
-}
-par(original_par)
+```{r, out.width = '100%'}
+realization_df <- data.frame(
+  location_dim1 = expanded_location[, 1],
+  location_dim2 = expanded_location[, 2],
+  value = realizations[1, ]
+)
+
+ggplot(realization_df, aes(location_dim1, location_dim2)) +
+  geom_tile(aes(fill = value)) +
+  scale_fill_gradientn(colours = coltab, limits = c(-10, 10)) +
+  base_theme +
+  labs(title = "1st realization", fill = "") +
+  fill_bar
 ```
 
 #### Apply `SpatPCA::spatpca`
@@ -114,17 +109,29 @@ eigen_est <- cv$eigenfn
 #### Compare **SpatPCA** with PCA
 The following figure shows that **SpatPCA** can find sparser pattern than PCA, which is close to the true pattern.
 ```{r, out.width = '100%'}
-data.frame(
+plot_df <- data.frame(
   location_dim1 = expanded_location[, 1],
   location_dim2 = expanded_location[, 2],
-  spatpca = eigen_est[, 1], 
-  pca = svd(realizations)$v[, 1]) %>%
-  gather(estimate, eigenfunction, -c(location_dim1, location_dim2)) %>%
-  ggplot(aes(location_dim1, location_dim2)) +
-  geom_tile(aes(fill=eigenfunction))  +
+  spatpca = eigen_est[, 1],
+  pca = svd(realizations)$v[, 1]
+)
+
+plot_df_long <- rbind(
+  data.frame(location_dim1 = plot_df$location_dim1,
+             location_dim2 = plot_df$location_dim2,
+             estimate = "spatpca",
+             eigenfunction = plot_df$spatpca),
+  data.frame(location_dim1 = plot_df$location_dim1,
+             location_dim2 = plot_df$location_dim2,
+             estimate = "pca",
+             eigenfunction = plot_df$pca)
+)
+
+ggplot(plot_df_long, aes(location_dim1, location_dim2)) +
+  geom_tile(aes(fill = eigenfunction)) +
   scale_fill_gradientn(colours = coltab, limits = color_scale_limit) +
   base_theme +
-  facet_wrap(.~estimate) +
+  facet_wrap(~estimate) +
   labs(fill = "") +
   fill_bar
 ```

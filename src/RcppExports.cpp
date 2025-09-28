@@ -12,60 +12,60 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // thinPlateSplineMatrix
-arma::mat thinPlateSplineMatrix(const arma::mat location);
+arma::mat thinPlateSplineMatrix(const arma::mat& location);
 RcppExport SEXP _SpatPCA_thinPlateSplineMatrix(SEXP locationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type location(locationSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type location(locationSEXP);
     rcpp_result_gen = Rcpp::wrap(thinPlateSplineMatrix(location));
     return rcpp_result_gen;
 END_RCPP
 }
 // eigenFunction
-arma::mat eigenFunction(const arma::mat new_location, const arma::mat original_location, const arma::mat Phi);
+arma::mat eigenFunction(const arma::mat& new_location, const arma::mat& original_location, const arma::mat& Phi);
 RcppExport SEXP _SpatPCA_eigenFunction(SEXP new_locationSEXP, SEXP original_locationSEXP, SEXP PhiSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type new_location(new_locationSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type original_location(original_locationSEXP);
-    Rcpp::traits::input_parameter< const arma::mat >::type Phi(PhiSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type new_location(new_locationSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type original_location(original_locationSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Phi(PhiSEXP);
     rcpp_result_gen = Rcpp::wrap(eigenFunction(new_location, original_location, Phi));
     return rcpp_result_gen;
 END_RCPP
 }
 // spatpcaCV
-List spatpcaCV(NumericMatrix sxyr, NumericMatrix Yr, int M, int K, NumericVector tau1r, NumericVector tau2r, NumericVector gammar, NumericVector nkr, int maxit, double tol, NumericVector l2r);
+Rcpp::List spatpcaCV(const Rcpp::NumericMatrix& sxyr, const Rcpp::NumericMatrix& Yr, int M, int K, const Rcpp::NumericVector& tau1r, const Rcpp::NumericVector& tau2r, const Rcpp::NumericVector& gammar, const Rcpp::NumericVector& nkr, int maxit, double tol, const Rcpp::NumericVector& l2r);
 RcppExport SEXP _SpatPCA_spatpcaCV(SEXP sxyrSEXP, SEXP YrSEXP, SEXP MSEXP, SEXP KSEXP, SEXP tau1rSEXP, SEXP tau2rSEXP, SEXP gammarSEXP, SEXP nkrSEXP, SEXP maxitSEXP, SEXP tolSEXP, SEXP l2rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type sxyr(sxyrSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type sxyr(sxyrSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< int >::type M(MSEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type tau1r(tau1rSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type tau2r(tau2rSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type gammar(gammarSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type nkr(nkrSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type tau1r(tau1rSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type tau2r(tau2rSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gammar(gammarSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type nkr(nkrSEXP);
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type l2r(l2rSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type l2r(l2rSEXP);
     rcpp_result_gen = Rcpp::wrap(spatpcaCV(sxyr, Yr, M, K, tau1r, tau2r, gammar, nkr, maxit, tol, l2r));
     return rcpp_result_gen;
 END_RCPP
 }
 // spatialPrediction
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction);
+Rcpp::List spatialPrediction(const Rcpp::NumericMatrix& phir, const Rcpp::NumericMatrix& Yr, double gamma, const Rcpp::NumericMatrix& predicted_eignefunction);
 RcppExport SEXP _SpatPCA_spatialPrediction(SEXP phirSEXP, SEXP YrSEXP, SEXP gammaSEXP, SEXP predicted_eignefunctionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type phir(phirSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type Yr(YrSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type phir(phirSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type Yr(YrSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
-    Rcpp::traits::input_parameter< NumericMatrix >::type predicted_eignefunction(predicted_eignefunctionSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix& >::type predicted_eignefunction(predicted_eignefunctionSEXP);
     rcpp_result_gen = Rcpp::wrap(spatialPrediction(phir, Yr, gamma, predicted_eignefunction));
     return rcpp_result_gen;
 END_RCPP
