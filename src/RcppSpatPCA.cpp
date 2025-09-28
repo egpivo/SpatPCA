@@ -55,7 +55,7 @@ struct thinPlateSpline {
 //' two_dim_location <- as.matrix(expand.grid(x = pesudo_sequence, y = pesudo_sequence))
 //' thin_plate_matrix <- thinPlateSplineMatrix(two_dim_location)
 // [[Rcpp::export]]
-arma::mat thinPlateSplineMatrix(const arma::mat location) {
+arma::mat thinPlateSplineMatrix(const arma::mat& location) {
   const int p = location.n_rows, d = location.n_cols;
   const int total_size = p + d;
   
@@ -91,9 +91,9 @@ arma::mat thinPlateSplineMatrix(const arma::mat location) {
 //' Phi <- matrix(c(1, 0, 0, 0), nrow = 4, ncol = 1)
 //' thin_plate_matrix <- eigenFunction(new_location, original_location, Phi)
 // [[Rcpp::export]]
-arma::mat eigenFunction(const arma::mat new_location,
-                        const arma::mat original_location,
-                        const arma::mat Phi) {
+arma::mat eigenFunction(const arma::mat& new_location,
+                        const arma::mat& original_location,
+                        const arma::mat& Phi) {
   const int p = original_location.n_rows, d = original_location.n_cols, K = Phi.n_cols;
   const int total_size = p + d;
   
@@ -540,25 +540,22 @@ struct spatpcaCVPhi3 {
 //' @param l2r A given tau2
 //' @return A list of selected parameters
 // [[Rcpp::export]]
-List spatpcaCV(
-    NumericMatrix sxyr,
-    NumericMatrix Yr,
-    int M,
-    int K,
-    NumericVector tau1r,
-    NumericVector tau2r,
-    NumericVector gammar,
-    NumericVector nkr,
-    int maxit,
-    double tol,
-    NumericVector l2r) {
+Rcpp::List spatpcaCV(const Rcpp::NumericMatrix& sxyr,
+                     const Rcpp::NumericMatrix& Yr,
+                     int M, int K,
+                     const Rcpp::NumericVector& tau1r,
+                     const Rcpp::NumericVector& tau2r,
+                     const Rcpp::NumericVector& gammar,
+                     const Rcpp::NumericVector& nkr,
+                     int maxit, double tol,
+                     const Rcpp::NumericVector& l2r) {
   int n = Yr.nrow(), p = Yr.ncol(), d = sxyr.ncol();
-  mat Y(Yr.begin(), n, p, false), sxy(sxyr.begin(), p, d, false);
-  colvec tau1(tau1r.begin(), tau1r.size(),false);
-  colvec tau2(tau2r.begin(), tau2r.size(), false);
-  colvec gamma(gammar.begin(), gammar.size(), false);
-  colvec nk(nkr.begin(), nkr.size(), false);
-  colvec l2(l2r.begin(), l2r.size(), false);
+  mat Y(Yr.begin(), n, p), sxy(sxyr.begin(), p, d);
+  colvec tau1(tau1r.begin(), tau1r.size());
+  colvec tau2(tau2r.begin(), tau2r.size());
+  colvec gamma(gammar.begin(), gammar.size());
+  colvec nk(nkr.begin(), nkr.size());
+  colvec l2(l2r.begin(), l2r.size());
   mat cv(M, tau1.n_elem), cv3(M, gamma.n_elem), cv_score_tau1, cv_score_tau2, cv_score_gamma, Omega, svd_U, svd_V;
   double selected_tau1, selected_tau2 = 0, selected_gamma;
   mat gram_matrix_Y = Y.t() * Y;
@@ -715,11 +712,16 @@ List spatpcaCV(
 //' \item{eigenvalue}{A vector of estimated eigenvalues.}
 //' \item{error}{Error rate for the ADMM algorithm}
 // [[Rcpp::export]]
-List spatialPrediction(NumericMatrix phir, NumericMatrix Yr, double gamma, NumericMatrix predicted_eignefunction) {
+Rcpp::List spatialPrediction(const Rcpp::NumericMatrix& phir,
+                             const Rcpp::NumericMatrix& Yr,
+                             double gamma,
+                             const Rcpp::NumericMatrix& predicted_eignefunction) {
   int n = Yr.nrow(), p = phir.nrow(), K = phir.ncol(), p2 = predicted_eignefunction.nrow() ;
-  mat phi(phir.begin(), p, K, false);
-  mat predicted_phi(predicted_eignefunction.begin(), p2, K, false);
-  mat Y(Yr.begin(), n, p, false);
+
+  mat phi(phir.begin(), p, K);
+  mat predicted_phi(predicted_eignefunction.begin(), p2, K);
+  mat Y(Yr.begin(), n, p);
+  
   mat transformed_eigenvectors, decreasing_transformed_eigenvectors;
   vec transformed_eigenvalues, decreasing_transformed_eigenvalues;
   
