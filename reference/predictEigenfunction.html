@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">SpatPCA</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.8</span>
       </span>
     </div>
 
@@ -101,7 +101,7 @@
 <span class="r-in"><span><span class="va">x_1Drm</span> <span class="op">&lt;-</span> <span class="va">x_1D</span><span class="op">[</span><span class="op">-</span><span class="va">rm_loc</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">Y_1Drm</span> <span class="op">&lt;-</span> <span class="va">Y_1D</span><span class="op">[</span>, <span class="op">-</span><span class="va">rm_loc</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">x_1Dnew</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">cv_1D</span> <span class="op">&lt;-</span> <span class="fu"><a href="spatpca.html">spatpca</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_1Drm</span>, Y <span class="op">=</span> <span class="va">Y_1Drm</span>, tau2 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, num_cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cv_1D</span> <span class="op">&lt;-</span> <span class="fu"><a href="spatpca.html">spatpca</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_1Drm</span>, Y <span class="op">=</span> <span class="va">Y_1Drm</span>, tau2 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">100</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dominant_patterns</span> <span class="op">&lt;-</span> <span class="fu">predictEigenfunction</span><span class="op">(</span><span class="va">cv_1D</span>, x_new <span class="op">=</span> <span class="va">x_1Dnew</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -118,7 +118,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
       </footer></div>
