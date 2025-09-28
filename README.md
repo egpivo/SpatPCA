@@ -1,6 +1,5 @@
 # SpatPCA: Regularized Principal Component Analysis for Spatial Data
 
-[![License](https://eddelbuettel.github.io/badges/GPL2+.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 [![R build status](https://github.com/egpivo/SpatPCA/workflows/R-CMD-check/badge.svg)](https://github.com/egpivo/SpatPCA/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/egpivo/SpatPCA/master.svg)](https://app.codecov.io/github/egpivo/SpatpCA?branch=master)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SpatPCA?color=green)](https://cran.r-project.org/package=SpatPCA)
